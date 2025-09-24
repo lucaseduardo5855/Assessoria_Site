@@ -700,6 +700,103 @@ section.precos{
 /* PRECOS Section estilo Finalizado*/
 
 
+
+/* FOOTER Section estilo Iniciado*/
+section.pagina-footer{
+    width: 100%;
+    padding: 70px 8% 50px;
+    background-color: var(--darkBk);
+    color: gray;
+}
+
+.footer-conteudo{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 3fr 2fr 2fr;
+    grid-gap: 40px;
+}
+
+.footer-conteudo .footer-col{
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-conteudo .footer-col-titulo{
+    margin-bottom: 20px;
+}
+
+.footer-conteudo .footer-col-titulo h3{
+    font-size: 24px;
+    text-transform: capitalize;
+}
+
+.footer-conteudo .footer-col-desc{
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-col-1 .footer-col-desc p {
+    line-height: 1.4;
+    color: white;
+}
+
+.footer-col-1 .footer-col-desc span{
+    color: red;
+    margin-bottom: 17px;
+    display: inline-block;
+}
+
+.footer-col-1 .footer-col-desc span:nth-child(1){
+    margin-top: 15px;
+}
+
+.footer-col-1 .footer-social-media{
+    display: flex;
+    margin-top: 20px;
+}
+
+.footer-col-1 .footer-social-media a{
+    text-decoration: none;
+    color: var(--amarelo-z4);
+    margin-right: 10px;
+}
+
+.footer-col-1 .footer-social-media a i{
+    width: 35px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    background-color: var(--fundo-z4);
+    color:aliceblue;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    transition: all 0.3s;
+}
+
+.footer-col-1 .footer-social-media a i:hover{
+    background-color: transparent;
+    border: 1px solid var(--amarelo-z4); /* amarelo quando passa o mouse MUDAR DPS */
+    color: rgb(255, 0, 0);
+}
+
+.footer-col-2 .footer-col-desc a{
+    text-decoration: none;
+    font-size: 16px;
+    color: white;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+    transition: 0.3s;
+}
+
+.footer-col-2 .footer-col-desc a:hover{
+    color: red;
+    
+}
+/* FOOTER Section estilo Finalizado*/
+
+
 /* Inicio das Media Querys */
 @media(max-width: 968px) {
     /* section home */

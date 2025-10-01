@@ -35,7 +35,7 @@ section .section-header{
     max-width: 700px;
     text-align: center;
     position: relative;
-    margin: 0 auto 50px auto;
+    margin: 0 auto 0px auto;
 }
 
 section .section-header h1::after{
@@ -57,7 +57,12 @@ section .section-header h1{
     font-size: 40px;
     color: var(--fundo-z4);
     margin-top: 0;
+<<<<<<< Updated upstream
     margin-bottom: 45px;
+=======
+    margin-bottom: 15px;
+    
+>>>>>>> Stashed changes
 }
 
 section .section-header p{
@@ -492,6 +497,7 @@ section.servicos{
 }
 
 
+<<<<<<< Updated upstream
 /* Treinadora Section estilo iniciado*/
 section.treinadora{
     padding: 120px 8%;
@@ -522,6 +528,8 @@ section.treinadora{
 /* Treinadora Section estilo Finalizado*/
 
 
+=======
+>>>>>>> Stashed changes
 /* Oferta Section estilo Iniciado*/
 section.oferta{ /* AJUSTAR */
     position: relative;

@@ -58,7 +58,12 @@ section .section-header h1{
     color: var(--fundo-z4);
     margin-top: 0;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     margin-bottom: 45px;
+=======
+    margin-bottom: 15px;
+    
+>>>>>>> Stashed changes
 =======
     margin-bottom: 15px;
     
@@ -498,6 +503,7 @@ section.servicos{
 
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 /* Treinadora Section estilo iniciado*/
 section.treinadora{
     padding: 120px 8%;
@@ -528,6 +534,8 @@ section.treinadora{
 /* Treinadora Section estilo Finalizado*/
 
 
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 /* Oferta Section estilo Iniciado*/

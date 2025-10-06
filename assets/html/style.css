@@ -38,7 +38,8 @@ section .section-header{
     text-align: center;
     position: relative;
     margin: 0 auto;
-    margin-bottom: 50px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
 }
 
 section .section-header h1::after{
@@ -47,7 +48,7 @@ section .section-header h1::after{
     width: 40%;
     height: 3px;
     background-color: var(--amarelo-z4);
-    margin: 15px auto 0 auto;
+    margin: 10px auto 0 auto;
 }
 
 section .section-header h3{
@@ -59,12 +60,13 @@ section .section-header h3{
 section .section-header h1{
     font-size: 40px;
     color: var(--fundo-z4);
+    margin-bottom: 25px;
     margin-top: 0;
-    margin-bottom: 45px;
 }
 
 section .section-header p{
     color: #666;
+    margin-top: 20px;
 }
 
 /* Código reutilizavel FIM */
@@ -623,8 +625,8 @@ section.treinadora {
 /* FIM Section Treinadora */
 section.treinadora-bio {
     width: 100%;
-    /* Mantenha o padding horizontal e garanta que o fundo seja branco para o topo */
-    padding: 110px 3.5% 0; 
+    /* CORREÇÃO: Zera o padding superior da section */
+    padding: 0 3.5% 0; 
     background-color: white; 
     margin: 0 auto;
 }
@@ -660,6 +662,29 @@ section.treinadora-bio {
     box-sizing: border-box;
     border-radius: 8px; 
     overflow: hidden; 
+}
+
+.section-header-treinadora {
+    /* CRÍTICO 1: Limita a largura e centraliza o bloco na horizontal */
+    max-width: 1000px; 
+    margin: 0 auto; 
+    /* CRÍTICO 2: Centraliza o texto (H1) dentro deste bloco */
+    text-align: center; 
+    
+    /* AJUSTE PARA SUBIR: Reduzido para puxar o H1 para o topo */
+    padding-top: 20px; 
+    
+    /* Mantém o espaçamento para separar da faixa escura */
+    margin-bottom: 20px; 
+    position: relative;
+}
+
+.section-header-treinadora h1 {
+    font-size: 40px;
+    color: var(--fundo-z4); /* Use sua cor principal */
+    /* Ajusta margens para subir o H1 */
+    margin-top: 0px; 
+    margin-bottom: 15px; /* Espaço para a linha amarela */
 }
 
 /* CONTEÚDO PRINCIPAL (TEXTO E FOTO) - CORREÇÃO DE ALINHAMENTO */

@@ -21,6 +21,7 @@ function listItemClicked (){
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Código da Navbar
     const navbar = document.querySelector('.main-navbar');
     const scrollThreshold = 50;
 
@@ -32,8 +33,31 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    window.addEventListener('scroll', toggleNavbarClass); // Adiciona o listener de evento para scroll
-    toggleNavbarClass(); // Garante que o estado seja verificado na hora do carregamento
-})
+    window.addEventListener('scroll', toggleNavbarClass);
+    toggleNavbarClass(); 
+    
+    //----------------------------------------------------
+    // SWIPER FEEDBACKS - AGORA INICIALIZA DEPOIS DO DOM
+    //----------------------------------------------------
+    const swiper = new Swiper('.js-testimonials-slider', {
+    grabCursor: true,
+    spaceBetween: 30,
+    
+    // ----------- CONFIGURAÇÃO PARA ROLAGEM AUTOMÁTICA -----------
+    autoplay: {
+        delay: 4000, // Tempo em milissegundos (5 segundos entre slides)
+        disableOnInteraction: false, // Continua rodando automaticamente mesmo depois de o usuário interagir
+    },
+    // -----------------------------------------------------------
 
-// Section home final
+    pagination:{
+        el: '.js-testimonials-pagination',
+        clickable: true
+    },
+    breakpoints: {
+        767:{
+            slidesPerView: 2
+        }
+    }
+});
+});

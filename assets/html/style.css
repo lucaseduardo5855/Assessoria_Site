@@ -684,8 +684,24 @@ section.treinadora-bio {
     color: var(--fundo-z4); /* Use sua cor principal */
     /* Ajusta margens para subir o H1 */
     margin-top: 0px; 
-    margin-bottom: 15px; /* Espaço para a linha amarela */
+    margin-bottom: 60px; /* Espaço para a linha amarela */
 }
+
+.section-header-treinadora h1::after{
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: 0;
+    width: 300px;
+    height: 3px;
+    background-color: var(--amarelo-z4); 
+    
+    /* TÉCNICA DE CENTRALIZAÇÃO DA LINHA */
+    left: 50%; 
+    transform: translateX(-50%); 
+    top: 90px;
+}
+
 
 /* CONTEÚDO PRINCIPAL (TEXTO E FOTO) - CORREÇÃO DE ALINHAMENTO */
 .bio-conteudo {
@@ -821,6 +837,99 @@ section.treinadora-bio {
     /* Puxa a foto para baixo para criar espaço acima dela (Ajuste se necessário) */
     margin-top: 20px; 
 }
+
+
+/* Inicio Section Feedbacks */
+.container{
+    max-width: 1170px;
+    margin: auto;
+    padding: 0 15px;
+}
+
+.section-header{
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.section-header .title{
+    font-size: 35px;
+    font-weight: 600;
+    text-transform: capitalize;
+    color: var(--fundo-z4);
+    line-height: 1.2;
+}
+
+.section-header .title::after{
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: 0;
+    width: 280px;
+    height: 3px;
+    background-color: var(--amarelo-z4); 
+    
+    /* TÉCNICA DE CENTRALIZAÇÃO DA LINHA */
+    left: 50%; 
+    transform: translateX(-50%); 
+    top: 60px;
+}
+
+.feedbacks{
+    padding: 100px 0;
+    background-color: #F5F5F5;
+}
+
+.testimonials-item{
+    background: linear-gradient(
+    to bottom,
+    #8296ac 0%,      /* Cor escura no topo (seu --fundo-z4) */
+    #0A2548 100%     /* Um tom ligeiramente mais claro na base */
+);
+    padding: 30px;
+    border-radius: 30px;
+    margin-top: 70px;
+}
+
+.testimonials-item img{
+    width: 90px; 
+    height: 90px;
+    border-radius: 50%;
+    vertical-align: middle;
+    object-fit: cover;
+}
+
+.testimonials-item .info{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.testimonials-item .name{
+    font-size: 24px;
+    text-transform: capitalize;
+    font-weight: 600;
+    color: white;
+    line-height: 1.2;
+}
+
+.testimonials-item p{
+    margin-top: 20px;
+    color: #f5f2f2;
+}
+
+.feedbacks .swiper-pagination{
+    position: relative;
+    margin-top: 40px;
+    bottom: auto;
+}
+
+.feedbacks .swiper-pagination-bullet{
+    height: 12px;
+    width: 12px;
+    background-color: var(--fundo-z4);
+}
+
+/* FIM Section Feedbacks */
 
 /* Oferta Section estilo Iniciado*/
 section.oferta{ /* AJUSTAR */

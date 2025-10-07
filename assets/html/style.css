@@ -45,7 +45,7 @@ section .section-header{
 section .section-header h1::after{
     content: "";
     display: block;
-    width: 40%;
+    width: 240px;
     height: 3px;
     background-color: var(--amarelo-z4);
     margin: 10px auto 0 auto;
@@ -436,15 +436,10 @@ section.servicos{
     margin-right: -8%;
     padding-left: 8%;
     padding-right: 8%;
-    background: linear-gradient(
-    to bottom,
-    #8296ac 0%,      /* Cor escura no topo (seu --fundo-z4) */
-    #0A2548 100%     /* Um tom ligeiramente mais claro na base */
-);
     border-left: 5px solid white;
     border-right: 5px solid white;
-    padding-top: 70px;
-    padding-bottom: 70px;
+    padding-top: 30px;
+    padding-bottom: 150px;
     box-sizing: border-box;
     border-radius: 8px;
     margin-bottom: 3rem;
@@ -487,7 +482,7 @@ section.servicos{
     position: relative;
     width: 100%;
     /* Altura ajustada para 4 colunas */
-    height: 280px; 
+    height: 400px; 
     overflow: hidden;
     border-radius: 5px 5px 0 0; /* Arredondamento apenas no topo */
     /* Remove a box-shadow que estava aqui */
@@ -701,7 +696,7 @@ section.treinadora-bio {
     display: block;
     position: absolute;
     bottom: 0;
-    width: 300px;
+    width: 230px;
     height: 3px;
     background-color: var(--amarelo-z4); 
     
@@ -848,6 +843,88 @@ section.treinadora-bio {
 }
 
 
+
+/* Inicio Section Consultoria Online */
+.consultoria-online{
+    background-color: #666;
+    padding: 100px 5%;
+}
+
+.consultoria-content{
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 50px;
+}
+
+.consultoria-coluna-esquerda{
+    width: 60%;
+}
+
+.consultoria-coluna-esquerda img{
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.consultoria-coluna-direita{
+    width: 40%;
+}
+
+.consultoria-titulo{
+    color: white;
+    font-size: 40px;
+    border-bottom: 2px solid #ff8c00;
+    display: inline-block;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+}
+
+.consultoria-subtitulo{
+    color: white;
+    font-size: 28px;
+    font-weight: 400;
+    margin-top: 10px;
+    margin-bottom: 40px;
+}
+
+.consultoria-passos{
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.consultoria-passos dt{
+    font-weight: bold;
+    color: black;
+    margin-top: 15px;
+}
+
+.consultoria-passos dd{
+    color: var(--fundo-z4);
+    margin-left: 0;
+    margin-bottom: 15px;
+}
+
+.btn-cta-consultoria{
+    display: inline-block;
+    background-color: var(--fundo-z4);
+    color: white;
+    padding: 12px 30px;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.btn-cta-consultoria:hover{
+    background-color: #FFB000;
+}
+/* FIM Section Consultoria Online */
+
+
+
+
 /* Inicio Section Feedbacks */
 .container{
     max-width: 1170px;
@@ -873,7 +950,7 @@ section.treinadora-bio {
     display: block;
     position: absolute;
     bottom: 0;
-    width: 280px;
+    width: 240px;
     height: 3px;
     background-color: var(--amarelo-z4); 
     

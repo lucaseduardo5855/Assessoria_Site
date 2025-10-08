@@ -681,7 +681,7 @@ section.treinadora-bio {
     padding-right: 8%;
 
     /* NOVO: IMAGEM DA TREINADORA COMO BACKGROUND */
-    background-image: url('img/1.png'); /* Caminho da sua imagem */
+    background-image: url('/assets/img/1.png'); /* Caminho da sua imagem */
     background-size: cover; /* Faz a imagem cobrir todo o fundo */
     background-repeat: no-repeat; /* Evita que a imagem se repita */
     

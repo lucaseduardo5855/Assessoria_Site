@@ -76,12 +76,12 @@ document.addEventListener('DOMContentLoaded', function() {
         musculacao: { // Usando preços do Combo, como discutido
             mensal: { price: "120", period: "/mês", currency: "R$" },
             semestral: { price: "650", period: "/6 meses", currency: "R$" },
-            anual: { price: "1.200", period: "/ano", currency: "R$" }
+            anual: { price: "840", period: "/ano", currency: "R$" }
         },
         combo: {
-            mensal: { price: "120", period: "/mês", currency: "R$" },
+            mensal: { price: "180", period: "/mês", currency: "R$" },
             semestral: { price: "650", period: "/6 meses", currency: "R$" },
-            anual: { price: "1.200", period: "/ano", currency: "R$" }
+            anual: { price: "1200", period: "/ano", currency: "R$" }
         }
     };
 
@@ -90,26 +90,31 @@ document.addEventListener('DOMContentLoaded', function() {
     const periodSmalls = document.querySelectorAll('.pricing-card small');
 
     // Função que atualiza os preços na tela
-    function updatePrices(duration) {
-        priceSpans.forEach(span => {
-            // Pega o ID do span (ex: price-corrida)
-            const id = span.id; 
-            // Extrai o nome do plano (ex: 'corrida')
-            const planName = id.split('-')[1]; 
+   function updatePrices(duration) {
+    priceSpans.forEach(span => {
+        // Pega o ID do span (ex: price-corrida)
+        const id = span.id; 
+        // Extrai o nome do plano (ex: 'corrida')
+        const planName = id.split('-')[1]; 
+        
+        // Busca os dados na nossa tabela
+        if (priceData[planName] && priceData[planName][duration]) {
+            const data = priceData[planName][duration];
             
-            // Busca os dados na nossa tabela
-            if (priceData[planName] && priceData[planName][duration]) {
-                const data = priceData[planName][duration];
-                
-                // Atualiza o preço principal
-                const [value, cents] = data.price.split('.');
-                span.innerHTML = `${data.currency} ${value}<sup>${cents || '00'}</sup>`;
-                
-                // Atualiza a pequena tag de duração (/mês, /ano, etc.)
-                document.getElementById(`period-${planName}`).textContent = data.period;
-            }
-        });
-    }
+            // ATENÇÃO: A alteração está AQUI.
+            // 1. Separamos o valor do preço (mesmo que não tenha ponto)
+            const [value, cents] = data.price.split('.');
+            
+            // 2. ATUALIZAÇÃO DO PREÇO PRINCIPAL:
+            // Removemos o <sup> e garantimos que apenas o 'value' (o número grande) seja exibido.
+            // Isso reproduz o estilo da sua imagem (R$ 840, R$ 1200)
+            span.innerHTML = `${data.currency} ${value}`; 
+            
+            // Atualiza a pequena tag de duração (/mês, /ano, etc.)
+            document.getElementById(`period-${planName}`).textContent = data.period;
+        }
+    });
+}
 
     // Adiciona o evento de clique aos botões de duração
     tabButtons.forEach(button => {

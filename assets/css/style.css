@@ -33,7 +33,7 @@ button:hover {
     color: var(--fundo-z4);
 }
 
-section .section-header{
+section .section-header {
     max-width: 700px;
     text-align: center;
     position: relative;
@@ -42,7 +42,7 @@ section .section-header{
     padding-bottom: 20px;
 }
 
-section .section-header h1::after{
+section .section-header h1::after {
     content: "";
     display: block;
     width: 240px;
@@ -51,19 +51,19 @@ section .section-header h1::after{
     margin: 10px auto 0 auto;
 }
 
-section .section-header h3{
+section .section-header h3 {
     font-size: 22px;
     color: var(--fundo-z4);
 }
 
-section .section-header h1{
+section .section-header h1 {
     font-size: 40px;
     color: var(--fundo-z4);
     margin-bottom: 25px;
     margin-top: 0;
 }
 
-section .section-header p{
+section .section-header p {
     color: #666;
     margin-top: 20px;
 }
@@ -82,7 +82,8 @@ body {
     max-width: auto;
     min-height: 100vh;
     margin: 0px auto;
-    background-color: white; /* FUNDO BACKGROUND SECTION*/
+    background-color: white;
+    /* FUNDO BACKGROUND SECTION*/
     /* CORREÇÃO PARA GARANTIR QUE NADA SAIA DESTE CONTAINER PRINCIPAL */
     overflow-x: hidden;
 }
@@ -91,11 +92,8 @@ section.home {
     position: relative;
     width: 100%;
     min-height: 100vh;
-    padding: 0px 8%;
-    background: url('img/banner3.jpeg');
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
+    padding: 0;
+    background-color: var(--darkBk);
 }
 
 .home .home-overlay {
@@ -104,8 +102,70 @@ section.home {
     height: 100%;
     top: 0;
     left: 0;
-    background-color: rgba(0, 0, 0, 0.7);
-    z-index: 1;
+    /* Z-INDEX 2: Fica sobre o slider, mas sob o texto e navegação */
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 2;
+}
+
+.home-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* CRÍTICO - Z-INDEX 1: O slider é o fundo, deve ficar por baixo de tudo */
+    z-index: 1; 
+    overflow: hidden;
+}
+
+.swiper-slide {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    /* Para centralizar a imagem se necessário */
+    justify-content: center;
+    align-items: center;
+}
+
+.slide-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* ESSENCIAL para a imagem cobrir o slide sem distorcer, cortando o excesso */
+    object-position: center top;
+    /* Tenta centralizar a parte mais importante da imagem */
+    display: block;
+}
+
+.home-slider .swiper-pagination {
+    cursor: pointer;
+    user-select: none;
+}
+
+.swiper-pagination.home-pagination {
+    position: absolute;
+    bottom: 30px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    /* CRÍTICO - Z-INDEX 110: Deve ser o maior valor (acima de tudo) */
+    z-index: 110; 
+    /* Garante que o clique seja detectado (essencial para resolver o problema) */
+    pointer-events: auto; 
+}
+
+.swiper-pagination-bullet {
+    background: white;
+    opacity: 0.7;
+    transition: background 0.3s, opacity 0.3s;
+    cursor: pointer;
+    margin: 0 5px;
+}
+
+.home-slider .swiper-pagination-bullet-active {
+    background: var(--amarelo-z4);
+    /* Cor de destaque (amarelo) */
+    opacity: 1;
 }
 
 /* navbar */
@@ -121,20 +181,27 @@ section.home {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #1B293F; 
+    background-color: #1B293F;
     z-index: 100;
     transition: all 0.3s ease-in-out;
 }
 
-.scrolled-navbar{
-    background-color: rgb(10, 25, 49); 
+.scrolled-navbar {
+    background-color: var(--fundo-z4);
     opacity: 1;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.scrolled-navbar .nav-list li a{
+.scrolled-navbar .nav-list li a {
     color: white;
     transition: color 0.3s;
+}
+
+.slide-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 /*.scrolled-navbar .nav-list li a:hover{
@@ -177,7 +244,7 @@ section.home {
 .main-navbar .nav-list li a:hover {
     width: 100%;
     transition: 0.3s ease;
-    color: #FFEA00;
+    color: var(--amarelo-z4);
 }
 
 .hamburguer-btn {
@@ -198,23 +265,30 @@ section.home {
 }
 
 .banner {
-    position: relative;
+    position: absolute;
     width: 100%;
-    min-height: calc(100vh - 80px);
-    /* centraliza o text */
+    height: calc(100vh - 80px); /* Ajustei para 100vh - altura da navbar fixa */
     top: 80px;
     color: white;
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 2;
+
+    /* CRÍTICO - Z-INDEX 3: Fica acima do overlay e do slider */
+    z-index: 3;
+    padding: 0 8%;
+    box-sizing: border-box;
+    /* Permitir cliques apenas no conteúdo (botões, links) do banner */
+    pointer-events: none; 
 }
 
 .banner-conteudo {
     position: relative;
-    max-width: 700px;
-    top: -55px;
+    max-width: 800px;
     text-align: center;
+    top: 0;
+    /* Permite o clique no botão e no texto do banner */
+    pointer-events: auto; 
 }
 
 
@@ -240,28 +314,30 @@ section.home {
     margin-top: 30px;
     font-size: 17px;
 }
+
 /* Section HOME estilo Final*/
 
 
 
 /* Facilities Section estilo Inicio*/
 /* 3 Colunas */
-section.facilities{
+section.facilities {
     width: 100%;
     padding: 0px 8% 0px;
 }
 
-.facilities .facilities-conteudo{
+.facilities .facilities-conteudo {
     position: relative;
     width: 100%;
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* faz os 3 colunas com grid */
+    grid-template-columns: repeat(3, 1fr);
+    /* faz os 3 colunas com grid */
     grid-column-gap: 2%;
     top: -80px;
     z-index: 3;
 }
 
-.facilities-conteudo .facilities-item{
+.facilities-conteudo .facilities-item {
     padding: 25px 30px 30px;
     background-color: whitesmoke;
     border-radius: 5px;
@@ -271,7 +347,7 @@ section.facilities{
     align-items: center;
 }
 
-.facilities-item .facilities-icon{
+.facilities-item .facilities-icon {
     width: 50px;
     height: 50px;
     display: flex;
@@ -281,17 +357,17 @@ section.facilities{
     background-color: var(--fundo-z4);
 }
 
-.facilities-item .facilities-desc{
+.facilities-item .facilities-desc {
     text-align: center;
     margin-top: 25px;
 }
 
-.facilities-item .facilities-icon i{
+.facilities-item .facilities-icon i {
     font-size: 22px;
     color: white;
 }
 
-.facilities-item .facilities-desc h2{
+.facilities-item .facilities-desc h2 {
     margin-bottom: 10px;
     color: var(--darkBk);
     font-size: 22px;
@@ -302,6 +378,7 @@ section.facilities{
     line-height: 1.4;
     color: #5e5858;
 }
+
 /* Facilities Section estilo Final*/
 
 
@@ -314,27 +391,29 @@ section.sobre {
 }
 
 /* 1. FLEXBOX CORRIGIDO: Garante colunas lado a lado, centralizadas e com espaçamento */
-.sobre .sobre-conteudo{
+.sobre .sobre-conteudo {
     display: flex;
-    justify-content: space-between; 
-    align-items: center; 
-    max-width: 1200px; 
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 100px 8%; /* Mantém o padding geral da seção */
+    padding: 100px 8%;
+    /* Mantém o padding geral da seção */
 }
 
 /* 2. COLUNA ESQUERDA (IMAGEM): Largura da imagem e contêiner */
-.sobre-conteudo .sobre-coluna-esquerda{
-    width: 50%; 
+.sobre-conteudo .sobre-coluna-esquerda {
+    width: 50%;
     /* CORREÇÃO: Remova o padding à esquerda para que a foto encoste na borda da seção */
-    padding-left: 0; 
+    padding-left: 0;
 }
 
-.sobre-conteudo .sobre-coluna-esquerda img{
+.sobre-conteudo .sobre-coluna-esquerda img {
     position: relative;
     display: block;
     width: 120%;
-    height: auto; /* Garante que a imagem mantenha proporção */
+    height: auto;
+    /* Garante que a imagem mantenha proporção */
     object-fit: cover;
     z-index: 2;
     border-radius: 12px;
@@ -355,26 +434,27 @@ section.sobre {
 
 /* 3. COLUNA DIREITA (TEXTO): Largura do texto e alinhamentos */
 .sobre-conteudo .sobre-coluna-direita {
-    position: relative; 
-    width: 55%; 
+    position: relative;
+    width: 55%;
     padding-left: 30px;
     /* Adiciona margem negativa para puxar todo o bloco para cima */
-    margin-top: -90px; /* Ajuste este valor (-60px) para subir ou descer mais */
+    margin-top: -90px;
+    /* Ajuste este valor (-60px) para subir ou descer mais */
     left: 10px;
     /* ... o restante do estilo da coluna direita ... */
 }
 
 /* 4. AJUSTE DO TEXTO E ESPAÇAMENTO */
-.sobre-conteudo .sobre-coluna-direita h4{
+.sobre-conteudo .sobre-coluna-direita h4 {
     font-size: 20px;
     color: var(--fundo-z4);
     font-weight: 700;
 
     /* CORREÇÃO DE ALINHAMENTO: Força o H4 a se centralizar dentro da sua coluna */
-    text-align: center; 
+    text-align: center;
     right: 10px;
     margin-bottom: 0;
-    margin-top: 0; 
+    margin-top: 0;
     position: relative;
     padding-bottom: 22px;
     text-align: center;
@@ -384,33 +464,36 @@ section.sobre {
 .pill-title {
     /* --- Estilos da Pílula --- */
     background-color: #003366;
-    color: white; /* Cor escura do texto (Azul, como na pílula original) */
-    
+    color: white;
+    /* Cor escura do texto (Azul, como na pílula original) */
+
     padding: 8px 20px;
-    border-radius: 20px; /* Arredondamento */
-    
+    border-radius: 20px;
+    /* Arredondamento */
+
     /* --- Layout e Sombra --- */
-    display: inline-block; /* Faz o fundo se ajustar ao texto */
+    display: inline-block;
+    /* Faz o fundo se ajustar ao texto */
     text-transform: uppercase;
-    font-size: 14px; 
+    font-size: 14px;
     font-weight: 600;
-    
+
     /* Sombra para flutuar (opcional) */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); 
-    
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+
     /* Margem para separar do título principal */
-    margin-bottom: 10px; 
+    margin-bottom: 10px;
 }
 
 .btn-sobre {
     /* Cores e Texto */
     /* Degradê do seu Azul (var(--fundo-z4)) para um Amarelo/Ciano */
-    background: linear-gradient(140deg, #003366, #006dd4); 
-    color: white; 
-    font-size: 12px; 
+    background: linear-gradient(140deg, #003366, #006dd4);
+    color: white;
+    font-size: 12px;
     font-weight: bold;
     /* Layout */
-    padding: 12px 25px; 
+    padding: 12px 25px;
     border: none;
     cursor: pointer;
     display: flex;
@@ -418,46 +501,50 @@ section.sobre {
     justify-content: center;
     gap: 8px;
     /* Forma */
-    border-radius: 8px; /* Cantos arredondados normais */
+    border-radius: 8px;
+    /* Cantos arredondados normais */
     /* Sombra Externa (como na primeira imagem) */
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3); 
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
     margin-top: 40px;
 }
 
 .btn-sobre:hover {
     /* Inverte a direção do degradê ou o brilho */
-    background: linear-gradient(140deg, #003366, #006dd4); 
-    transform: translateY(-2px); /* Efeito de 'levantar' */
+    background: linear-gradient(140deg, #003366, #006dd4);
+    transform: translateY(-2px);
+    /* Efeito de 'levantar' */
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
     color: white;
 }
 
-.sobre-conteudo .sobre-coluna-direita h1{
+.sobre-conteudo .sobre-coluna-direita h1 {
     font-size: 34px;
     font-weight: 500;
     color: var(--fundo-z4);
-    margin-top: 20px; 
+    margin-top: 20px;
     margin-bottom: 20px;
     line-height: 1.2;
     /* GARANTE ALINHAMENTO À ESQUERDA: */
-    text-align: left; 
+    text-align: left;
 }
 
-.sobre-conteudo .sobre-coluna-direita p{
+.sobre-conteudo .sobre-coluna-direita p {
     /* Garante que os parágrafos também fiquem alinhados à esquerda */
-    text-align: left; 
-    max-width: 100%; /* Permite que ocupe a largura total da coluna */
-    margin: 0 0 15px 0; /* Remove a centralização por margem */
+    text-align: left;
+    max-width: 100%;
+    /* Permite que ocupe a largura total da coluna */
+    margin: 0 0 15px 0;
+    /* Remove a centralização por margem */
     color: rgb(117, 100, 100);
 }
 
 
 
 /* Servicos Section estilo iniciado*/
-section.servicos{
+section.servicos {
     width: 100%;
-    padding: 80px 8% 0; 
+    padding: 80px 8% 0;
     background-color: rgb(255, 255, 255);
 }
 
@@ -479,59 +566,62 @@ section.servicos{
 
 
 /* Ajuste o .servicos-conteudo para centralizar o grid DENTRO do fundo azul */
-.servicos .servicos-conteudo{
+.servicos .servicos-conteudo {
     width: 100%;
     display: grid;
     /* Layout de 4 colunas */
-    grid-template-columns: repeat(4, 1fr); 
+    grid-template-columns: repeat(4, 1fr);
     grid-gap: 20px;
     /* Limite a largura e centralize */
-    max-width: 1920px; 
-    margin: 0 auto; 
+    max-width: 1920px;
+    margin: 0 auto;
     /* Adicione padding horizontal para que o conteúdo não encoste nas bordas da tela */
     padding: 0 5%;
 }
 
-.servicos-conteudo .servico-box{
+.servicos-conteudo .servico-box {
     display: flex;
     flex-direction: column;
     padding: 0;
     /* FUNDO BRANCO: O card flutua sobre o fundo azul */
-    background-color: white; 
+    background-color: white;
     /* Sombra no card inteiro */
-    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2); 
-    border-radius: 5px; 
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
     position: relative;
-    transition: none; 
+    transition: none;
 }
 
 /* Efeito de zoom na imagem no hover */
 .servicos-conteudo .servico-box:hover .servico-image-box img {
-    transform: scale(1.05); 
+    transform: scale(1.05);
 }
 
 .servico-box .servico-image-box {
     position: relative;
     width: 100%;
     /* Altura ajustada para 4 colunas */
-    height: 400px; 
+    height: 400px;
     overflow: hidden;
-    border-radius: 5px 5px 0 0; /* Arredondamento apenas no topo */
+    border-radius: 5px 5px 0 0;
+    /* Arredondamento apenas no topo */
     /* Remove a box-shadow que estava aqui */
     box-shadow: none;
 }
 
 .servico-box .servico-image-box img {
     width: 100%;
-    height: 100%; /* Ajuste para cobrir a altura de 200px */
+    height: 100%;
+    /* Ajuste para cobrir a altura de 200px */
     object-fit: cover;
     transition: transform 0.3s;
-    transform: scale(1.0); 
+    transform: scale(1.0);
 }
 
 /* Título simples que agora fica DENTRO do card branco */
 .servico-box .image-title-overlay {
-    position: relative; /* Ajuste para fluir normalmente após a imagem */
+    position: relative;
+    /* Ajuste para fluir normalmente após a imagem */
     bottom: 0;
     left: 0;
     width: 100%;
@@ -539,7 +629,7 @@ section.servicos{
     background-color: white;
     text-align: center;
     /* Linha de destaque para o estilo final */
-    border-top: 2px solid var(--fundo-z4); 
+    border-top: 2px solid var(--fundo-z4);
     z-index: 5;
     /* Arredondamento inferior */
     border-radius: 0 0 5px 5px;
@@ -549,30 +639,32 @@ section.servicos{
     font-size: 16px;
     font-weight: 600;
     /* COR DO TEXTO ESCURO, pois o fundo é branco */
-    color: var(--darkBk); 
+    color: var(--darkBk);
     text-transform: uppercase;
     display: block;
     margin: 0;
 }
 
 /* Estilos removidos/simplificados */
-.servico-box .servico-card-content, 
+.servico-box .servico-card-content,
 .servico-box .servico-texto-longo {
-    display: none; 
+    display: none;
 }
 
 /* Inicio Section Treinadora */
 section.treinadora {
     /* Background cinza claro da sua seção 'Sobre Nós' */
     background-color: #F5F5F5;
-    padding: 100px 8%; /* Padding geral da seção */
+    padding: 100px 8%;
+    /* Padding geral da seção */
     position: relative;
 }
 
 .treinadora .treinadora-conteudo {
     display: flex;
     justify-content: space-between;
-    align-items: center; /* Centraliza verticalmente */
+    align-items: center;
+    /* Centraliza verticalmente */
     max-width: 1200px;
     margin: 0 auto;
     padding: 60px;
@@ -581,26 +673,26 @@ section.treinadora {
 
 /* 1. Coluna de Texto (Direita no nome, mas colocada à ESQUERDA no HTML para Flexbox) */
 .treinadora-coluna-direita {
-    width: 55%; 
+    width: 55%;
     /* Remove espaçamento extra e garante alinhamento à esquerda para o corpo do texto */
-    padding-right: 30px; 
-    text-align: left; 
+    padding-right: 30px;
+    text-align: left;
 }
 
 /* 2. Coluna da Imagem (Esquerda no nome, mas colocada à DIREITA no HTML) */
 .treinadora-coluna-esquerda {
-    width: 50%; 
-    padding: 0; 
+    width: 50%;
+    padding: 0;
     /* Garante o visual limpo, sem moldura */
-    background-color: transparent; 
-    box-shadow: none; 
+    background-color: transparent;
+    box-shadow: none;
 }
 
 .treinadora-coluna-esquerda img {
     width: 100%;
     height: auto;
     display: block;
-    border-radius: 5px; 
+    border-radius: 5px;
     object-fit: cover;
 }
 
@@ -611,13 +703,16 @@ section.treinadora {
     letter-spacing: 1px;
     text-transform: uppercase;
     font-weight: 700;
-    
+
     /* CENTRALIZAÇÃO E EFEITO */
-    text-align: center; /* Centraliza o texto H4 na coluna */
+    text-align: center;
+    /* Centraliza o texto H4 na coluna */
     margin-bottom: 0;
-    margin-top: -60px; /* Puxa para cima */
+    margin-top: -60px;
+    /* Puxa para cima */
     position: relative;
-    padding-bottom: 10px; /* Espaço para a linha amarela */
+    padding-bottom: 10px;
+    /* Espaço para a linha amarela */
 }
 
 /* Linha Amarela no H4 */
@@ -628,11 +723,11 @@ section.treinadora {
     bottom: 0;
     width: 70px;
     height: 3px;
-    background-color: var(--amarelo-z4); 
-    
+    background-color: var(--amarelo-z4);
+
     /* TÉCNICA DE CENTRALIZAÇÃO DA LINHA */
-    left: 50%; 
-    transform: translateX(-50%); 
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 /* 4. Estilos de H1 e P (Alinha à esquerda, como no Sobre Nós original) */
@@ -640,7 +735,8 @@ section.treinadora {
     font-size: 38px;
     font-weight: 400;
     color: var(--fundo-z4);
-    margin: 30px 0px 25px; /* Ajuste o espaçamento após a linha amarela */
+    margin: 30px 0px 25px;
+    /* Ajuste o espaçamento após a linha amarela */
     line-height: 1;
     text-align: center;
     align-items: center
@@ -650,9 +746,10 @@ section.treinadora {
     font-size: 16px;
     color: #444;
     line-height: 1.6;
-    margin-bottom: 15px; 
+    margin-bottom: 15px;
     text-align: left;
 }
+
 /* FIM Section Treinadora */
 
 
@@ -662,8 +759,8 @@ section.treinadora {
 section.treinadora-bio {
     width: 100%;
     /* CORREÇÃO: Zera o padding superior da section */
-    padding: 0 3.5% 0; 
-    background-color: white; 
+    padding: 0 3.5% 0;
+    background-color: white;
     margin: 0 auto;
 }
 
@@ -672,69 +769,74 @@ section.treinadora-bio {
     /* MÁGICA DA LARGURA TOTAL: Ajuste para compensar 8% (padding horizontal do site) */
     margin-left: -8%;
     margin-right: -8%;
-    
+
     /* Padding interno para alinhar o conteúdo com o resto do site */
     padding-left: 8%;
     padding-right: 8%;
 
     /* NOVO: IMAGEM DA TREINADORA COMO BACKGROUND */
-    background-image: url('/assets/img/1.png'); /* Caminho da sua imagem */
-    background-size: cover; /* Faz a imagem cobrir todo o fundo */
-    background-repeat: no-repeat; /* Evita que a imagem se repita */
-    
+    background-image: url('/assets/img/1.png');
+    /* Caminho da sua imagem */
+    background-size: cover;
+    /* Faz a imagem cobrir todo o fundo */
+    background-repeat: no-repeat;
+    /* Evita que a imagem se repita */
+
     /* CORREÇÃO CRÍTICA: Foca no centro horizontal e no topo vertical para priorizar o rosto/corpo */
-    background-position: 5 0% top; 
-    
+    background-position: 5 0% top;
+
     /* Overlay para legibilidade (Mantido) */
-    background-blend-mode: multiply; 
-    background-color: rgba(0, 0, 0, 0.4); 
+    background-blend-mode: multiply;
+    background-color: rgba(0, 0, 0, 0.4);
 
     border-left: 5px solid white;
     border-right: 5px solid white;
-    
+
     padding-top: 100px;
-    padding-bottom: 80px; 
-    
+    padding-bottom: 80px;
+
     box-sizing: border-box;
-    border-radius: 8px; 
-    overflow: hidden; 
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .section-header-treinadora {
     /* CRÍTICO 1: Limita a largura e centraliza o bloco na horizontal */
-    max-width: 1000px; 
-    margin: 0 auto; 
+    max-width: 1000px;
+    margin: 0 auto;
     /* CRÍTICO 2: Centraliza o texto (H1) dentro deste bloco */
-    text-align: center; 
-    
+    text-align: center;
+
     /* AJUSTE PARA SUBIR: Reduzido para puxar o H1 para o topo */
-    padding-top: 20px; 
-    
+    padding-top: 20px;
+
     /* Mantém o espaçamento para separar da faixa escura */
-    margin-bottom: 20px; 
+    margin-bottom: 20px;
     position: relative;
 }
 
 .section-header-treinadora h1 {
     font-size: 40px;
-    color: var(--fundo-z4); /* Use sua cor principal */
+    color: var(--fundo-z4);
+    /* Use sua cor principal */
     /* Ajusta margens para subir o H1 */
-    margin-top: 0px; 
-    margin-bottom: 60px; /* Espaço para a linha amarela */
+    margin-top: 0px;
+    margin-bottom: 60px;
+    /* Espaço para a linha amarela */
 }
 
-.section-header-treinadora h1::after{
+.section-header-treinadora h1::after {
     content: "";
     display: block;
     position: absolute;
     bottom: 0;
     width: 230px;
     height: 3px;
-    background-color: var(--amarelo-z4); 
-    
+    background-color: var(--amarelo-z4);
+
     /* TÉCNICA DE CENTRALIZAÇÃO DA LINHA */
-    left: 50%; 
-    transform: translateX(-50%); 
+    left: 50%;
+    transform: translateX(-50%);
     top: 90px;
 }
 
@@ -742,22 +844,23 @@ section.treinadora-bio {
 /* CONTEÚDO PRINCIPAL (TEXTO E FOTO) - CORREÇÃO DE ALINHAMENTO */
 .bio-conteudo {
     width: 100%;
-    max-width: 1400px; 
-    margin: 0 auto; 
-    
+    max-width: 1400px;
+    margin: 0 auto;
+
     display: flex;
     justify-content: space-between;
-    align-items: flex-start; /* Alinha ao topo */
-    color: white; 
-    min-height: auto; 
+    align-items: flex-start;
+    /* Alinha ao topo */
+    color: white;
+    min-height: auto;
 }
 
 /* 1. COLUNA DE TEXTO (Esquerda) */
 .bio-coluna-texto {
-    width: 65%; 
-    padding-right: 40px; 
+    width: 65%;
+    padding-right: 40px;
     /* Padding inferior para alinhar o fundo */
-    padding-bottom: 25px; 
+    padding-bottom: 25px;
     text-align: left;
 }
 
@@ -773,14 +876,17 @@ section.treinadora-bio {
     content: "";
     display: block;
     /* Tamanho e Cor */
-    width: 30%; 
+    width: 30%;
     height: 3px;
     background-color: var(0);
     /* REMOVE A MARGEM e usa o posicionamento absoluto para CENTRALIZAR PERFEITAMENTE */
     position: absolute;
-    bottom: -5px; /* Posição abaixo do texto H2 */
-    left: 50%; /* Move para o centro da largura do H2 */
-    transform: translateX(-50%); /* Ajusta 50% da sua própria largura para o centro exato */
+    bottom: -5px;
+    /* Posição abaixo do texto H2 */
+    left: 50%;
+    /* Move para o centro da largura do H2 */
+    transform: translateX(-50%);
+    /* Ajusta 50% da sua própria largura para o centro exato */
 }
 
 .bio-coluna-texto h3 {
@@ -789,12 +895,14 @@ section.treinadora-bio {
     color: white;
     margin-bottom: 20px;
 }
+
 .bio-coluna-texto p {
     color: #f0f0f0;
     line-height: 1.6;
     margin-bottom: 10px;
     margin-top: 20px;
 }
+
 .bio-linha {
     font-weight: bold;
 }
@@ -802,41 +910,45 @@ section.treinadora-bio {
 .bio-coluna-texto .bio-secao {
     /* CORREÇÃO: Adiciona uma margem superior uniforme a TODAS as seções de currículo. */
     /* Este valor (25px) separa o bloco do texto ou do bloco anterior. */
-    margin-top: 25px; 
+    margin-top: 25px;
 }
 
 .bio-coluna-texto .bio-linha {
-    display: none; /* Oculta a linha de parágrafo vazia se ela não for necessária */
+    display: none;
+    /* Oculta a linha de parágrafo vazia se ela não for necessária */
 }
 
 .bio-secao h4 {
     /* Título da subseção (CURRÍCULO PROFISSIONAL/ESPORTIVO) */
     font-size: 16px;
     font-weight: 700;
-    color: var(--amarelo-z4); /* Usa sua cor amarela para destaque */
+    color: var(--amarelo-z4);
+    /* Usa sua cor amarela para destaque */
     text-transform: uppercase;
-    margin-bottom: 5px; 
+    margin-bottom: 5px;
 }
 
 .curriculo-lista {
-    list-style: none; /* Remove os marcadores padrão */
+    list-style: none;
+    /* Remove os marcadores padrão */
     padding-left: 0;
 }
 
 .curriculo-lista li {
     font-size: 15px;
     line-height: 1.6;
-    color: white; /* Cor branca para o texto */
+    color: white;
+    /* Cor branca para o texto */
     margin-bottom: 5px;
-    
+
     /* Marcador customizado (ponto/traço) */
-    padding-left: 15px; 
+    padding-left: 15px;
     position: relative;
 }
 
 .curriculo-lista li::before {
-    content: "•"; 
-    color: var(--amarelo-z4); 
+    content: "•";
+    color: var(--amarelo-z4);
     position: absolute;
     left: 0;
     font-weight: bold;
@@ -845,14 +957,14 @@ section.treinadora-bio {
 /* 2. COLUNA DA FOTO (Direita) */
 .bio-coluna-foto {
     /* Mantenha a largura e alinhamento */
-    width: 35%; 
+    width: 35%;
     padding-top: 0;
     padding-bottom: 0;
-    align-self: flex-start; 
-    
+    align-self: flex-start;
+
     /* Opcional: Ocultar a imagem da coluna direita se ela for a mesma do fundo */
-    /* display: none; */ 
-    
+    /* display: none; */
+
     /* OU, se você quer uma imagem diferente, transparente, etc. */
     /* Ajuste aqui o estilo para a imagem que você quer na coluna, se houver */
     display: none;
@@ -871,18 +983,18 @@ section.treinadora-bio {
     border-radius: 5px;
     object-fit: cover;
     /* Puxa a foto para baixo para criar espaço acima dela (Ajuste se necessário) */
-    margin-top: 20px; 
+    margin-top: 20px;
 }
 
 
 
 /* Inicio Section Consultoria Online */
-.consultoria-online{
+.consultoria-online {
     background-color: #F5F5F5;
     padding: 60px 5%;
 }
 
-.consultoria-content{
+.consultoria-content {
     max-width: 1920px;
     margin: 0 auto;
     display: flex;
@@ -890,30 +1002,31 @@ section.treinadora-bio {
     gap: 50px;
 }
 
-.consultoria-coluna-esquerda{
+.consultoria-coluna-esquerda {
     width: 60%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
-.consultoria-coluna-esquerda .consultoria-imagem img{
+
+.consultoria-coluna-esquerda .consultoria-imagem img {
     width: 100;
     height: auto;
     display: block;
 }
 
 
-.consultoria-coluna-esquerda img{
+.consultoria-coluna-esquerda img {
     max-width: 100%;
     height: auto;
     display: block;
 }
 
-.consultoria-coluna-direita{
+.consultoria-coluna-direita {
     width: 40%;
 }
 
-.consultoria-titulo{
+.consultoria-titulo {
     color: var(--fundo-z4);
     font-size: 40px;
     border-bottom: 1px solid #66666675;
@@ -922,7 +1035,7 @@ section.treinadora-bio {
     margin-bottom: 5px;
 }
 
-.consultoria-subtitulo{
+.consultoria-subtitulo {
     color: var(--darkBk);
     font-size: 28px;
     font-weight: 400;
@@ -930,24 +1043,24 @@ section.treinadora-bio {
     margin-bottom: 40px;
 }
 
-.consultoria-passos{
+.consultoria-passos {
     margin-top: 20px;
     margin-bottom: 30px;
 }
 
-.consultoria-passos dt{
+.consultoria-passos dt {
     font-weight: bold;
     color: var(--fundo-z4);
     margin-top: 15px;
 }
 
-.consultoria-passos dd{
+.consultoria-passos dd {
     color: #666;
     margin-left: 0;
     margin-bottom: 15px;
 }
 
-.btn-cta-consultoria{
+.btn-cta-consultoria {
     display: inline-block;
     background-color: var(--fundo-z4);
     color: white;
@@ -955,34 +1068,35 @@ section.treinadora-bio {
     text-decoration: none;
     font-weight: bold;
     border-radius: 10px;
-    transition:  0.3s ease;
+    transition: 0.3s ease;
     margin-top: 20px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
 }
 
-.btn-cta-consultoria:hover{
+.btn-cta-consultoria:hover {
     background-color: var(--amarelo-z4);
     color: black;
     transition: 0.3s ease;
 }
+
 /* FIM Section Consultoria Online */
 
 
 
 
 /* Inicio Section Feedbacks */
-.container{
+.container {
     max-width: 1170px;
     margin: auto;
     padding: 0 15px;
 }
 
-.section-header{
+.section-header {
     text-align: center;
     margin-bottom: 50px;
 }
 
-.section-header .title{
+.section-header .title {
     font-size: 35px;
     font-weight: 600;
     text-transform: capitalize;
@@ -990,51 +1104,52 @@ section.treinadora-bio {
     line-height: 1.2;
 }
 
-.section-header .title::after{
+.section-header .title::after {
     content: "";
     display: block;
     position: absolute;
     bottom: 0;
     width: 240px;
     height: 3px;
-    background-color: var(--amarelo-z4); 
-    
+    background-color: var(--amarelo-z4);
+
     /* TÉCNICA DE CENTRALIZAÇÃO DA LINHA */
-    left: 50%; 
-    transform: translateX(-50%); 
+    left: 50%;
+    transform: translateX(-50%);
     top: 60px;
 }
 
-.feedbacks{
+.feedbacks {
     padding: 100px 0;
 }
 
-.testimonials-item{
-    background: linear-gradient(
-    to bottom,
-    #8296ac 0%,      /* Cor escura no topo (seu --fundo-z4) */
-    #0A2548 100%     /* Um tom ligeiramente mais claro na base */
-);
+.testimonials-item {
+    background: linear-gradient(to bottom,
+            #8296ac 0%,
+            /* Cor escura no topo (seu --fundo-z4) */
+            #0A2548 100%
+            /* Um tom ligeiramente mais claro na base */
+        );
     padding: 30px;
     border-radius: 30px;
     margin-top: 70px;
 }
 
-.testimonials-item img{
-    width: 90px; 
+.testimonials-item img {
+    width: 90px;
     height: 90px;
     border-radius: 50%;
     vertical-align: middle;
     object-fit: cover;
 }
 
-.testimonials-item .info{
+.testimonials-item .info {
     display: flex;
     align-items: center;
     gap: 20px;
 }
 
-.testimonials-item .name{
+.testimonials-item .name {
     font-size: 24px;
     text-transform: capitalize;
     font-weight: 600;
@@ -1042,18 +1157,18 @@ section.treinadora-bio {
     line-height: 1.2;
 }
 
-.testimonials-item p{
+.testimonials-item p {
     margin-top: 20px;
     color: #f5f2f2;
 }
 
-.feedbacks .swiper-pagination{
+.feedbacks .swiper-pagination {
     position: relative;
     margin-top: 40px;
     bottom: auto;
 }
 
-.feedbacks .swiper-pagination-bullet{
+.feedbacks .swiper-pagination-bullet {
     height: 12px;
     width: 12px;
     background-color: var(--fundo-z4);
@@ -1062,7 +1177,8 @@ section.treinadora-bio {
 /* FIM Section Feedbacks */
 
 /* Oferta Section estilo Iniciado*/
-section.oferta{ /* AJUSTAR */
+section.oferta {
+    /* AJUSTAR */
     position: relative;
     width: 100%;
     padding: 100px 8%;
@@ -1072,7 +1188,7 @@ section.oferta{ /* AJUSTAR */
     background-position: center;
 }
 
-.oferta .oferta-overlay{
+.oferta .oferta-overlay {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -1082,7 +1198,7 @@ section.oferta{ /* AJUSTAR */
     z-index: 1;
 }
 
-.oferta .oferta-conteudo{
+.oferta .oferta-conteudo {
     position: relative;
     width: 100%;
     z-index: 2;
@@ -1092,7 +1208,7 @@ section.oferta{ /* AJUSTAR */
     flex-direction: column;
 }
 
-.oferta .oferta-conteudo h1{
+.oferta .oferta-conteudo h1 {
     font-size: 42px;
     color: whitesmoke;
     text-transform: uppercase;
@@ -1100,44 +1216,47 @@ section.oferta{ /* AJUSTAR */
     letter-spacing: 2px;
 }
 
-.oferta .oferta-conteudo span{
+.oferta .oferta-conteudo span {
     margin: 10px 0px;
     color: whitesmoke;
     font-size: 32px;
 }
 
-.oferta .oferta-conteudo h3{
+.oferta .oferta-conteudo h3 {
     font-size: 24px;
     color: whitesmoke;
     text-transform: uppercase;
     letter-spacing: 2px;
 }
 
-.oferta .oferta-conteudo .start-training-btn{
+.oferta .oferta-conteudo .start-training-btn {
     margin-top: 40px;
     padding: 12px 30px;
     font-size: 16px;
 }
+
 /* OFERTA Section estilo Finalizado*/
 
 
 /* EQUIPE Section estilo iniciado*/
-section.equipe{
+section.equipe {
     width: 100%;
     padding: 80px 8% 20px;
 }
 
-.equipe .equipe-conteudo{
+.equipe .equipe-conteudo {
     max-width: 1068px;
     display: grid;
     /* CORREÇÃO: 3 COLUNAS NO DESKTOP, SE HOUVER MAIS TREINADORES */
-    grid-template-columns: repeat(3, 1fr); 
+    grid-template-columns: repeat(3, 1fr);
     grid-gap: 20px;
     margin: 0 auto;
 }
+
 /* ... (Mantenha o resto do CSS de Equipe) ... */
 
-.equipe-conteudo .treinador-card{ /* mudar tamahho da imagem */
+.equipe-conteudo .treinador-card {
+    /* mudar tamahho da imagem */
     position: relative;
     max-width: 350px;
     padding: 10px;
@@ -1148,35 +1267,36 @@ section.equipe{
     overflow: hidden;
 }
 
-.treinador-card .treinador-image{
+.treinador-card .treinador-image {
     width: 100%;
     display: block;
     border-radius: 5px 5px 0px 0px;
 }
 
-.treinador-card .treinador-image img{
+.treinador-card .treinador-image img {
     width: 100%;
     height: 300px;
-    object-fit: cover; /* MUDAR A IAMGEM */
+    object-fit: cover;
+    /* MUDAR A IAMGEM */
     object-position: center;
 }
 
-.treinador-card .treinador-desc{
+.treinador-card .treinador-desc {
     padding: 10px 0px;
 }
 
-.treinador-card .treinador-desc h2{
+.treinador-card .treinador-desc h2 {
     font-size: 22px;
     font-weight: 600;
     color: var(--fundo-z4);
 }
 
-.treinador-card .treinador-desc p{
+.treinador-card .treinador-desc p {
     color: var(--darkBk);
     margin-top: 5px;
 }
 
-.treinador-card .treinador-contato{
+.treinador-card .treinador-contato {
     position: absolute;
     top: calc(50% - 50px);
     /*right: 0;*/
@@ -1191,16 +1311,16 @@ section.equipe{
     transition: 0.3s;
 }
 
-.equipe-conteudo .treinador-card:hover .treinador-contato{
+.equipe-conteudo .treinador-card:hover .treinador-contato {
     right: 0;
 }
 
-.treinador-card .treinador-contato a{
+.treinador-card .treinador-contato a {
     text-decoration: none;
     color: var(--darkBk);
 }
 
-.treinador-card .treinador-contato a:not(:last-child){
+.treinador-card .treinador-contato a:not(:last-child) {
     margin-bottom: 15px;
 }
 
@@ -1210,32 +1330,33 @@ section.equipe{
     transition: 0.3s;
 }
 
-.treinador-card .treinador-contato a i:hover{
+.treinador-card .treinador-contato a i:hover {
     transform: scale(1.2);
 }
+
 /* EQUIPE Section estilo finalizado*/
 
 
 /* PRECOS Section estilo iniciado*/
-#pricing-z4-perfomance{
+#pricing-z4-perfomance {
     background-color: white;
     padding: 80px 20px;
     color: var(--darkBk);
     text-align: center;
 }
 
-.container{
+.container {
     max-width: 1200px;
     margin: 0 auto;
 }
 
-.section-title{
+.section-title {
     font-size: 2.5em;
     margin-bottom: 50px;
     color: var(--fundo-z4);
 }
 
-.tabs-navigation{
+.tabs-navigation {
     display: flex;
     justify-content: center;
     gap: 20px;
@@ -1246,8 +1367,8 @@ section.equipe{
     display: inline-flex;
 }
 
-.tab-button{
-   background-color: white; 
+.tab-button {
+    background-color: white;
     border-radius: 20px;
     padding: 20px 20px;
     width: 200px;
@@ -1256,21 +1377,21 @@ section.equipe{
     transition: transform 0.3s;
 }
 
-.tab-button.active{
-    background: linear-gradient(140deg, #003366, #006dd4a0); 
+.tab-button.active {
+    background: linear-gradient(140deg, #003366, #006dd4a0);
     color: white;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-.pricing-content.active{
+.pricing-content.active {
     display: block;
 }
 
-.pricing-content{
+.pricing-content {
     display: none;
 }
 
-.pricing-cards-wrapper{
+.pricing-cards-wrapper {
     display: flex;
     justify-content: center;
     gap: 30px;
@@ -1278,7 +1399,7 @@ section.equipe{
 }
 
 
-.pricing-card{
+.pricing-card {
     background-color: var(--fundo-z4);
     border-radius: 20px;
     padding: 40px 30px;
@@ -1289,19 +1410,19 @@ section.equipe{
 }
 
 .pricing-card:hover {
-     transform: translateY(-7px);
-    box-shadow: 0 20px 40px rgba(10, 0, 0, 0.2); 
+    transform: translateY(-7px);
+    box-shadow: 0 20px 40px rgba(10, 0, 0, 0.2);
 }
 
 
-.card-pro .most-popular{
+.card-pro .most-popular {
     background: linear-gradient(145deg, var(--darkBk), var(--amarelo-z4));
     transform: scale(1.08);
     color: var(--amarelo-z4);
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
 }
 
-.highlight-badge{
+.highlight-badge {
     position: absolute;
     top: -15px;
     right: 30px;
@@ -1315,15 +1436,18 @@ section.equipe{
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-.plan-name, #period-musculacao, #period-musculacao, #period-combo{
+.plan-name,
+#period-musculacao,
+#period-musculacao,
+#period-combo {
     color: white;
 }
 
-#period-corrida{
+#period-corrida {
     color: white;
 }
 
-.price{
+.price {
     font-size: 3em;
     font-weight: 700;
     display: block;
@@ -1331,7 +1455,7 @@ section.equipe{
     color: white;
 }
 
-.price small{
+.price small {
     font-size: 0.3em;
     font-weight: normal;
     opacity: 0.7;
@@ -1346,11 +1470,11 @@ section.equipe{
     margin-top: 10px;
 }
 
-.card-pro .card-pro .description{
+.card-pro .card-pro .description {
     color: white;
 }
 
-.features{
+.features {
     list-style: none;
     padding: 0;
     text-align: left;
@@ -1359,12 +1483,12 @@ section.equipe{
     color: white;
 }
 
-.features li{
+.features li {
     padding: 10px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.btn-choose{
+.btn-choose {
     color: var(--darkBk);
     border: none;
     padding: 12px 40px;
@@ -1376,19 +1500,20 @@ section.equipe{
     background-color: white;
 }
 
-.btn-choose:hover{
+.btn-choose:hover {
     background-color: yellow;
     transition: 0.3s ease;
 }
 
-.card-pro .btn-choose{
+.card-pro .btn-choose {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
+
 /* PRECOS Section estilo Finalizado*/
 
 
 /* FOOTER Section estilo Iniciado*/
-section.pagina-footer{
+section.pagina-footer {
     width: 100%;
     padding: 200px 8% 50px;
     background-color: rgb(10, 25, 49);
@@ -1398,13 +1523,13 @@ section.pagina-footer{
     flex-direction: column;
 }
 
-.footer-logo{
+.footer-logo {
     width: 150px;
     height: auto;
     margin-bottom: 20px;
 }
 
-.footer-conteudo{
+.footer-conteudo {
     width: 100%;
     display: grid;
     grid-template-columns: 2.5fr 3.5fr 3fr;
@@ -1412,27 +1537,28 @@ section.pagina-footer{
     margin-bottom: 30px;
 }
 
-.footer-conteudo .footer-col{
+.footer-conteudo .footer-col {
     display: flex;
     flex-direction: column;
 }
+
 /* ... (Mantenha o resto do CSS do Footer) ... */
 
-.footer-conteudo .footer-col-titulo{
+.footer-conteudo .footer-col-titulo {
     margin-bottom: 10px;
 }
 
-.footer-conteudo .footer-col-titulo h3{
+.footer-conteudo .footer-col-titulo h3 {
     font-size: 24px;
     text-transform: capitalize;
 }
 
-.footer-conteudo .footer-col-desc{
+.footer-conteudo .footer-col-desc {
     display: flex;
     flex-direction: column;
 }
 
-.footer-col-desc i{
+.footer-col-desc i {
     color: var(--amarelo-z4);
     margin-right: 10px;
 }
@@ -1442,22 +1568,22 @@ section.pagina-footer{
     color: white;
 }
 
-.footer-col-1 .footer-col-desc span{
+.footer-col-1 .footer-col-desc span {
 
     margin-bottom: 17px;
     display: inline-block;
 }
 
-.footer-col-1 .footer-col-desc span:nth-child(1){
+.footer-col-1 .footer-col-desc span:nth-child(1) {
     margin-top: 15px;
 }
 
-.footer-col-1 .footer-social-media{
+.footer-col-1 .footer-social-media {
     display: flex;
     margin-top: 20px;
 }
 
-.footer-col-1 .footer-social-media a{
+.footer-col-1 .footer-social-media a {
     text-decoration: none;
     color: var(--amarelo-z4);
     margin-right: 10px;
@@ -1466,7 +1592,7 @@ section.pagina-footer{
     height: 50px;
 }
 
-.footer-col-1 .footer-social-media a i{
+.footer-col-1 .footer-social-media a i {
     width: 35px;
     height: 35px;
     display: flex;
@@ -1474,19 +1600,20 @@ section.pagina-footer{
     align-items: center;
     font-size: 16px;
     background-color: var(--fundo-z4);
-    color:aliceblue;
+    color: aliceblue;
     border: 1px solid transparent;
     border-radius: 10px;
     transition: all 0.3s;
 }
 
 
-.footer-col-1 .footer-social-media a i:hover{
+.footer-col-1 .footer-social-media a i:hover {
     background-color: transparent;
-    border: 1px solid var(--amarelo-z4); /* amarelo quando passa o mouse MUDAR DPS */
+    border: 1px solid var(--amarelo-z4);
+    /* amarelo quando passa o mouse MUDAR DPS */
 }
 
-.footer-col-1 .social-media-title{
+.footer-col-1 .social-media-title {
     font-size: 18px;
     font-weight: 500;
     margin-top: 20px;
@@ -1494,20 +1621,20 @@ section.pagina-footer{
     margin-left: -15px;
 }
 
-.noticia-info{
+.noticia-info {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-.btn-noticia-btn{
+.btn-noticia-btn {
     height: auto;
     width: 400px;
     text-align: center;
     font-size: 15px;
 }
 
-.footer-col-2 .footer-col-desc a{
+.footer-col-2 .footer-col-desc a {
     text-decoration: none;
     font-size: 16px;
     color: white;
@@ -1517,7 +1644,7 @@ section.pagina-footer{
 }
 
 
-.footer-col-2 .footer-col-desc a:hover{
+.footer-col-2 .footer-col-desc a:hover {
     color: var(--amarelo-z4);
 }
 
@@ -1525,43 +1652,46 @@ section.pagina-footer{
     display: flex;
     flex-direction: column;
     /* Centraliza horizontalmente: logo, título, e container de ícones */
-    align-items: center; 
-    text-align: center; /* Centraliza qualquer texto que ainda esteja nesta coluna */
+    align-items: center;
+    text-align: center;
+    /* Centraliza qualquer texto que ainda esteja nesta coluna */
 }
 
 .footer-col.footer-col-2 {
     display: flex;
     flex-direction: column;
     /* Centraliza o CONTEÚDO DA COLUNA (Título e Lista) Verticalmente no espaço */
-    justify-content: flex-start; 
+    justify-content: flex-start;
 }
 
 .footer-col-2 .contact-list {
     display: flex;
     flex-direction: column;
     /* Alinha os itens da lista ao centro (horizontalmente) */
-    align-items: center; 
-    text-align: center; /* Centraliza o texto dos links */
+    align-items: center;
+    text-align: center;
+    /* Centraliza o texto dos links */
     /* Remove a margem superior padrão do Flexbox */
-    margin-top: 0; 
+    margin-top: 0;
 }
 
 .footer-col-2 .footer-col-titulo {
     /* Define o alinhamento horizontal do container do título */
-    text-align: center; 
-    margin-bottom: 25px; /* Espaço abaixo do título */
+    text-align: center;
+    margin-bottom: 25px;
+    /* Espaço abaixo do título */
 }
 
 .footer-col-2 .footer-col-titulo h3 {
     /* Centraliza o texto do título */
     text-align: center;
     /* Garante que o texto não seja afetado pelo tamanho da coluna */
-    margin: 0 auto; 
+    margin: 0 auto;
 }
 
-.footer-col-2 .footer-col-desc a{
+.footer-col-2 .footer-col-desc a {
     text-decoration: none;
-    font-size: 16px; 
+    font-size: 16px;
     color: white;
     letter-spacing: 1px;
     margin-bottom: 16px;
@@ -1574,12 +1704,13 @@ section.pagina-footer{
 
 /* Inicio das Media Querys */
 @media (max-width: 968px) {
+
     /* No tablet, empilha as colunas */
     .bio-conteudo {
         flex-direction: column;
         align-items: center;
     }
-    
+
     .bio-coluna-texto,
     .bio-coluna-foto {
         width: 100%;
@@ -1598,6 +1729,7 @@ section.pagina-footer{
 }
 
 @media(max-width: 868px) {
+
     /* home Section */
     .main-navbar .hamburguer-btn {
         display: block;
@@ -1621,7 +1753,8 @@ section.pagina-footer{
         z-index: 100;
     }
 
-    .home .main-navbar .nav-list.active{ /* chama o navlist com Background colocor e os Li > a */
+    .home .main-navbar .nav-list.active {
+        /* chama o navlist com Background colocor e os Li > a */
         right: 0;
     }
 
@@ -1643,98 +1776,109 @@ section.pagina-footer{
     }
 
     /* ICON 'X' no hamburguer quando tiver desativado */
-    .main-navbar .hamburguer-btn.active span:nth-child(1){
+    .main-navbar .hamburguer-btn.active span:nth-child(1) {
         transform: translateY(8px) rotate(45deg);
     }
 
-    .main-navbar .hamburguer-btn.active span:nth-child(3){
+    .main-navbar .hamburguer-btn.active span:nth-child(3) {
         transform: translateY(-8px) rotate(-45deg);
     }
 
-    .main-navbar .hamburguer-btn.active span:nth-child(2){
+    .main-navbar .hamburguer-btn.active span:nth-child(2) {
         transform: translateX(-30px);
         opacity: 0;
     }
+
     /* Section Facilities */
-    .facilities .facilities-conteudo{
-        grid-template-columns: repeat(2, 1fr); /* 2 coluna em 868px*/
+    .facilities .facilities-conteudo {
+        grid-template-columns: repeat(2, 1fr);
+        /* 2 coluna em 868px*/
         grid-gap: 25px 20px;
     }
+
     /* SOBRE section */
-    .sobre .sobre-conteudo{
+    .sobre .sobre-conteudo {
         grid-template-columns: 1fr;
         grid-gap: 25px 0px;
     }
-    .sobre-conteudo .sobre-coluna-esquerda{
+
+    .sobre-conteudo .sobre-coluna-esquerda {
         max-height: 500px;
     }
 
-    .sobre-conteudo h1{
+    .sobre-conteudo h1 {
         font-size: 32px;
     }
 
-    .sobre-coluna-direita .sobre-estados .sobre-estados{
-        flex-basis: 100%; 
+    .sobre-coluna-direita .sobre-estados .sobre-estados {
+        flex-basis: 100%;
     }
 
     /* Servicos Section - Removendo regras conflitantes */
-    .servicos-conteudo .servico-box{
+    .servicos-conteudo .servico-box {
         flex-direction: column;
         /* CORREÇÃO: Removido margin-top 25px para evitar espaçamento em excesso */
     }
-    
+
     /* FOOTER Section*/
-    .pagina-footer .footer-conteudo{
+    .pagina-footer .footer-conteudo {
         grid-template-columns: 1fr;
     }
 }
 
 @media(max-width: 668px) {
+
     /* Servicos Section - Mude para 1 coluna */
-    .servicos .servicos-conteudo{
-        grid-template-columns:  1fr;
+    .servicos .servicos-conteudo {
+        grid-template-columns: 1fr;
     }
-    
+
     /* EQUIPE SECTION - Mude para 1 coluna */
-    .equipe .equipe-conteudo{
-        max-width: 350px; /* Aumentado de 300px para 350px para melhor visualização */
+    .equipe .equipe-conteudo {
+        max-width: 350px;
+        /* Aumentado de 300px para 350px para melhor visualização */
         grid-template-columns: 1fr;
         grid-gap: 20px 0px;
     }
-    
+
     /* PRECOS Section */
-    .precos .precos-conteudo{
+    .precos .precos-conteudo {
         grid-template-columns: 1fr;
     }
 
 }
 
 @media(max-width: 568px) {
+
     /*Home section */
-   .banner .banner-conteudo h2{
-    font-size: 20px;
+    .banner .banner-conteudo h2 {
+        font-size: 20px;
     }
-    .banner .banner-conteudo h1{
+
+    .banner .banner-conteudo h1 {
         font-size: 40px;
     }
+
     /* Section Facilities */
-    .facilities .facilities-conteudo{
-        grid-template-columns: 1fr; /* 1 coluna em 568*/
+    .facilities .facilities-conteudo {
+        grid-template-columns: 1fr;
+        /* 1 coluna em 568*/
         grid-gap: 25px 0px;
     }
+
     /* SOBRE Section */
-    .sobre-conteudo .sobre-coluna-direita .sobre-estados{
+    .sobre-conteudo .sobre-coluna-direita .sobre-estados {
         flex-direction: column;
         align-items: center;
     }
 
-    .sobre-estados .sobre-estados-1{
+    .sobre-estados .sobre-estados-1 {
         margin-right: 0px;
         margin-bottom: 15px;
     }
 
     /* Sections Heading */
-    section .section-header h1{
+    section .section-header h1 {
         font-size: 32px;
     }
 }

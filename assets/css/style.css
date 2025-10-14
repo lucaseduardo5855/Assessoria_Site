@@ -89,6 +89,7 @@ body {
     overflow-x: hidden;
 }
 
+/* section.home - Container Principal */
 section.home {
     position: relative;
     width: 100%;
@@ -97,33 +98,33 @@ section.home {
     background-color: var(--darkBk);
 }
 
+/* home-overlay - Camada escura sobre o slider */
 .home .home-overlay {
     position: absolute;
     width: 100%;
     height: 100%;
     top: 0;
     left: 0;
-    /* Z-INDEX 2: Fica sobre o slider, mas sob o texto e navegação */
     background-color: rgba(0, 0, 0, 0.4);
     z-index: 2;
 }
 
+/* home-slider - Container do Swiper */
 .home-slider {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    /* CRÍTICO - Z-INDEX 1: O slider é o fundo, deve ficar por baixo de tudo */
     z-index: 1; 
     overflow: hidden;
 }
 
+/* swiper-slide e Imagem */
 .swiper-slide {
     width: 100%;
     height: 100%;
     display: flex;
-    /* Para centralizar a imagem se necessário */
     justify-content: center;
     align-items: center;
 }
@@ -132,26 +133,18 @@ section.home {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* ESSENCIAL para a imagem cobrir o slide sem distorcer, cortando o excesso */
     object-position: center top;
-    /* Tenta centralizar a parte mais importante da imagem */
     display: block;
 }
 
-.home-slider .swiper-pagination {
-    cursor: pointer;
-    user-select: none;
-}
-
+/* Paginação (Bolinhas) */
 .swiper-pagination.home-pagination {
     position: absolute;
     bottom: 30px;
     left: 0;
     width: 100%;
     text-align: center;
-    /* CRÍTICO - Z-INDEX 110: Deve ser o maior valor (acima de tudo) */
     z-index: 110; 
-    /* Garante que o clique seja detectado (essencial para resolver o problema) */
     pointer-events: auto; 
 }
 
@@ -165,11 +158,10 @@ section.home {
 
 .home-slider .swiper-pagination-bullet-active {
     background: var(--amarelo-z4);
-    /* Cor de destaque (amarelo) */
     opacity: 1;
 }
 
-/* navbar */
+/* main-navbar - Navegação */
 .main-navbar {
     position: fixed;
     width: 100%;
@@ -198,17 +190,6 @@ section.home {
     transition: color 0.3s;
 }
 
-.slide-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-/*.scrolled-navbar .nav-list li a:hover{
-    color: var(--amarelo-z4);
-}*/
-
 .main-navbar .logo img {
     width: 120px;
     height: auto;
@@ -220,7 +201,6 @@ section.home {
 
 .main-navbar .nav-list li {
     display: inline-block;
-    /*deixa alinhado horinzontal*/
     margin: 0px 15px;
 }
 
@@ -232,16 +212,6 @@ section.home {
     position: relative;
 }
 
-/*.main-navbar .nav-list li a:after {
-    content: "";
-    position: absolute;
-    color: #FFEA00;
-    height: 3px;
-    width: 0;
-    left: 0;
-    bottom: -10px;
-}
-*/
 .main-navbar .nav-list li a:hover {
     width: 100%;
     transition: 0.3s ease;
@@ -252,11 +222,9 @@ section.home {
     user-select: none;
     cursor: pointer;
     display: none;
-    /* desaparece */
 }
 
 .hamburguer-btn span {
-    /* icon de hamburguer */
     display: block;
     width: 26px;
     height: 2px;
@@ -265,21 +233,19 @@ section.home {
     transition: all 0.3s;
 }
 
+/* banner - Conteúdo principal sobre o slider */
 .banner {
     position: absolute;
     width: 100%;
-    height: calc(100vh - 80px); /* Ajustei para 100vh - altura da navbar fixa */
+    height: calc(100vh - 80px); 
     top: 80px;
     color: white;
     display: flex;
     justify-content: center;
     align-items: center;
-
-    /* CRÍTICO - Z-INDEX 3: Fica acima do overlay e do slider */
     z-index: 3;
     padding: 0 8%;
     box-sizing: border-box;
-    /* Permitir cliques apenas no conteúdo (botões, links) do banner */
     pointer-events: none; 
 }
 
@@ -288,36 +254,98 @@ section.home {
     max-width: 800px;
     text-align: center;
     top: 0;
-    /* Permite o clique no botão e no texto do banner */
     pointer-events: auto; 
+    
+    /* Centraliza os elementos filhos (h1, p, button) */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
+/* ---------------------------------------------------- */
+/* NOVOS ESTILOS PARA O EFEITO DE REVELAÇÃO (VÍDEO 1)   */
+/* ---------------------------------------------------- */
 
-.banner-conteudo h2 {
-    font-size: 26px;
-    font-weight: 400;
-    /* color */
+/* Contêiner que faz a "máscara" do texto */
+.text-reveal-container {
+    overflow: hidden; 
+    /* Altura ajustada para 2 ou 3 linhas de texto (Ajuste este valor se necessário) */
+    height: 180px; 
+    margin: 20px auto; 
+    position: relative;
+    text-align: center; 
+    width: 100%;
+    max-width: 650px; 
 }
 
-.banner-conteudo h1 {
+/* O H1 que desliza para cima (inicia fora de vista) */
+.banner-conteudo .animated-text {
     color: white;
-    margin: 20px 0px;
-    font-size: 52px;
-    line-height: 1.3;
-    font-weight: 500;
+    /* AUMENTADO: Fonte maior (Ajuste conforme o seu gosto, 70px é um bom começo) */
+    font-size: 70px; 
+    line-height: 1.1; /* Reduzi o line-height para juntar um pouco as linhas */
+    font-weight: 700; /* Usei 900 para parecer mais forte/bold como na imagem */
+    
+    /* Posição inicial: 100% abaixo */
+    transform: translateY(100%); 
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
+    
+    display: block; 
+    margin: 0; 
+    /* Removi o padding-left, pois o risco vai para a direita */
+    padding-left: 0; 
 }
 
-.banner-conteudo p {
+/* O Risco Vertical (Pseudo-Elemento) */
+.text-reveal-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    /* CRÍTICO: Use left: 100% para posicionar o risco na borda direita do .text-reveal-container */
+    left: 100%; 
+    
+    width: 6px; /* Espessura do risco */
+    height: 100%;
+    background-color: red; /* Cor do risco */
+    
+    /* Move o risco para a esquerda em sua própria largura (para ficar na borda) e esconde (scaleY: 0) */
+    transform: translateX(-6px) scaleY(0); 
+    transform-origin: top; 
+    opacity: 0; 
+    transition: transform 0.6s 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.1s 0.2s;
+    z-index: 300;
+}
+
+/* CLASSE DE ANIMAÇÃO: Ativada pelo JavaScript */
+.slide-active-animation .animated-text {
+    /* Move o texto para a posição visível */
+    transform: translateY(0); 
+}
+
+.slide-active-animation .text-reveal-container::before {
+    /* MUDANÇA CRÍTICA: Agora o risco cresce (scaleY: 1) e permanece na borda direita. 
+       Para movê-lo para a direita do TEXTO, precisamos de um ajuste.
+       Vamos tentar posicionar o risco 10px à direita do contêiner. */
+    transform: translateX(10px) scaleY(1); /* Tente 10px ou ajuste este valor */
+    opacity: 1; 
+}
+
+/* Estilos de elementos abaixo da animação */
+.banner-conteudo .animacao-descricao {
     color: white;
+    margin-top: 20px; 
+    font-size: 1.1em;
 }
 
 .btn-ler-mais {
     margin-top: 30px;
     font-size: 17px;
+    background-color: var(--amarelo-z4); 
+    color: var(--darkBk);
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
 }
-
-/* Section HOME estilo Final*/
-
 
 
 /* Facilities Section estilo Inicio*/

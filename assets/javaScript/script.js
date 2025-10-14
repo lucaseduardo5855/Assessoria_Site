@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
     toggleNavbarClass();
 
     // =========================================================
-    // 2. NOVO: SWIPER SLIDER DA HOME
+    // 2. SWIPER SLIDER DA HOME
     // =========================================================
     const homeSwiper = new Swiper('.home-slider', {
         loop: true, // Carrossel infinito
@@ -61,7 +61,49 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // =========================================================
-    // 3. SWIPER FEEDBACKS
+    // 3. ANIMAÇÃO DE REVELAÇÃO (MÁSCARA/RISCO - MÚLTIPLOS SLIDES)
+    // =========================================================
+    const textContainer = document.querySelector('.text-reveal-container');
+    const typingElement = document.querySelector('.animated-text');
+
+    // Array de textos a serem animados (Índice 0 = Slide 1, Índice 1 = Slide 2, etc.)
+    const animatedTexts = [
+        "NASCIDOS PARA CORRER", // Texto para o Slide 1 (realIndex 0)
+        "SUPERE SEUS LIMITES",   // Texto para o Slide 2 (realIndex 1)
+        "COMECE HOJE MESMO"      // Texto para o Slide 3 (realIndex 2)
+    ];
+
+
+    function handleSlideChange() {
+        // 1. Remove a classe de animação e limpa o texto
+        textContainer.classList.remove('slide-active-animation');
+        typingElement.textContent = ''; 
+
+        // Obtém o índice real do slide ativo
+        const activeIndex = homeSwiper.realIndex;
+
+        // Timeout para garantir que o CSS volte ao estado inicial antes de animar novamente
+       setTimeout(() => {
+        // 2. Verifica se existe um texto definido para este índice
+        if (animatedTexts[activeIndex]) {
+            // A) Define o texto
+            typingElement.textContent = animatedTexts[activeIndex];
+            
+            // B) Dispara a animação CSS (inicia o slide do texto e do risco)
+            textContainer.classList.add('slide-active-animation');
+        } 
+        // 3. SE NÃO HOUVER TEXTO DEFINIDO (else), O CAMPO FICARÁ VAZIO, como desejado.
+    }, 50); // Pequeno atraso para garantir a redefinição da animação CSS
+}
+
+    // Adiciona o evento para quando a transição do slide terminar
+    homeSwiper.on('slideChangeTransitionEnd', handleSlideChange);
+
+    // Inicia o processo no carregamento da página (para animar o slide inicial)
+    handleSlideChange(); 
+
+    // =========================================================
+    // 4. SWIPER FEEDBACKS (MANTIDO)
     // =========================================================
     const swiper = new Swiper('.js-testimonials-slider', {
         grabCursor: true,
@@ -84,9 +126,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // =========================================================
-    // 4. TABELA DE PREÇOS (EXISTENTE)
+    // 5. TABELA DE PREÇOS (MANTIDO)
     // =========================================================
-    // Tabela de Preços: Estrutura a ser consultada.
     const priceData = {
         corrida: {
             mensal: { price: "80", period: "/mês", currency: "R$" },
@@ -108,43 +149,30 @@ document.addEventListener('DOMContentLoaded', function () {
     const tabButtons = document.querySelectorAll('.tabs-navigation .tab-button');
     const priceSpans = document.querySelectorAll('.pricing-card .price');
 
-    // Função que atualiza os preços na tela
     function updatePrices(duration) {
         priceSpans.forEach(span => {
-            // Pega o ID do span (ex: price-corrida)
             const id = span.id;
-            // Extrai o nome do plano (ex: 'corrida')
             const planName = id.split('-')[1];
 
-            // Busca os dados na nossa tabela
             if (priceData[planName] && priceData[planName][duration]) {
                 const data = priceData[planName][duration];
-
-                const [value, cents] = data.price.split('.');
+                const [value] = data.price.split('.');
 
                 span.innerHTML = `${data.currency} ${value}`;
-
-                // Atualiza a pequena tag de duração (/mês, /ano, etc.)
                 document.getElementById(`period-${planName}`).textContent = data.period;
             }
         });
     }
 
-    // Adiciona o evento de clique aos botões de duração
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
-            // 1. Limpeza e Ativação do Botão
             tabButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
 
-            // 2. Pega a duração (mensal, semestral ou anual)
             const newDuration = button.getAttribute('data-duration');
-
-            // 3. ATUALIZA OS PREÇOS DOS CARDS
             updatePrices(newDuration);
         });
     });
 
-    // Garante que os preços "Mensais" estejam carregados por padrão
     updatePrices('mensal');
 });

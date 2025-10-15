@@ -1,0 +1,35 @@
+{
+    "compilerOptions": {
+      "target": "es5",
+      "lib": [
+        "dom",
+        "dom.iterable",
+        "es6"
+      ],
+      "allowJs": true,
+      "skipLibCheck": true,
+      "esModuleInterop": true,
+      "allowSyntheticDefaultImports": true,
+      "strict": true,
+      "forceConsistentCasingInFileNames": true,
+      "noFallthroughCasesInSwitch": true,
+      "module": "esnext",
+      "moduleResolution": "node",
+      "resolveJsonModule": true,
+      "isolatedModules": true,
+      "noEmit": true,
+      "jsx": "react-jsx",
+      
+      // Configuração de Path Aliases
+      "baseUrl": "src", // Indica que o diretório 'src' é a raiz para resolução de módulos
+      "paths": {
+        // Define que '@/ qualquer_coisa' deve ser resolvido a partir da raiz (src/qualquer_coisa)
+        "@/*": [
+          "*"
+        ]
+      }
+    },
+    "include": [
+      "src"
+    ]
+  }

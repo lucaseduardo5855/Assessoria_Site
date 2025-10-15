@@ -1,0 +1,171 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("STUDENT") // ADMIN ou STUDENT
+  phone     String?
+  birthDate DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos
+  studentProfile StudentProfile?
+  workouts       Workout[]
+  evaluations    Evaluation[]
+  eventAttendances EventAttendance[]
+
+  @@map("users")
+}
+
+model StudentProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Informações pessoais
+  height      Float?
+  weight      Float?
+  goals       String?
+  limitations String?
+  
+  // Dados de treino
+  totalWorkouts    Int @default(0)
+  totalCalories    Int @default(0)
+  totalDistance    Float @default(0)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("student_profiles")
+}
+
+model WorkoutPlan {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  modality    String   // RUNNING, MUSCLE_TRAINING, FUNCTIONAL, TRAIL_RUNNING
+  type        String? // Tipo de treino
+  courseType  String? // Tipo de percurso (para corrida)
+  status      String   @default("PROPOSED") // PROPOSED, ACTIVE, COMPLETED, CANCELLED
+  order       Int?
+  isFavorite  Boolean @default(false)
+  workoutDate DateTime
+  
+  // Relacionamentos
+  exercises   Exercise[]
+  workouts    Workout[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("workout_plans")
+}
+
+model Exercise {
+  id          String   @id @default(cuid())
+  workoutPlanId String
+  workoutPlan   WorkoutPlan @relation(fields: [workoutPlanId], references: [id], onDelete: Cascade)
+  
+  sequence    Int
+  name        String
+  description String?
+  sets        Int?
+  reps        Int?
+  load        Float?
+  interval    String?
+  instruction String?
+  observation String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("exercises")
+}
+
+model Workout {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workoutPlanId String?
+  workoutPlan   WorkoutPlan? @relation(fields: [workoutPlanId], references: [id])
+  
+  modality    String   // RUNNING, MUSCLE_TRAINING, FUNCTIONAL, TRAIL_RUNNING
+  type        String?
+  courseType  String?
+  duration    Int? // em minutos
+  distance    Float? // em km
+  pace        String? // pace realizado
+  calories    Int?
+  notes       String?
+  completedAt DateTime @default(now())
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("workouts")
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  date        DateTime
+  location    String?
+  type        String   // TRAINING, COMPETITION, WORKSHOP, SOCIAL
+  maxAttendees Int?
+  
+  // Relacionamentos
+  attendances EventAttendance[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("events")
+}
+
+model EventAttendance {
+  id      String @id @default(cuid())
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  confirmed Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([eventId, userId])
+  @@map("event_attendances")
+}
+
+model Evaluation {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  type        String   // INITIAL, MONTHLY, FINAL
+  weight      Float?
+  height      Float?
+  bodyFat     Float?
+  muscleMass  Float?
+  notes       String?
+  
+  evaluatedAt DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("evaluations")
+}

@@ -1,0 +1,107 @@
+/* Hero/Home Section */
+.home {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.home-slider {
+    height: 100%;
+}
+
+.swiper-slide {
+    position: relative;
+    height: 100%;
+}
+
+.slide-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.home-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        135deg,
+        rgba(8, 31, 62, 0.8) 0%,
+        rgba(8, 31, 62, 0.6) 50%,
+        rgba(8, 31, 62, 0.9) 100%
+    );
+    z-index: 2;
+}
+
+/* Banner central */
+.banner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 3;
+    width: 100%;
+    padding: 0 20px;
+}
+
+.banner-conteudo h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    animation: fadeInUp 1s ease-out;
+}
+
+/* Animação de texto */
+.text-reveal-container {
+    overflow: hidden;
+}
+
+.animated-text {
+    display: inline-block;
+    animation: slideInLeft 1s ease-out;
+}
+
+/* Pagination do slider */
+.home-pagination {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+}
+
+.swiper-pagination-bullet {
+    width: 12px;
+    height: 12px;
+    background-color: rgba(255, 255, 255, 0.5);
+    opacity: 1;
+    transition: all 0.3s ease;
+}
+
+.swiper-pagination-bullet-active {
+    background-color: var(--amarelo-z4);
+    transform: scale(1.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .banner-conteudo h1 {
+        font-size: 2.5rem;
+    }
+    
+    .banner {
+        padding: 0 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .banner-conteudo h1 {
+        font-size: 2rem;
+    }
+}

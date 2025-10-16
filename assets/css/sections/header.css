@@ -1,0 +1,109 @@
+/* Header/Navbar */
+.main-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(8, 31, 62, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 15px 0;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.main-navbar .logo img {
+    height: 40px;
+    width: auto;
+}
+
+.main-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 50px;
+}
+
+.nav-list {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+}
+
+.nav-list li a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    position: relative;
+}
+
+.nav-list li a:hover {
+    color: var(--amarelo-z4);
+}
+
+.nav-list li a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -5px;
+    left: 0;
+    background-color: var(--amarelo-z4);
+    transition: width 0.3s ease;
+}
+
+.nav-list li a:hover::after {
+    width: 100%;
+}
+
+.junte-se-btn .btn-join-us {
+    background-color: var(--amarelo-z4);
+    color: var(--fundo-z4);
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.junte-se-btn .btn-join-us:hover {
+    background-color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 234, 0, 0.3);
+}
+
+/* Hamburger menu (mobile) */
+.hamburguer-btn {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    gap: 4px;
+}
+
+.hamburguer-btn span {
+    width: 25px;
+    height: 3px;
+    background-color: white;
+    transition: all 0.3s ease;
+}
+
+.hamburguer-btn:hover span {
+    background-color: var(--amarelo-z4);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .nav-list {
+        display: none;
+    }
+    
+    .hamburguer-btn {
+        display: flex;
+    }
+    
+    .main-navbar {
+        padding: 15px 20px;
+    }
+}

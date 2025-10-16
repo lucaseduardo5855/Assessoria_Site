@@ -1,0 +1,85 @@
+/* Services/Serviços Section */
+.servicos {
+    padding: 100px 0;
+    background: linear-gradient(135deg, var(--fundo-z4) 0%, #0a2540 100%);
+}
+
+.servicos-fundo-colorido {
+    background: linear-gradient(45deg, rgba(255, 234, 0, 0.1) 0%, rgba(255, 234, 0, 0.05) 100%);
+    padding: 60px 0;
+    border-radius: 20px;
+    margin: 0 20px;
+}
+
+.servicos-conteudo {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.servico-box {
+    position: relative;
+    height: 300px;
+    border-radius: 15px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.servico-box:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.servico-image-box {
+    width: 100%;
+    height: 100%;
+}
+
+.servico-image-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.servico-box:hover .servico-image-box img {
+    transform: scale(1.1);
+}
+
+.image-title-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    padding: 30px 20px 20px;
+    color: white;
+}
+
+.image-title-overlay span {
+    font-size: 1.3rem;
+    font-weight: 600;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .servicos-conteudo {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .servico-box {
+        height: 250px;
+    }
+    
+    .servicos-fundo-colorido {
+        margin: 0 10px;
+        padding: 40px 0;
+    }
+}

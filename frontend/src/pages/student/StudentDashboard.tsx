@@ -39,15 +39,48 @@ const StudentDashboard: React.FC = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const [workoutStats, workouts, events] = await Promise.all([
-          workoutService.getStats('month'),
-          workoutService.getMyWorkouts(1, 5),
-          eventService.getEvents(1, 5, undefined, 'true'),
-        ]);
+        setLoading(true);
+        
+        // Buscar estatísticas de treinos
+        const statsResponse = await fetch('http://localhost:5000/api/workouts/stats?period=month', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        
+        if (statsResponse.ok) {
+          const statsData = await statsResponse.json();
+          setStats(statsData);
+        }
 
-        setStats(workoutStats);
-        setRecentWorkouts(workouts?.data || []);
-        setUpcomingEvents(events?.data || []);
+        // Buscar treinos recentes
+        const workoutsResponse = await fetch('http://localhost:5000/api/workouts/my-workouts?page=1&limit=5', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        
+        if (workoutsResponse.ok) {
+          const workoutsData = await workoutsResponse.json();
+          setRecentWorkouts(workoutsData.workouts || []);
+        }
+
+        // Buscar eventos próximos
+        const eventsResponse = await fetch('http://localhost:5000/api/events/my-events', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        
+        if (eventsResponse.ok) {
+          const eventsData = await eventsResponse.json();
+          // Filtrar apenas eventos futuros
+          const now = new Date();
+          const upcomingEvents = eventsData.events?.filter((event: any) => 
+            new Date(event.date) > now
+          ).slice(0, 5) || [];
+          setUpcomingEvents(upcomingEvents);
+        }
       } catch (error) {
         console.error('Erro ao carregar dados do dashboard:', error);
       } finally {
@@ -56,6 +89,17 @@ const StudentDashboard: React.FC = () => {
     };
 
     fetchDashboardData();
+
+    // Listener para recarregar dados quando um treino for registrado
+    const handleWorkoutRegistered = () => {
+      fetchDashboardData();
+    };
+
+    window.addEventListener('workoutRegistered', handleWorkoutRegistered);
+
+    return () => {
+      window.removeEventListener('workoutRegistered', handleWorkoutRegistered);
+    };
   }, []);
 
   const getModalityIcon = (modality: string) => {

@@ -41,7 +41,8 @@ const workoutRecordSchema = Joi.object({
     distance: Joi.number().optional(),
     pace: Joi.string().optional(),
     calories: Joi.number().optional(),
-    notes: Joi.string().optional()
+    notes: Joi.string().optional(),
+    completedAt: Joi.date().optional()
 });
 
 // Criar planilha de treino (apenas admin)

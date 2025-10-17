@@ -66,12 +66,23 @@ const StudentEvolutionDashboard: React.FC = () => {
 
   useEffect(() => {
     fetchDashboardData();
+
+    // Listener para recarregar dados quando um treino for registrado
+    const handleWorkoutRegistered = () => {
+      fetchDashboardData();
+    };
+
+    window.addEventListener('workoutRegistered', handleWorkoutRegistered);
+
+    return () => {
+      window.removeEventListener('workoutRegistered', handleWorkoutRegistered);
+    };
   }, []);
 
   const fetchDashboardData = async () => {
     try {
       // Buscar treinos do usuário
-      const workoutsResponse = await fetch(`http://localhost:5000/api/workouts/user/${user?.id}`, {
+      const workoutsResponse = await fetch('http://localhost:5000/api/workouts/my-workouts?page=1&limit=100', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -82,47 +93,17 @@ const StudentEvolutionDashboard: React.FC = () => {
       let userWorkouts = [];
       if (workoutsResponse.ok) {
         const workoutsData = await workoutsResponse.json();
-        if (workoutsData.data) {
-          userWorkouts = workoutsData.data;
+        if (workoutsData.workouts) {
+          userWorkouts = workoutsData.workouts;
         } else if (Array.isArray(workoutsData)) {
           userWorkouts = workoutsData;
-        } else if (workoutsData.workouts) {
-          userWorkouts = workoutsData.workouts;
         }
       }
       
-      // Se não há treinos reais, criar dados de exemplo para demonstração
+      // Se não há treinos reais, usar dados vazios
       if (userWorkouts.length === 0) {
-        console.log('Nenhum treino encontrado, criando dados de exemplo...');
-        userWorkouts = [
-          {
-            id: '1',
-            modality: 'RUNNING',
-            distance: 5,
-            pace: 6.5,
-            calories: 300,
-            duration: 32,
-            completedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-          },
-          {
-            id: '2',
-            modality: 'RUNNING',
-            distance: 8,
-            pace: 6.2,
-            calories: 480,
-            duration: 49,
-            completedAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString()
-          },
-          {
-            id: '3',
-            modality: 'RUNNING',
-            distance: 10,
-            pace: 6.0,
-            calories: 600,
-            duration: 60,
-            completedAt: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString()
-          }
-        ];
+        console.log('Nenhum treino encontrado, iniciando com dados zerados...');
+        userWorkouts = [];
       }
 
       // Buscar eventos
@@ -141,14 +122,24 @@ const StudentEvolutionDashboard: React.FC = () => {
       const totalCalories = userWorkouts.reduce((sum: number, workout: any) => 
         sum + (workout.calories || 0), 0);
       const averagePace = userWorkouts.length > 0 
-        ? userWorkouts.reduce((sum: number, workout: any) => sum + (workout.pace || 0), 0) / userWorkouts.length
+        ? userWorkouts.reduce((sum: number, workout: any) => {
+            if (workout.pace) {
+              const paceStr = workout.pace.toString();
+              if (paceStr.includes(':')) {
+                const [minutes, seconds] = paceStr.split(':').map(Number);
+                return sum + (minutes + seconds / 60);
+              }
+              return sum + parseFloat(paceStr);
+            }
+            return sum;
+          }, 0) / userWorkouts.length
         : 0;
 
       // Calcular treinos deste mês
       const thisMonth = new Date();
       thisMonth.setDate(1);
       const thisMonthWorkouts = userWorkouts.filter((workout: any) => 
-        new Date(workout.workoutDate) >= thisMonth
+        new Date(workout.completedAt) >= thisMonth
       ).length;
 
       setStats({
@@ -171,32 +162,31 @@ const StudentEvolutionDashboard: React.FC = () => {
     }
   };
 
-  const generateEvolutionData = (workouts: WorkoutPlan[]): EvolutionData[] => {
+  const generateEvolutionData = (workouts: any[]): EvolutionData[] => {
     const data: EvolutionData[] = [];
-    const last30Days = 30;
     
-    for (let i = last30Days; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      
-      // Simular evolução baseada nos treinos reais
-      const basePace = 5.5; // 5:30 min/km
-      const improvement = (last30Days - i) * 0.02; // Melhoria de 2 segundos por dia
-      const pace = Math.max(4.0, basePace - improvement + (Math.random() - 0.5) * 0.5);
-      
-      const distance = Math.random() * 10 + 5; // 5-15 km
-      const calories = distance * 60; // ~60 cal/km
-      const duration = distance * pace; // minutos
-      
-      data.push({
-        date: date.toISOString().split('T')[0],
-        pace: Math.round(pace * 100) / 100,
-        distance: Math.round(distance * 100) / 100,
-        calories: Math.round(calories),
-        duration: Math.round(duration),
-        modality: ['RUNNING', 'MUSCLE_TRAINING', 'FUNCTIONAL'][Math.floor(Math.random() * 3)]
-      });
+    // Se não há treinos, retornar array vazio
+    if (workouts.length === 0) {
+      return data;
     }
+    
+    // Processar apenas os treinos reais do usuário
+    workouts.forEach((workout: any) => {
+      if (workout.completedAt) {
+        const date = new Date(workout.completedAt).toISOString().split('T')[0];
+        data.push({
+          date: date,
+          pace: workout.pace ? parseFloat(workout.pace.replace(':', '.')) : 0,
+          distance: workout.distance || 0,
+          calories: workout.calories || 0,
+          duration: workout.duration || 0,
+          modality: workout.modality
+        });
+      }
+    });
+    
+    // Ordenar por data
+    data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     
     return data;
   };

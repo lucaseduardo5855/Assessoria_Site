@@ -512,13 +512,14 @@ section.sobre {
 .btn-sobre {
     /* Cores e Texto */
     /* Degradê do seu Azul (var(--fundo-z4)) para um Amarelo/Ciano */
-    background: linear-gradient(140deg, #003366, #006dd4);
+    background: linear-gradient(90deg, #003366, #006dd4) !important;
     color: white;
     font-size: 12px;
     font-weight: bold;
     /* Layout */
     padding: 12px 25px;
-    border: none;
+    border: 0px solid transparent !important;
+    outline: 0px solid transparent !important;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -540,6 +541,43 @@ section.sobre {
     /* Efeito de 'levantar' */
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
     color: white;
+}
+
+.btn-sobre:focus {
+    outline: none !important;
+    border: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+}
+
+.btn-sobre:active {
+    outline: none !important;
+    border: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+}
+
+/* REGRA SUPER ESPECÍFICA PARA REMOVER QUALQUER LISTA VERMELHA */
+a.btn-whatsapp-link button.btn-sobre,
+a.btn-whatsapp-link button.btn-sobre:focus,
+a.btn-whatsapp-link button.btn-sobre:active,
+a.btn-whatsapp-link button.btn-sobre:hover,
+a.btn-whatsapp-link button.btn-sobre:visited {
+    border: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    outline: none !important;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3) !important;
+}
+
+a.btn-whatsapp-link button.btn-sobre:active {
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3) !important;
 }
 
 .sobre-conteudo .sobre-coluna-direita h1 {

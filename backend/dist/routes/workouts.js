@@ -42,7 +42,8 @@ const workoutRecordSchema = joi_1.default.object({
     distance: joi_1.default.number().optional(),
     pace: joi_1.default.string().optional(),
     calories: joi_1.default.number().optional(),
-    notes: joi_1.default.string().optional()
+    notes: joi_1.default.string().optional(),
+    completedAt: joi_1.default.date().optional()
 });
 router.post('/plans', auth_1.authenticateToken, auth_1.requireAdmin, (0, errorHandler_1.asyncHandler)(async (req, res) => {
     const { error, value } = workoutPlanSchema.validate(req.body);

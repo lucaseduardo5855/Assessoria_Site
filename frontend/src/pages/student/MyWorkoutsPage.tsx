@@ -65,7 +65,7 @@ const MyWorkoutsPage: React.FC = () => {
       console.log('=== BUSCANDO TREINOS DO ALUNO ===');
       
       // Buscar treinos do aluno
-      const response = await fetch(`http://localhost:5000/api/workouts/user/${user?.id}`, {
+      const response = await fetch('http://localhost:5000/api/workouts/my-workouts?page=1&limit=50', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -139,20 +139,32 @@ const MyWorkoutsPage: React.FC = () => {
       console.log('Dados do treino:', workoutForm);
       console.log('ID do usuário:', user?.id);
       
+      // Mapear modalidade para o formato esperado pelo backend
+      const modalityMap: { [key: string]: string } = {
+        'Corrida': 'RUNNING',
+        'Musculação': 'MUSCLE_TRAINING',
+        'Funcional': 'FUNCTIONAL',
+        'Trail Running': 'TRAIL_RUNNING'
+      };
+
+      // Validar se modalidade foi selecionada
+      if (!workoutForm.modality) {
+        throw new Error('Por favor, selecione uma modalidade');
+      }
+
       // Criar dados do treino
       const workoutData = {
-        modality: workoutForm.modality,
+        modality: modalityMap[workoutForm.modality] || workoutForm.modality,
         duration: parseInt(workoutForm.duration) || 0,
         distance: parseFloat(workoutForm.distance) || 0,
         calories: parseInt(workoutForm.calories) || 0,
-        pace: parseFloat(workoutForm.pace) || 0,
-        notes: workoutForm.notes,
-        userId: user?.id,
+        pace: workoutForm.pace || null, // Enviar como string
+        notes: workoutForm.notes || '',
         completedAt: new Date().toISOString()
       };
       
       // Fazer requisição para registrar treino
-      const response = await fetch('http://localhost:5000/api/workouts/register', {
+      const response = await fetch('http://localhost:5000/api/workouts/record', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -188,7 +200,11 @@ const MyWorkoutsPage: React.FC = () => {
       });
       
       // Recarregar lista de treinos
-      fetchWorkouts();
+      await fetchWorkouts();
+      
+      // Recarregar dados do dashboard se estiver na mesma sessão
+      // Isso garante que as estatísticas sejam atualizadas
+      window.dispatchEvent(new CustomEvent('workoutRegistered'));
       
     } catch (error) {
       console.error('=== ERRO AO REGISTRAR TREINO ===');

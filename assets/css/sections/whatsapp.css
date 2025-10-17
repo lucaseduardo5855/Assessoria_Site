@@ -18,6 +18,35 @@
     position: relative;
 }
 
+.btn-whatsapp-link,
+.btn-whatsapp-link:focus,
+.btn-whatsapp-link:active,
+.btn-whatsapp-link:hover {
+    /* CRÍTICO: Remove o sublinhado e o contorno do link */
+    text-decoration: none !important;
+    outline: none !important;
+    border: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    
+    /* Garante que o texto seja branco (para evitar a cor vazada) */
+    color: white !important; 
+}
+
+.btn-whatsapp-link button,
+.btn-whatsapp-link button:focus,
+.btn-whatsapp-link button:active,
+.btn-whatsapp-link button:hover {
+    border: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    outline: none !important;
+}
+
 .whatsappLink:hover {
     transform: scale(1.1);
     box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6);

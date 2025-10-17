@@ -80,6 +80,10 @@
     font-size: 18px;
 }
 
+.btn-sobre teste:hover{
+    text-decoration: none;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .sobre-conteudo {

@@ -161,11 +161,12 @@ async function main() {
         });
         console.log('✅ Planilha criada:', plan.title);
     }
+    const now = new Date();
     const events = [
         {
             title: 'Treino em Grupo - Corrida',
             description: 'Treino coletivo de corrida no parque',
-            date: new Date('2024-02-15T18:00:00'),
+            date: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000),
             location: 'Parque Barigui',
             type: 'TRAINING',
             maxAttendees: 20
@@ -173,7 +174,7 @@ async function main() {
         {
             title: 'Workshop de Nutrição Esportiva',
             description: 'Palestra sobre alimentação para atletas',
-            date: new Date('2024-02-20T19:00:00'),
+            date: new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000),
             location: 'Centro de Treinamento Z4',
             type: 'WORKSHOP',
             maxAttendees: 30
@@ -181,7 +182,7 @@ async function main() {
         {
             title: 'Corrida Solidária',
             description: 'Evento beneficente de corrida',
-            date: new Date('2024-03-10T08:00:00'),
+            date: new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000),
             location: 'Praça da Liberdade',
             type: 'COMPETITION',
             maxAttendees: 100
@@ -191,6 +192,19 @@ async function main() {
         const event = await prisma.event.create({
             data: eventData
         });
+        const allStudents = await prisma.user.findMany({
+            where: { role: 'STUDENT' },
+            select: { id: true }
+        });
+        if (allStudents.length > 0) {
+            await prisma.eventAttendance.createMany({
+                data: allStudents.map(student => ({
+                    userId: student.id,
+                    eventId: event.id,
+                    confirmed: false
+                }))
+            });
+        }
         console.log('✅ Evento criado:', event.title);
     }
     const users = await prisma.user.findMany({

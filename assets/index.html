@@ -11,6 +11,9 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
     <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/sections/footer.css">
+    <link rel="stylesheet" href="./css/sections/dev.css">
+    <link rel="stylesheet" href="./css/sections/header.css">
 
 </head>
 
@@ -24,9 +27,9 @@
             <ul class="nav-list">
                 <li><a href="#inicio">Inicio</a></li>
                 <li><a href="#sobre">Quem somos</a></li>
-                <li><a href="#servicos">Servicos</a></li>
-                <li><a href="#treinador">Treinador</a></li>
-                <li><a href="#preços">Preços</a></li>
+                <li><a href="#modalidades">Modalidades</a></li>
+                <li><a href="#treinadora-bio">Treinador</a></li>
+                <li><a href="#pricing-z4-perfomance">Preços</a></li>
                 <li><a href="#contato">Contato</a></li>
             </ul>
             <a href="http://localhost:3000" target="_blank" class="junte-se-btn">
@@ -39,7 +42,7 @@
             </div>
         </nav>
 
-        <section class="home" id="home">
+        <section class="home" id="inicio">
             <div class="swiper home-slider">
                 <div class="swiper-wrapper">
                     <div class="swiper-slide">
@@ -91,22 +94,24 @@
                     <p>Aqui, seu progresso é nossa missão!</p>
                     <a href="https://wa.me/5543998489857?text=Olá! Gostaria de fazer parte da Familia Z4!"
                         target="_blank">
-                        <button class="btn-sobre" type="button"><strong>Quero treinar com vocês!</strong></button>
+                        <button class="btn-sobre" type="button">
+                            <strong><i class="fa-solid fa-medal"></i> Quero treinar com vocês!</strong>
+                        </button>
                     </a>
                 </div>
             </div>
         </section>
 
-        <section class="servicos" id="servicos">
+        <section class="servicos" id="modalidades">
 
             <header class="section-header">
                 <h1>Modalidades Esportivas</h1>
-                <p>Sua jornada no esporte será guiada por uma profissional dedicada e pronta para ajudar você a alcançar
+                <p>
                     Sua jornada no esporte será guiada por uma profissional dedicada e pronta para ajudar você a
                     alcançar
                     seus objetivos.</p>
-                <p>Ela fornecerá o acompanhamento exclusivo que você precisa, garantindo que sua experiência de treino
-                    seja sempre enriquecedora e com o máximo contato.</p>
+                <p>Vamos fornecer o acompanhamento exclusivo que você precisa, garantindo que sua experiência de treino
+                    seja sempre enriquecedora e com o máximo contato e evolução.</p>
             </header>
 
             <div class="servicos-fundo-colorido">
@@ -265,7 +270,8 @@
                             <li>✓ Sincronização com Strava/Garmin</li>
                             <li>✓ Bônus: Treino funcional (2x/sem)</li>
                         </ul>
-                        <a href="#" class="btn-choose btn-choose-link" data-plan-name="Corrida + Musculação">
+                        <a href="#" class="btn-choose btn-choose-link" data-plan-name="Corrida + Musculação"
+                            style="text-decoration: none !important;">
                             Escolher Plano
                         </a>
                     </div>
@@ -290,20 +296,22 @@
                         <dt>Feedback Constante:</dt>
                         <dd>Obtenho e analiso suas necessidades, limitações e objetivos.</dd>
 
-                        <dt>MONTAGEM DE TREINO</dt>
+                        <dt>Montagem de Treino</dt>
                         <DD>Personalizo o seu treino de acordo com o seu objetivo, a partir das informações
                             acima.</DD>
 
-                        <dt>Disponibilidade do APP</dt>
+                        <dt>Disponibilidade do Sistema</dt>
                         <DD>Acesso do aluno ao aplicativo para acompanhamento e execução dos treinos.</DD>
 
                         <dt>Alterações mensais</dt>
                         <DD>Modifico algumas variaveis de exercícios e carga mensalmente, conforme resposta
                             do aluno ao
                             treinamento.</DD>
+
+                        <dt>Entrevista</dt>
+                        <DD>Entrevista por chamada de vídeo com seu treinador.</DD>
                     </dl>
 
-                    <button class="btn-cta-consultoria">Entre em contato!</button>
                 </div>
 
             </div>
@@ -428,20 +436,26 @@
                 </div>
             </div>
         </section>
-        <section class="pagina-footer">
+        <section class="pagina-footer" id="contato">
             <div class="footer-conteudo">
 
                 <div class="footer-col footer-col-1">
                     <div class="footer-col-titulo">
-                        <img src="" alt="logo-z4" class="footer-logo">
+                        <img src="/assets/img/Group 182 (3).png" alt="logo-z4" class="footer-logo">
                     </div>
                     <div class="footer-col-desc">
-                        <h3 class="social-media-title">Redes Sociais:</h3>
+                        <h3 class="social-media-title">Redes Sociais</h3>
 
                         <div class="footer-social-media">
-                            <a href=""><i class="fa-brands fa-facebook"></i></a>
-                            <a href=""><i class="fa-brands fa-instagram"></i></a>
-                            <a href=""><i class="fa-brands fa-tiktok"></i></a>
+
+                            <a href="https://www.instagram.com/elitreinadora_personal/" target="_blank"><i
+                                    class="fa-brands fa-instagram"></i></a>
+
+                            <a href="https://www.tiktok.com/@elipersonaltrainer?is_from_webapp=1&sender_device=pc"
+                                target="_blank"><i class="fa-brands fa-tiktok"></i></a>
+
+                            <a href="https://www.instagram.com/elitreinadora_personal/"><i
+                                    class="fa-brands fa-facebook"></i></a>
                         </div>
                     </div>
                 </div>
@@ -453,17 +467,17 @@
                     <div class="footer-col-desc">
                         <a href="">
                             <i class="fas fa-phone"></i>
-                            41 99547-5047
+                            +55 42 98489857
                         </a>
 
                         <a href="mailto:contato@v8assessoria.com.br">
                             <i class="fas fa-envelope"></i>
-                            contato@v8assessoria.com.br
+                            elimelo200307@gmail.com
                         </a>
 
-                        <a href="https://maps.app.goo.gl/endereco_aqui" target="_blank">
+                        <a href="https://maps.app.goo.gl/m9FCBdrASKAnW2cC8" target="_blank">
                             <i class="fas fa-map-marker-alt"></i>
-                            Rua Dr. Carlos de Paula Soares, 450, Curitiba - PR
+                            Parque Euzébio Delgado - Beira Rio - Jaguariaíva, PR, 84200-000
                         </a>
                     </div>
                 </div>
@@ -478,8 +492,8 @@
                                 <button class="btn-noticia-btn" type="button"><strong>Matricule-se</strong></button>
                             </a>
                             <a href="http://localhost:3000" target="_blank">
-                                <button class="btn-noticia-btn" type="button"><strong>Área do
-                                        Aluno</strong></button>
+                                <button class="btn-area-footer" type="button"><strong>Área do
+                                        Atleta</strong></button>
                             </a>
                         </div>
                     </div>
@@ -495,7 +509,8 @@
     </div>
 
     <div class="pop-up">
-        <a href="https://wa.me/5543998489857?text=teste" target="_blank" class="whatsappLink" rel="no-referrer">
+        <a href="https://wa.me/5543998489857?text=Olá, quero conhecer mais sobre a Z4!" target="_blank"
+            class="whatsappLink" rel="no-referrer">
             <img src="../assets/img/whatsapp.svg" alt="WhatsApp Icon" class="icon">
         </a>
     </div>

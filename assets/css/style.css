@@ -25,11 +25,11 @@ button {
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s;
-
 }
 
+
 button:hover {
-    background-color: white;
+    background-color: var(--amarelo-z4);
     color: var(--fundo-z4);
 }
 
@@ -75,7 +75,7 @@ body {
     width: 100%;
     min-height: 100vh;
     font-family: 'Poppins', sans-serif;
-    overflow-x: hidden; 
+    overflow-x: hidden;
 }
 
 .land-wrapper {
@@ -106,7 +106,7 @@ section.home {
     height: 100%;
     top: 0;
     left: 0;
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(8, 31, 62, 0.65);
     z-index: 2;
 }
 
@@ -117,7 +117,7 @@ section.home {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 1; 
+    z-index: 1;
     overflow: hidden;
 }
 
@@ -145,8 +145,8 @@ section.home {
     left: 0;
     width: 100%;
     text-align: center;
-    z-index: 110; 
-    pointer-events: auto; 
+    z-index: 110;
+    pointer-events: auto;
 }
 
 .swiper-pagination-bullet {
@@ -174,38 +174,42 @@ section.home {
     margin: 0px auto;
     display: flex;
     justify-content: space-between;
-    align-items: center; /* Alinha o conteúdo verticalmente */
-    background-color: #1B293F; /* Fundo original */
+    align-items: center;
+    /* Alinha o conteúdo verticalmente */
+    background-color: #1B293F;
+    /* Fundo original */
     /* MANTENHA ESTE Z-INDEX PARA VISIBILIDADE */
-    z-index: 9999; 
+    z-index: 9999;
     transition: all 0.3s ease-in-out;
 }
 
 .main-navbar .logo img {
-    width: 120px; /* Largura correta do logo */
+    width: 120px;
+    /* Largura correta do logo */
     height: auto;
 }
 
 .main-navbar .nav-list {
     list-style: none;
     padding: 0;
-    
+
     /* FORÇA O FLEXBOX PARA ALINHAMENTO HORIZONTAL E VERTICAL */
-    display: flex; 
-    align-items: center; 
-    height: 100%; 
-    margin: 0; 
+    display: flex;
+    align-items: center;
+    height: 100%;
+    margin: 0;
 }
 
 .main-navbar .nav-list li {
-    display: block; /* Garante que o item ocupe espaço */
+    display: block;
+    /* Garante que o item ocupe espaço */
     margin: 0px 15px;
 }
 
 .main-navbar .nav-list li a {
     text-decoration: none;
     /* CRÍTICO: Cor branca para aparecer sobre o fundo escuro */
-    color: white; 
+    color: white;
     font-size: 14px;
     transition: all 0.3s;
     position: relative;
@@ -215,17 +219,9 @@ section.home {
     color: var(--amarelo-z4);
 }
 
-.main-navbar .junte-se-btn .btn-join-us {
-    background-color: var(--amarelo-z4); /* Amarelo */
-    color: var(--fundo-z4); /* Azul escuro */
-    font-weight: 700;
-    /* Adicione padding e border-radius se necessário */
-    padding: 10px 15px; 
-    border-radius: 6px; 
-}
 
 .hamburguer-btn {
-    display: none; 
+    display: none;
 }
 
 
@@ -242,7 +238,7 @@ section.home {
 .banner {
     position: absolute;
     width: 100%;
-    height: calc(100vh - 80px); 
+    height: calc(100vh - 80px);
     top: 80px;
     color: white;
     display: flex;
@@ -251,7 +247,7 @@ section.home {
     z-index: 3;
     padding: 0 8%;
     box-sizing: border-box;
-    pointer-events: none; 
+    pointer-events: none;
 }
 
 .banner-conteudo {
@@ -259,7 +255,7 @@ section.home {
     max-width: 800px;
     text-align: center;
     top: 0;
-    pointer-events: auto; 
+    pointer-events: auto;
     /* Centraliza os elementos filhos */
     display: flex;
     flex-direction: column;
@@ -272,14 +268,14 @@ section.home {
 
 /* Contêiner da Máscara/Background Amarelo */
 .text-reveal-container {
-    height: 250px; 
-    margin: 20px auto; 
-    position: relative; 
+    height: 250px;
+    margin: 20px auto;
+    position: relative;
     display: block;
-    width: 100%; 
-    max-width: 400px; 
+    width: 100%;
+    max-width: 400px;
     /* CRÍTICO: Máscara que esconde o H1 na posição inicial */
-    overflow: hidden; 
+    overflow: hidden;
     /* FUNDO AMARELO */
 }
 
@@ -287,20 +283,20 @@ section.home {
 .banner-conteudo .animated-text {
     /* Cor do texto (ESCURO) */
     color: white;
-    font-size: 70px; 
-    line-height: 1.1; 
-    font-weight: 700; 
-    
+    font-size: 70px;
+    line-height: 1.1;
+    font-weight: 700;
+
     /* CRÍTICO: Posição inicial (fora de vista) */
-    transform: translateY(100%); 
+    transform: translateY(100%);
     transition: transform 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    
+
     /* CRÍTICO: Essencial para posicionar o ::after e ocupar a largura do texto */
-    position: relative; 
-    display: inline-block; 
-    text-align: left; 
-    margin: 10px; 
-    z-index: 6; 
+    position: relative;
+    display: inline-block;
+    text-align: left;
+    margin: 10px;
+    z-index: 6;
 }
 
 /* O Risco Vertical (Pseudo-Elemento ::after) */
@@ -308,38 +304,42 @@ section.home {
     content: '';
     position: absolute;
     top: 0;
-    
+
     /* CRÍTICO: Mude a regra left:calc(100% + 5px) para posicionar o risco na BORDA DIREITA da CAIXA AMARELA, 
        mas ainda como um pseudo-elemento do H1. */
-    right: 0; /* Coloca o risco na borda direita do H1 */
-    
-    width: 6px; 
+    right: 0;
+    /* Coloca o risco na borda direita do H1 */
+
+    width: 6px;
     height: 100%;
-    background-color: var(--amarelo-z4); /* Cor do risco */
-    
+    background-color: var(--amarelo-z4);
+    /* Cor do risco */
+
     /* Esconde o risco completamente (altura zero) */
-    transform: scaleY(0); 
-    transform-origin: top; 
-    opacity: 1; /* Mude para 1 para garantir que ele esteja visível se animado */
+    transform: scaleY(0);
+    transform-origin: top;
+    opacity: 1;
+    /* Mude para 1 para garantir que ele esteja visível se animado */
     transition: transform 1.5s 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.1s 0.1s;
-    z-index: 7; 
+    z-index: 7;
 }
 
 /* CLASSE DE ANIMAÇÃO: Ativada pelo JavaScript */
 .slide-active-animation .animated-text {
     /* Move o texto para a posição visível */
-    transform: translateY(0%); 
+    transform: translateY(0%);
 }
+
 .slide-active-animation .animated-text::after {
     /* Faz o risco crescer e o torna visível */
-    transform: scaleY(1); 
+    transform: scaleY(1);
     /* Removido o opacity: 1, pois já está no estado inicial */
 }
 
 /* Ocultando elementos removidos do HTML da HOME */
 .banner-conteudo .animacao-descricao,
 .btn-ler-mais {
-    display: none; 
+    display: none;
 }
 
 
@@ -442,6 +442,7 @@ section.sobre {
     z-index: 2;
     border-radius: 12px;
     right: 130px;
+    background-color: #003366;
 }
 
 /* Pseudo-elemento da imagem (mantido) */
@@ -452,7 +453,7 @@ section.sobre {
     height: calc(100% - 15px);
     top: -10px;
     left: -10px;
-    z-index: 1;
+    z-index: 2;
 }
 
 
@@ -532,9 +533,20 @@ section.sobre {
     margin-top: 40px;
 }
 
-.btn-sobre:hover{
+.btn-sobre:hover {
     transform: translateY(-3px);
     color: white;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+}
+
+
+.btn-sobre a {
+    color: white;
+    background-color: transparent;
+    outline: none;
+    border: none;
+    text-decoration: none;
+    margin-right: 5px;
 }
 
 
@@ -1081,8 +1093,8 @@ section.treinadora-bio {
 
 .btn-cta-consultoria {
     display: inline-block;
-    background-color: var(--fundo-z4);
-    color: white;
+    background-color: var(--amarelo-z4);
+    color: var(--fundo-z4);
     padding: 12px 30px;
     text-decoration: none;
     font-weight: bold;
@@ -1093,14 +1105,12 @@ section.treinadora-bio {
 }
 
 .btn-cta-consultoria:hover {
-    background-color: var(--amarelo-z4);
-    color: black;
+    background-color: var(--fundo-z4);
+    color: white;
     transition: 0.3s ease;
 }
 
 /* FIM Section Consultoria Online */
-
-
 
 
 /* Inicio Section Feedbacks */
@@ -1509,7 +1519,7 @@ section.equipe {
 
 .btn-choose {
     color: var(--darkBk);
-    border: none;
+    outline: none;
     padding: 12px 40px;
     border-radius: 30px;
     font-size: 1em;
@@ -1522,6 +1532,8 @@ section.equipe {
 .btn-choose:hover {
     background-color: yellow;
     transition: 0.3s ease;
+    border: none;
+    outline: none;
 }
 
 .card-pro .btn-choose {
@@ -1638,6 +1650,9 @@ section.pagina-footer {
     margin-top: 20px;
     margin-bottom: 15px;
     margin-left: -15px;
+    background-color: #F7F7F7;
+    color: var(--fundo-z4);
+    border-radius: 20px 90px;
 }
 
 .noticia-info {
@@ -1647,11 +1662,33 @@ section.pagina-footer {
 }
 
 .btn-noticia-btn {
+    background-color: white;
     height: auto;
     width: 400px;
     text-align: center;
     font-size: 15px;
+    margin-top: 20px;
 }
+
+.btn-noticia-btn:hover{
+        background-color: white;
+        transform: translateY(-2px);
+}
+
+
+.btn-area-footer {
+    height: auto;
+    width: 400px;
+    text-align: center;
+    font-size: 15px;
+    margin-top: 20px;
+}
+
+.btn-area-footer:hover {
+    transform: translateY(-2px);
+}
+
+
 
 .footer-col-2 .footer-col-desc a {
     text-decoration: none;
@@ -1717,7 +1754,24 @@ section.pagina-footer {
     transition: 0.3s;
 }
 
-.whatsappLink{
+.direito-copia {
+    background-color: #FFFFFF;
+    padding: 20px 0;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: block;
+    visibility: visible;
+    opacity: 1;
+    position: relative;
+    z-index: 10;
+}
+
+.direito-copia p {
+    color: var(--fundo-z4);
+    font-size: 0.9rem;
+}
+
+.whatsappLink {
     position: fixed;
     cursor: pointer;
     width: 60px;
@@ -1733,7 +1787,7 @@ section.pagina-footer {
     z-index: 10000;
 }
 
-.icon{
+.icon {
     margin-top: 12px;
     color: #fff;
     width: 31px;

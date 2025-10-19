@@ -22,14 +22,14 @@ const workoutPlanSchema = Joi.object({
     userId: Joi.string().optional(), // Campo para associar planilha a um usuário específico
     exercises: Joi.array().items(Joi.object({
         sequence: Joi.number().optional(),
-        name: Joi.string().optional(),
-        description: Joi.string().optional(),
+        name: Joi.string().allow('').optional(),
+        description: Joi.string().allow('').optional(),
         sets: Joi.number().optional(),
         reps: Joi.number().optional(),
         load: Joi.number().optional(),
-        interval: Joi.string().optional(),
-        instruction: Joi.string().optional(),
-        observation: Joi.string().optional()
+        interval: Joi.string().allow('').optional(),
+        instruction: Joi.string().allow('').optional(),
+        observation: Joi.string().allow('').optional()
     })).optional()
 });
 
@@ -70,21 +70,6 @@ router.post('/plans', authenticateToken, requireAdmin, asyncHandler(async (req: 
                 workoutPlanId: workoutPlan.id
             }))
         });
-
-        // Buscar planilha com exercícios
-        const planWithExercises = await prisma.workoutPlan.findUnique({
-            where: { id: workoutPlan.id },
-            include: {
-                exercises: {
-                    orderBy: { sequence: 'asc' }
-                }
-            }
-        });
-
-        return res.status(201).json({ // CORREÇÃO 1: Já tinha 'return'
-            message: 'Planilha criada com sucesso',
-            workoutPlan: planWithExercises
-        });
     }
 
     // Se um userId foi fornecido, criar um workout associado à planilha
@@ -96,14 +81,26 @@ router.post('/plans', authenticateToken, requireAdmin, asyncHandler(async (req: 
                 modality: planData.modality,
                 type: planData.type || null,
                 courseType: planData.courseType || null,
-                completedAt: new Date() // Marcar como concluído para que apareça na lista do aluno
+                // assignedBy: req.user!.id, // Temporariamente comentado até regenerar Prisma
+                // status: 'ASSIGNED', // Temporariamente comentado até regenerar Prisma
+                // completedAt não será definido, mantendo como null (não concluído)
             }
         });
     }
 
-    return res.status(201).json({ // CORREÇÃO 2: Adicionado 'return' para resolver TS7030
+    // Buscar planilha com exercícios para retornar dados completos
+    const planWithExercises = await prisma.workoutPlan.findUnique({
+        where: { id: workoutPlan.id },
+        include: {
+            exercises: {
+                orderBy: { sequence: 'asc' }
+            }
+        }
+    });
+
+    return res.status(201).json({
         message: 'Planilha criada com sucesso',
-        workoutPlan
+        workoutPlan: planWithExercises
     });
 }));
 
@@ -299,12 +296,18 @@ router.post('/record', authenticateToken, asyncHandler(async (req: AuthRequest, 
     });
 
     // Atualizar estatísticas do perfil do aluno
-    await prisma.studentProfile.update({
+    await prisma.studentProfile.upsert({
         where: { userId: req.user!.id },
-        data: {
+        update: {
             totalWorkouts: { increment: 1 },
             totalCalories: { increment: value.calories || 0 },
             totalDistance: { increment: value.distance || 0 }
+        },
+        create: {
+            userId: req.user!.id,
+            totalWorkouts: 1,
+            totalCalories: value.calories || 0,
+            totalDistance: value.distance || 0
         }
     });
 
@@ -316,11 +319,12 @@ router.post('/record', authenticateToken, asyncHandler(async (req: AuthRequest, 
 
 // Listar treinos do usuário
 router.get('/my-workouts', authenticateToken, asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { page = 1, limit = 10, modality, startDate, endDate } = req.query;
+    const { page = 1, limit = 10, modality, startDate, endDate, status } = req.query;
     const skip = (Number(page) - 1) * Number(limit);
 
     const where: any = { userId: req.user!.id };
     if (modality) where.modality = modality;
+    if (status) where.status = status;
 
     if (startDate || endDate) {
         where.completedAt = {};
@@ -333,12 +337,12 @@ router.get('/my-workouts', authenticateToken, asyncHandler(async (req: AuthReque
             where,
             include: {
                 workoutPlan: {
-                    select: { title: true, modality: true }
+                    select: { title: true, modality: true, description: true }
                 }
             },
             skip,
             take: Number(limit),
-            orderBy: { completedAt: 'desc' }
+            orderBy: { createdAt: 'desc' }
         }),
         prisma.workout.count({ where })
     ]);
@@ -352,6 +356,75 @@ router.get('/my-workouts', authenticateToken, asyncHandler(async (req: AuthReque
             pages: Math.ceil(total / Number(limit))
         }
     });
+}));
+
+// Listar treinos atribuídos pelo admin
+router.get('/assigned-workouts', authenticateToken, asyncHandler(async (req: AuthRequest, res: Response) => {
+    try {
+        console.log('=== BUSCANDO TREINOS ATRIBUÍDOS ===');
+        console.log('User ID:', req.user!.id);
+        
+        const workouts = await prisma.workout.findMany({
+            where: { 
+                userId: req.user!.id,
+                workoutPlanId: { not: null }
+            },
+            include: {
+                workoutPlan: {
+                    select: { title: true, modality: true, description: true }
+                }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        console.log('Treinos encontrados:', workouts.length);
+        console.log('Treinos:', workouts);
+
+        res.json({
+            workouts,
+            total: workouts.length
+        });
+    } catch (error) {
+        console.error('Erro ao buscar treinos atribuídos:', error);
+        res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+}));
+
+// Debug: Listar todos os treinos do usuário (para debug)
+router.get('/debug-workouts', authenticateToken, asyncHandler(async (req: AuthRequest, res: Response) => {
+    try {
+        console.log('=== DEBUG TODOS OS TREINOS ===');
+        console.log('User ID:', req.user!.id);
+        
+        const workouts = await prisma.workout.findMany({
+            where: { userId: req.user!.id },
+            include: {
+                workoutPlan: {
+                    select: { title: true, modality: true, description: true }
+                }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        console.log('Total de treinos:', workouts.length);
+        console.log('Treinos:', workouts);
+
+        res.json({
+            userId: req.user!.id,
+            totalWorkouts: workouts.length,
+            workouts: workouts.map(w => ({
+                id: w.id,
+                modality: w.modality,
+                workoutPlanId: w.workoutPlanId,
+                workoutPlanTitle: w.workoutPlan?.title,
+                completedAt: w.completedAt,
+                createdAt: w.createdAt
+            }))
+        });
+    } catch (error) {
+        console.error('Erro no debug:', error);
+        res.status(500).json({ error: 'Erro interno do servidor' });
+    }
 }));
 
 // Gerar PDF da planilha

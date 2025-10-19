@@ -24,6 +24,7 @@ model User {
   // Relacionamentos
   studentProfile StudentProfile?
   workouts       Workout[]
+  assignedWorkouts Workout[] @relation("AssignedWorkouts")
   evaluations    Evaluation[]
   eventAttendances EventAttendance[]
 
@@ -101,6 +102,8 @@ model Workout {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   workoutPlanId String?
   workoutPlan   WorkoutPlan? @relation(fields: [workoutPlanId], references: [id])
+  assignedBy  String?  // ID do admin que atribuiu o treino
+  assignedByUser User? @relation("AssignedWorkouts", fields: [assignedBy], references: [id])
   
   modality    String   // RUNNING, MUSCLE_TRAINING, FUNCTIONAL, TRAIL_RUNNING
   type        String?
@@ -110,7 +113,8 @@ model Workout {
   pace        String? // pace realizado
   calories    Int?
   notes       String?
-  completedAt DateTime @default(now())
+  status      String @default("COMPLETED") // ASSIGNED, COMPLETED, CANCELLED
+  completedAt DateTime?
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

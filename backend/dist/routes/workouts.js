@@ -85,7 +85,7 @@ router.post('/plans', auth_1.authenticateToken, auth_1.requireAdmin, (0, errorHa
                 modality: planData.modality,
                 type: planData.type || null,
                 courseType: planData.courseType || null,
-                completedAt: new Date()
+                completedAt: null
             }
         });
     }
@@ -253,12 +253,18 @@ router.post('/record', auth_1.authenticateToken, (0, errorHandler_1.asyncHandler
             userId: req.user.id
         }
     });
-    await prisma.studentProfile.update({
+    await prisma.studentProfile.upsert({
         where: { userId: req.user.id },
-        data: {
+        update: {
             totalWorkouts: { increment: 1 },
             totalCalories: { increment: value.calories || 0 },
             totalDistance: { increment: value.distance || 0 }
+        },
+        create: {
+            userId: req.user.id,
+            totalWorkouts: 1,
+            totalCalories: value.calories || 0,
+            totalDistance: value.distance || 0
         }
     });
     res.status(201).json({
@@ -267,11 +273,13 @@ router.post('/record', auth_1.authenticateToken, (0, errorHandler_1.asyncHandler
     });
 }));
 router.get('/my-workouts', auth_1.authenticateToken, (0, errorHandler_1.asyncHandler)(async (req, res) => {
-    const { page = 1, limit = 10, modality, startDate, endDate } = req.query;
+    const { page = 1, limit = 10, modality, startDate, endDate, status } = req.query;
     const skip = (Number(page) - 1) * Number(limit);
     const where = { userId: req.user.id };
     if (modality)
         where.modality = modality;
+    if (status)
+        where.status = status;
     if (startDate || endDate) {
         where.completedAt = {};
         if (startDate)
@@ -284,12 +292,12 @@ router.get('/my-workouts', auth_1.authenticateToken, (0, errorHandler_1.asyncHan
             where,
             include: {
                 workoutPlan: {
-                    select: { title: true, modality: true }
+                    select: { title: true, modality: true, description: true }
                 }
             },
             skip,
             take: Number(limit),
-            orderBy: { completedAt: 'desc' }
+            orderBy: { createdAt: 'desc' }
         }),
         prisma.workout.count({ where })
     ]);
@@ -302,6 +310,67 @@ router.get('/my-workouts', auth_1.authenticateToken, (0, errorHandler_1.asyncHan
             pages: Math.ceil(total / Number(limit))
         }
     });
+}));
+router.get('/assigned-workouts', auth_1.authenticateToken, (0, errorHandler_1.asyncHandler)(async (req, res) => {
+    try {
+        console.log('=== BUSCANDO TREINOS ATRIBUÍDOS ===');
+        console.log('User ID:', req.user.id);
+        const workouts = await prisma.workout.findMany({
+            where: {
+                userId: req.user.id,
+                workoutPlanId: { not: null }
+            },
+            include: {
+                workoutPlan: {
+                    select: { title: true, modality: true, description: true }
+                }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+        console.log('Treinos encontrados:', workouts.length);
+        console.log('Treinos:', workouts);
+        res.json({
+            workouts,
+            total: workouts.length
+        });
+    }
+    catch (error) {
+        console.error('Erro ao buscar treinos atribuídos:', error);
+        res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+}));
+router.get('/debug-workouts', auth_1.authenticateToken, (0, errorHandler_1.asyncHandler)(async (req, res) => {
+    try {
+        console.log('=== DEBUG TODOS OS TREINOS ===');
+        console.log('User ID:', req.user.id);
+        const workouts = await prisma.workout.findMany({
+            where: { userId: req.user.id },
+            include: {
+                workoutPlan: {
+                    select: { title: true, modality: true, description: true }
+                }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+        console.log('Total de treinos:', workouts.length);
+        console.log('Treinos:', workouts);
+        res.json({
+            userId: req.user.id,
+            totalWorkouts: workouts.length,
+            workouts: workouts.map(w => ({
+                id: w.id,
+                modality: w.modality,
+                workoutPlanId: w.workoutPlanId,
+                workoutPlanTitle: w.workoutPlan?.title,
+                completedAt: w.completedAt,
+                createdAt: w.createdAt
+            }))
+        });
+    }
+    catch (error) {
+        console.error('Erro no debug:', error);
+        res.status(500).json({ error: 'Erro interno do servidor' });
+    }
 }));
 router.get('/plans/:id/pdf', auth_1.authenticateToken, (0, errorHandler_1.asyncHandler)(async (req, res) => {
     const { id } = req.params;

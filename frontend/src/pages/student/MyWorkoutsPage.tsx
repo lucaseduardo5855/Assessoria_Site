@@ -28,15 +28,20 @@ import {
 import {
   Add,
   FitnessCenter,
+  Visibility,
 } from '@mui/icons-material';
+import { Chip, IconButton } from '@mui/material';
 import { useAuth } from '../../contexts/AuthContext';
 
 const MyWorkoutsPage: React.FC = () => {
   const { user } = useAuth();
   const [workouts, setWorkouts] = useState<any[]>([]);
+  const [assignedWorkouts, setAssignedWorkouts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [registerWorkoutOpen, setRegisterWorkoutOpen] = useState(false);
+  const [workoutDetailsOpen, setWorkoutDetailsOpen] = useState(false);
+  const [selectedWorkoutDetails, setSelectedWorkoutDetails] = useState<any>(null);
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
@@ -94,6 +99,24 @@ const MyWorkoutsPage: React.FC = () => {
       
       console.log('Treinos carregados:', workoutsData.length);
       setWorkouts(workoutsData);
+      
+      // Buscar treinos atribuídos pelo admin
+      const assignedResponse = await fetch('http://localhost:5000/api/workouts/my-workouts?page=1&limit=50', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (assignedResponse.ok) {
+        const assignedData = await assignedResponse.json();
+        // Filtrar apenas treinos que têm workoutPlanId (atribuídos pelo admin)
+        const assignedWorkouts = (assignedData.workouts || []).filter((workout: any) => workout.workoutPlanId);
+        console.log('Treinos atribuídos encontrados:', assignedWorkouts.length);
+        setAssignedWorkouts(assignedWorkouts);
+      }
+      
       setError(null);
     } catch (err: any) {
       console.error('=== ERRO AO BUSCAR TREINOS ===');
@@ -139,14 +162,6 @@ const MyWorkoutsPage: React.FC = () => {
       console.log('Dados do treino:', workoutForm);
       console.log('ID do usuário:', user?.id);
       
-      // Mapear modalidade para o formato esperado pelo backend
-      const modalityMap: { [key: string]: string } = {
-        'Corrida': 'RUNNING',
-        'Musculação': 'MUSCLE_TRAINING',
-        'Funcional': 'FUNCTIONAL',
-        'Trail Running': 'TRAIL_RUNNING'
-      };
-
       // Validar se modalidade foi selecionada
       if (!workoutForm.modality) {
         throw new Error('Por favor, selecione uma modalidade');
@@ -154,7 +169,7 @@ const MyWorkoutsPage: React.FC = () => {
 
       // Criar dados do treino
       const workoutData = {
-        modality: modalityMap[workoutForm.modality] || workoutForm.modality,
+        modality: workoutForm.modality, // Já está no formato correto (RUNNING, MUSCLE_TRAINING, etc.)
         duration: parseInt(workoutForm.duration) || 0,
         distance: parseFloat(workoutForm.distance) || 0,
         calories: parseInt(workoutForm.calories) || 0,
@@ -176,7 +191,9 @@ const MyWorkoutsPage: React.FC = () => {
       console.log('Status da resposta:', response.status);
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.message || `Erro HTTP ${response.status}`;
+        throw new Error(errorMessage);
       }
       
       const result = await response.json();
@@ -210,9 +227,11 @@ const MyWorkoutsPage: React.FC = () => {
       console.error('=== ERRO AO REGISTRAR TREINO ===');
       console.error('Erro completo:', error);
       
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido ao registrar treino';
+      
       setSnackbar({
         open: true,
-        message: 'Erro ao registrar treino',
+        message: errorMessage,
         severity: 'error'
       });
     }
@@ -225,6 +244,44 @@ const MyWorkoutsPage: React.FC = () => {
       case 'FUNCTIONAL': return 'Funcional';
       case 'TRAIL_RUNNING': return 'Trail Running';
       default: return modality;
+    }
+  };
+
+  const handleViewWorkoutDetails = async (workout: any) => {
+    try {
+      console.log('=== BUSCANDO DETALHES DO TREINO ===');
+      console.log('Workout ID:', workout.id);
+      console.log('Workout Plan ID:', workout.workoutPlanId);
+      
+      // Buscar detalhes da planilha de treino
+      const response = await fetch(`http://localhost:5000/api/workouts/plans/${workout.workoutPlanId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Detalhes da planilha:', data);
+        setSelectedWorkoutDetails(data.workoutPlan);
+        setWorkoutDetailsOpen(true);
+      } else {
+        console.error('Erro ao buscar detalhes:', response.status);
+        setSnackbar({
+          open: true,
+          message: 'Erro ao carregar detalhes do treino',
+          severity: 'error'
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao buscar detalhes do treino:', error);
+      setSnackbar({
+        open: true,
+        message: 'Erro ao carregar detalhes do treino',
+        severity: 'error'
+      });
     }
   };
 
@@ -307,6 +364,71 @@ const MyWorkoutsPage: React.FC = () => {
 
       {renderWorkoutsTable()}
 
+      {/* Seção de Treinos Atribuídos pelo Admin */}
+      {assignedWorkouts && assignedWorkouts.length > 0 && (
+        <Box mt={4}>
+          <Typography variant="h5" gutterBottom>
+            Treinos Atribuídos pelo Administrador
+          </Typography>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Treino</TableCell>
+                  <TableCell>Modalidade</TableCell>
+                  <TableCell>Tipo</TableCell>
+                  <TableCell>Percurso</TableCell>
+                  <TableCell>Atribuído por</TableCell>
+                  <TableCell>Data de Atribuição</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell>Ações</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {assignedWorkouts.map((workout, index) => (
+                  <TableRow key={index}>
+                    <TableCell>
+                      <Typography variant="body2" fontWeight="medium">
+                        {workout.workoutPlan?.title || 'Treino Personalizado'}
+                      </Typography>
+                      {workout.workoutPlan?.description && (
+                        <Typography variant="caption" color="text.secondary">
+                          {workout.workoutPlan.description}
+                        </Typography>
+                      )}
+                    </TableCell>
+                    <TableCell>{getModalityLabel(workout.modality)}</TableCell>
+                    <TableCell>{workout.type || '-'}</TableCell>
+                    <TableCell>{workout.courseType || '-'}</TableCell>
+                    <TableCell>Administrador</TableCell>
+                    <TableCell>
+                      {new Date(workout.createdAt).toLocaleDateString('pt-BR')}
+                    </TableCell>
+                    <TableCell>
+                      <Chip 
+                        label="Pendente" 
+                        color="warning" 
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <IconButton
+                        onClick={() => handleViewWorkoutDetails(workout)}
+                        color="primary"
+                        size="small"
+                        title="Ver detalhes do treino"
+                      >
+                        <Visibility />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
+      )}
+
       {/* Modal para registrar treino */}
       <Dialog open={registerWorkoutOpen} onClose={() => setRegisterWorkoutOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Registrar Novo Treino</DialogTitle>
@@ -367,6 +489,104 @@ const MyWorkoutsPage: React.FC = () => {
           <Button onClick={() => setRegisterWorkoutOpen(false)}>Cancelar</Button>
           <Button onClick={handleRegisterWorkout} variant="contained">
             Registrar Treino
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Modal para ver detalhes do treino atribuído */}
+      <Dialog open={workoutDetailsOpen} onClose={() => setWorkoutDetailsOpen(false)} maxWidth="md" fullWidth>
+        <DialogTitle>
+          Detalhes do Treino: {selectedWorkoutDetails?.title}
+        </DialogTitle>
+        <DialogContent>
+          {selectedWorkoutDetails && (
+            <Box>
+              {/* Informações básicas */}
+              <Box mb={3}>
+                <Typography variant="h6" gutterBottom>
+                  Informações do Treino
+                </Typography>
+                <Box display="flex" flexDirection="column" gap={1}>
+                  <Typography><strong>Modalidade:</strong> {getModalityLabel(selectedWorkoutDetails.modality)}</Typography>
+                  <Typography><strong>Tipo:</strong> {selectedWorkoutDetails.type || 'Não especificado'}</Typography>
+                  <Typography><strong>Percurso:</strong> {selectedWorkoutDetails.courseType || 'Não especificado'}</Typography>
+                  <Typography><strong>Data:</strong> {new Date(selectedWorkoutDetails.workoutDate).toLocaleDateString('pt-BR')}</Typography>
+                  {selectedWorkoutDetails.description && (
+                    <Typography><strong>Descrição:</strong> {selectedWorkoutDetails.description}</Typography>
+                  )}
+                </Box>
+              </Box>
+
+              {/* Exercícios */}
+              {selectedWorkoutDetails.exercises && selectedWorkoutDetails.exercises.length > 0 && (
+                <Box>
+                  <Typography variant="h6" gutterBottom>
+                    Exercícios ({selectedWorkoutDetails.exercises.length})
+                  </Typography>
+                  <TableContainer component={Paper} variant="outlined">
+                    <Table size="small">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>#</TableCell>
+                          <TableCell>Nome</TableCell>
+                          <TableCell>Séries</TableCell>
+                          <TableCell>Repetições</TableCell>
+                          <TableCell>Carga</TableCell>
+                          <TableCell>Intervalo</TableCell>
+                          <TableCell>Instruções</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {selectedWorkoutDetails.exercises.map((exercise: any, index: number) => (
+                          <TableRow key={index}>
+                            <TableCell>{exercise.sequence}</TableCell>
+                            <TableCell>
+                              <Typography variant="body2" fontWeight="medium">
+                                {exercise.name}
+                              </Typography>
+                              {exercise.description && (
+                                <Typography variant="caption" color="text.secondary">
+                                  {exercise.description}
+                                </Typography>
+                              )}
+                            </TableCell>
+                            <TableCell>{exercise.sets || '-'}</TableCell>
+                            <TableCell>{exercise.reps || '-'}</TableCell>
+                            <TableCell>{exercise.load ? `${exercise.load}kg` : '-'}</TableCell>
+                            <TableCell>{exercise.interval || '-'}</TableCell>
+                            <TableCell>
+                              {exercise.instruction && (
+                                <Typography variant="caption">
+                                  {exercise.instruction}
+                                </Typography>
+                              )}
+                              {exercise.observation && (
+                                <Typography variant="caption" color="text.secondary" display="block">
+                                  Obs: {exercise.observation}
+                                </Typography>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Box>
+              )}
+
+              {(!selectedWorkoutDetails.exercises || selectedWorkoutDetails.exercises.length === 0) && (
+                <Box textAlign="center" py={3}>
+                  <Typography color="text.secondary">
+                    Nenhum exercício cadastrado para este treino.
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setWorkoutDetailsOpen(false)}>
+            Fechar
           </Button>
         </DialogActions>
       </Dialog>

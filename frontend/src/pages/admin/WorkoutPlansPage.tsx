@@ -224,12 +224,16 @@ const WorkoutPlansPage: React.FC = () => {
         courseType: formData.courseType || undefined,
         status: formData.status,
         workoutDate: new Date(formData.workoutDate).toISOString(),
+        // Incluir exercícios se existirem
+        exercises: exercises.filter(ex => ex.name && ex.name.trim() !== ''),
         // Incluir userId se aluno foi selecionado
         ...(formData.studentId && { userId: formData.studentId })
       };
       
       console.log('=== CRIANDO PLANILHA ===');
       console.log('FormData completo:', formData);
+      console.log('Exercícios:', exercises);
+      console.log('Exercícios filtrados:', exercises.filter(ex => ex.name && ex.name.trim() !== ''));
       console.log('Dados enviados para API:', planData);
       console.log('StudentId selecionado:', formData.studentId);
       console.log('userId será incluído?', !!(formData.studentId && { userId: formData.studentId }));

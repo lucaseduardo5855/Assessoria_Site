@@ -68,12 +68,14 @@ const MyEventsPage: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Erro ao carregar eventos');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Erro ${response.status}: ${response.statusText}`);
       }
 
       const data = await response.json();
       setEvents(data.events || []);
     } catch (error: any) {
+      console.error('Erro ao carregar eventos:', error);
       setSnackbar({
         open: true,
         message: 'Erro ao carregar eventos: ' + error.message,
@@ -208,17 +210,18 @@ const MyEventsPage: React.FC = () => {
             const isPastEvent = eventDate < new Date();
 
             return (
-              <Grid item xs={12} md={6} lg={4} key={event.id}>
-                <Card>
-                  <CardContent>
-                    <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
-                      <Typography variant="h6" component="h2">
+              <Grid item xs={12} sm={10} md={10} lg={10} key={event.id} sx={{ mx: 'auto' }}>
+                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', minHeight: 320 }}>
+                  <CardContent sx={{ flex: 1, p: 3 }}>
+                    <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={3} gap={1} flexWrap="wrap">
+                      <Typography variant="h6" component="h2" sx={{ flex: 1, wordBreak: 'break-word' }}>
                         {event.title}
                       </Typography>
                       <Chip
                         label={getEventTypeLabel(event.type)}
                         color={getEventTypeColor(event.type)}
                         size="small"
+                        sx={{ flexShrink: 0 }}
                       />
                     </Box>
 
@@ -228,28 +231,29 @@ const MyEventsPage: React.FC = () => {
                       </Typography>
                     )}
 
-                    <Box mb={1}>
-                      <Typography variant="body2" color="textSecondary">
+                    <Box mb={2}>
+                      <Typography variant="body1" color="textSecondary">
                         <strong>Data:</strong> {eventDate.toLocaleDateString('pt-BR')}
                       </Typography>
                     </Box>
 
                     {event.location && (
-                      <Box mb={1}>
-                        <Typography variant="body2" color="textSecondary">
+                      <Box mb={2}>
+                        <Typography variant="body1" color="textSecondary">
                           <strong>Local:</strong> {event.location}
                         </Typography>
                       </Box>
                     )}
 
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Box display="flex" justifyContent="space-between" alignItems="center" gap={1} mb={2}>
                       <Chip
                         label={attendanceStatus.label}
                         color={attendanceStatus.color}
                         size="small"
+                        sx={{ flexShrink: 0 }}
                       />
                       {event.maxAttendees && (
-                        <Typography variant="caption" color="textSecondary">
+                        <Typography variant="caption" color="textSecondary" sx={{ flexShrink: 0 }}>
                           Máx: {event.maxAttendees} pessoas
                         </Typography>
                       )}
@@ -257,22 +261,26 @@ const MyEventsPage: React.FC = () => {
                   </CardContent>
 
                   {!isPastEvent && (
-                    <CardActions>
+                    <CardActions sx={{ display: 'flex', gap: 1, p: 2, pt: 0 }}>
                       <Button
-                        size="small"
+                        size="medium"
                         startIcon={<CheckCircle />}
                         color="success"
+                        variant={event.myAttendance?.confirmed === true ? "contained" : "outlined"}
                         onClick={() => handleAttendance(event.id, event.title, true)}
                         disabled={event.myAttendance?.confirmed === true}
+                        sx={{ flex: 1 }}
                       >
                         Confirmar
                       </Button>
                       <Button
-                        size="small"
+                        size="medium"
                         startIcon={<Cancel />}
                         color="error"
+                        variant={event.myAttendance?.confirmed === false ? "contained" : "outlined"}
                         onClick={() => handleAttendance(event.id, event.title, false)}
                         disabled={event.myAttendance?.confirmed === false}
+                        sx={{ flex: 1 }}
                       >
                         Negar
                       </Button>

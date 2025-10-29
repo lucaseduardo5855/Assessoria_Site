@@ -27,6 +27,9 @@ import {
   Select,
   MenuItem,
   Chip,
+  Checkbox,
+  ListItemText,
+  OutlinedInput,
 } from '@mui/material';
 import {
   Add,
@@ -65,11 +68,32 @@ const EventsPage: React.FC = () => {
     location: '',
     type: '',
     maxAttendees: '',
+    selectedStudents: [] as string[],
   });
+
+  const [students, setStudents] = useState<Array<{id: string, name: string}>>([]);
 
   useEffect(() => {
     fetchEvents();
+    fetchStudents();
   }, []);
+
+  const fetchStudents = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/users/students?limit=1000', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setStudents(data.students || []);
+      }
+    } catch (err) {
+      console.error('Erro ao buscar alunos:', err);
+    }
+  };
 
   const fetchEvents = async () => {
     try {
@@ -145,6 +169,7 @@ const EventsPage: React.FC = () => {
         location: formData.location || undefined,
         type: formData.type,
         maxAttendees: parseInt(formData.maxAttendees) || null,
+        userIds: formData.selectedStudents.length > 0 ? formData.selectedStudents : undefined,
       };
       
       console.log('Dados do evento criados:', eventData);
@@ -246,6 +271,7 @@ const EventsPage: React.FC = () => {
       location: '',
       type: '',
       maxAttendees: '',
+      selectedStudents: [],
     });
   };
 
@@ -258,6 +284,7 @@ const EventsPage: React.FC = () => {
       location: event.location || '',
       type: event.type,
       maxAttendees: event.maxAttendees?.toString() || '',
+      selectedStudents: [], // Limpar seleção ao editar
     });
     setIsEditModalOpen(true);
   };
@@ -282,6 +309,7 @@ const EventsPage: React.FC = () => {
         location: formData.location || undefined,
         type: formData.type,
         maxAttendees: parseInt(formData.maxAttendees) || null,
+        userIds: formData.selectedStudents.length > 0 ? formData.selectedStudents : undefined,
       };
       
       console.log('Dados sendo enviados para API:', eventData);
@@ -540,6 +568,32 @@ const EventsPage: React.FC = () => {
               onChange={(e) => setFormData({ ...formData, maxAttendees: e.target.value })}
               fullWidth
             />
+            <FormControl fullWidth>
+              <InputLabel>Alunos (deixe vazio para todos)</InputLabel>
+              <Select
+                multiple
+                value={formData.selectedStudents}
+                onChange={(e) => setFormData({ ...formData, selectedStudents: e.target.value as string[] })}
+                input={<OutlinedInput label="Alunos (deixe vazio para todos)" />}
+                renderValue={(selected) => (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {selected.map((value) => {
+                      const student = students.find(s => s.id === value);
+                      return student ? (
+                        <Chip key={value} label={student.name} size="small" />
+                      ) : null;
+                    })}
+                  </Box>
+                )}
+              >
+                {students.map((student) => (
+                  <MenuItem key={student.id} value={student.id}>
+                    <Checkbox checked={formData.selectedStudents.indexOf(student.id) > -1} />
+                    <ListItemText primary={student.name} />
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Box>
         </DialogContent>
         <DialogActions>
@@ -603,6 +657,32 @@ const EventsPage: React.FC = () => {
               onChange={(e) => setFormData({ ...formData, maxAttendees: e.target.value })}
               fullWidth
             />
+            <FormControl fullWidth>
+              <InputLabel>Alunos (deixe vazio para todos)</InputLabel>
+              <Select
+                multiple
+                value={formData.selectedStudents}
+                onChange={(e) => setFormData({ ...formData, selectedStudents: e.target.value as string[] })}
+                input={<OutlinedInput label="Alunos (deixe vazio para todos)" />}
+                renderValue={(selected) => (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {selected.map((value) => {
+                      const student = students.find(s => s.id === value);
+                      return student ? (
+                        <Chip key={value} label={student.name} size="small" />
+                      ) : null;
+                    })}
+                  </Box>
+                )}
+              >
+                {students.map((student) => (
+                  <MenuItem key={student.id} value={student.id}>
+                    <Checkbox checked={formData.selectedStudents.indexOf(student.id) > -1} />
+                    <ListItemText primary={student.name} />
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Box>
         </DialogContent>
         <DialogActions>

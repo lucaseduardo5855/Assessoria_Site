@@ -16,7 +16,8 @@ const eventSchema = joi_1.default.object({
     date: joi_1.default.date().required(),
     location: joi_1.default.string().optional(),
     type: joi_1.default.string().valid('TRAINING', 'COMPETITION', 'WORKSHOP', 'SOCIAL').required(),
-    maxAttendees: joi_1.default.number().positive().allow(null).optional()
+    maxAttendees: joi_1.default.number().positive().allow(null).optional(),
+    userIds: joi_1.default.array().items(joi_1.default.string()).optional()
 });
 const attendanceSchema = joi_1.default.object({
     confirmed: joi_1.default.boolean().required()
@@ -26,17 +27,25 @@ router.post('/', auth_1.authenticateToken, auth_1.requireAdmin, (0, errorHandler
     if (error) {
         throw (0, errorHandler_1.createError)(error.details[0].message, 400);
     }
+    const { userIds, ...eventData } = value;
     const event = await prisma.event.create({
-        data: value
+        data: eventData
     });
-    const allStudents = await prisma.user.findMany({
-        where: { role: 'STUDENT' },
-        select: { id: true }
-    });
-    if (allStudents.length > 0) {
+    let studentsToNotify = [];
+    if (userIds && userIds.length > 0) {
+        studentsToNotify = userIds;
+    }
+    else {
+        const allStudents = await prisma.user.findMany({
+            where: { role: 'STUDENT' },
+            select: { id: true }
+        });
+        studentsToNotify = allStudents.map(s => s.id);
+    }
+    if (studentsToNotify.length > 0) {
         await prisma.eventAttendance.createMany({
-            data: allStudents.map(student => ({
-                userId: student.id,
+            data: studentsToNotify.map((userId) => ({
+                userId,
                 eventId: event.id,
                 confirmed: false
             }))
@@ -46,6 +55,49 @@ router.post('/', auth_1.authenticateToken, auth_1.requireAdmin, (0, errorHandler
         message: 'Evento criado com sucesso',
         event
     });
+}));
+router.get('/my-events', auth_1.authenticateToken, (0, errorHandler_1.asyncHandler)(async (req, res) => {
+    try {
+        console.log('=== BUSCANDO EVENTOS DO ALUNO ===');
+        console.log('User ID:', req.user.id);
+        const events = await prisma.event.findMany({
+            include: {
+                attendances: {
+                    where: {
+                        userId: req.user.id
+                    },
+                    select: {
+                        id: true,
+                        confirmed: true
+                    }
+                },
+                _count: {
+                    select: { attendances: true }
+                }
+            },
+            orderBy: { date: 'asc' }
+        });
+        console.log('Total de eventos encontrados:', events.length);
+        const eventsWithAttendance = events.map(event => ({
+            id: event.id,
+            title: event.title,
+            description: event.description,
+            date: event.date,
+            location: event.location,
+            type: event.type,
+            maxAttendees: event.maxAttendees,
+            createdAt: event.createdAt,
+            updatedAt: event.updatedAt,
+            myAttendance: event.attendances[0] || null,
+            _count: event._count
+        }));
+        console.log('Eventos formatados retornados:', eventsWithAttendance.length);
+        res.json({ events: eventsWithAttendance });
+    }
+    catch (error) {
+        console.error('❌ Erro ao buscar eventos do aluno:', error);
+        throw (0, errorHandler_1.createError)('Erro ao carregar eventos: ' + error.message, 500);
+    }
 }));
 router.get('/', auth_1.authenticateToken, (0, errorHandler_1.asyncHandler)(async (req, res) => {
     const { page = 1, limit = 10, type, upcoming = 'true' } = req.query;
@@ -115,9 +167,10 @@ router.put('/:id', auth_1.authenticateToken, auth_1.requireAdmin, (0, errorHandl
     if (error) {
         throw (0, errorHandler_1.createError)(error.details[0].message, 400);
     }
+    const { userIds, ...eventData } = value;
     const event = await prisma.event.update({
         where: { id },
-        data: value,
+        data: eventData,
         include: {
             attendances: {
                 include: {
@@ -169,24 +222,6 @@ router.put('/:id/attendance', auth_1.authenticateToken, (0, errorHandler_1.async
         message: confirmed ? 'Presença confirmada' : 'Presença negada',
         attendance
     });
-}));
-router.get('/my-events', auth_1.authenticateToken, (0, errorHandler_1.asyncHandler)(async (req, res) => {
-    const events = await prisma.event.findMany({
-        include: {
-            attendances: {
-                where: {
-                    userId: req.user.id
-                }
-            }
-        },
-        orderBy: { date: 'asc' }
-    });
-    const eventsWithAttendance = events.map(event => ({
-        ...event,
-        myAttendance: event.attendances[0] || null,
-        attendances: undefined
-    }));
-    res.json({ events: eventsWithAttendance });
 }));
 router.post('/:id/attend', auth_1.authenticateToken, (0, errorHandler_1.asyncHandler)(async (req, res) => {
     const { id } = req.params;

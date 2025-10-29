@@ -14,7 +14,8 @@ const eventSchema = Joi.object({
   date: Joi.date().required(),
   location: Joi.string().optional(),
   type: Joi.string().valid('TRAINING', 'COMPETITION', 'WORKSHOP', 'SOCIAL').required(),
-  maxAttendees: Joi.number().positive().allow(null).optional()
+  maxAttendees: Joi.number().positive().allow(null).optional(),
+  userIds: Joi.array().items(Joi.string()).optional()
 });
 
 const attendanceSchema = Joi.object({
@@ -28,20 +29,31 @@ router.post('/', authenticateToken, requireAdmin, asyncHandler(async (req: AuthR
     throw createError(error.details[0].message, 400);
   }
 
+  const { userIds, ...eventData } = value;
+
   const event = await prisma.event.create({
-    data: value
+    data: eventData
   });
 
-  // Criar notificações para todos os alunos
-  const allStudents = await prisma.user.findMany({
-    where: { role: 'STUDENT' },
-    select: { id: true }
-  });
+  // Criar notificações apenas para os alunos selecionados
+  let studentsToNotify = [];
+  
+  if (userIds && userIds.length > 0) {
+    // Alunos selecionados especificamente
+    studentsToNotify = userIds;
+  } else {
+    // Se nenhum aluno foi selecionado, criar para todos
+    const allStudents = await prisma.user.findMany({
+      where: { role: 'STUDENT' },
+      select: { id: true }
+    });
+    studentsToNotify = allStudents.map(s => s.id);
+  }
 
-  if (allStudents.length > 0) {
+  if (studentsToNotify.length > 0) {
     await prisma.eventAttendance.createMany({
-      data: allStudents.map(student => ({
-        userId: student.id,
+      data: studentsToNotify.map((userId: string) => ({
+        userId,
         eventId: event.id,
         confirmed: false // Status pendente para confirmação
       }))
@@ -52,6 +64,57 @@ router.post('/', authenticateToken, requireAdmin, asyncHandler(async (req: AuthR
     message: 'Evento criado com sucesso',
     event
   });
+}));
+
+// Listar eventos do aluno com status de presença (DEVE VIR ANTES DE /:id)
+router.get('/my-events', authenticateToken, asyncHandler(async (req: AuthRequest, res: Response) => {
+  try {
+    console.log('=== BUSCANDO EVENTOS DO ALUNO ===');
+    console.log('User ID:', req.user!.id);
+    
+    // Buscar TODOS os eventos (sem filtro de data)
+    const events = await prisma.event.findMany({
+      include: {
+        attendances: {
+          where: {
+            userId: req.user!.id
+          },
+          select: {
+            id: true,
+            confirmed: true
+          }
+        },
+        _count: {
+          select: { attendances: true }
+        }
+      },
+      orderBy: { date: 'asc' }
+    });
+
+    console.log('Total de eventos encontrados:', events.length);
+
+    // Formatar resposta para incluir status de presença
+    const eventsWithAttendance = events.map(event => ({
+      id: event.id,
+      title: event.title,
+      description: event.description,
+      date: event.date,
+      location: event.location,
+      type: event.type,
+      maxAttendees: event.maxAttendees,
+      createdAt: event.createdAt,
+      updatedAt: event.updatedAt,
+      myAttendance: event.attendances[0] || null,
+      _count: event._count
+    }));
+
+    console.log('Eventos formatados retornados:', eventsWithAttendance.length);
+
+    res.json({ events: eventsWithAttendance });
+  } catch (error: any) {
+    console.error('❌ Erro ao buscar eventos do aluno:', error);
+    throw createError('Erro ao carregar eventos: ' + error.message, 500);
+  }
 }));
 
 // Listar eventos
@@ -134,9 +197,11 @@ router.put('/:id', authenticateToken, requireAdmin, asyncHandler(async (req: Aut
     throw createError(error.details[0].message, 400);
   }
 
+  const { userIds, ...eventData } = value;
+
   const event = await prisma.event.update({
     where: { id },
-    data: value,
+    data: eventData,
     include: {
       attendances: {
         include: {
@@ -201,83 +266,6 @@ router.put('/:id/attendance', authenticateToken, asyncHandler(async (req: AuthRe
     message: confirmed ? 'Presença confirmada' : 'Presença negada',
     attendance
   });
-}));
-
-// Listar eventos do aluno com status de presença
-router.get('/my-events', authenticateToken, asyncHandler(async (req: AuthRequest, res: Response) => {
-  console.log('=== BUSCANDO EVENTOS DO ALUNO ===');
-  console.log('User ID:', req.user!.id);
-  
-  // Buscar TODOS os alunos para garantir que todos estão associados aos eventos
-  const allStudents = await prisma.user.findMany({
-    where: { role: 'STUDENT' },
-    select: { id: true }
-  });
-
-  console.log('Total de alunos cadastrados:', allStudents.length);
-
-  // Buscar TODOS os eventos
-  const allEvents = await prisma.event.findMany({
-    select: { id: true }
-  });
-
-  console.log('Total de eventos no sistema:', allEvents.length);
-
-  // Garantir que TODOS os alunos tenham attendance em TODOS os eventos
-  if (allStudents.length > 0 && allEvents.length > 0) {
-    for (const student of allStudents) {
-      for (const event of allEvents) {
-        // Verificar se já existe o registro
-        const existing = await prisma.eventAttendance.findUnique({
-          where: {
-            eventId_userId: {
-              eventId: event.id,
-              userId: student.id
-            }
-          }
-        });
-
-        // Se não existe, criar
-        if (!existing) {
-          await prisma.eventAttendance.create({
-            data: {
-              eventId: event.id,
-              userId: student.id,
-              confirmed: false
-            }
-          });
-        }
-      }
-    }
-  }
-
-  // Agora buscar os eventos com a presença do usuário logado
-  const events = await prisma.event.findMany({
-    include: {
-      attendances: {
-        where: {
-          userId: req.user!.id
-        }
-      },
-      _count: {
-        select: { attendances: true }
-      }
-    },
-    orderBy: { date: 'asc' }
-  });
-
-  console.log('Total de eventos encontrados:', events.length);
-
-  // Formatar resposta para incluir status de presença
-  const eventsWithAttendance = events.map(event => ({
-    ...event,
-    myAttendance: event.attendances[0] || null,
-    attendances: undefined // Remover para não expor dados de outros alunos
-  }));
-
-  console.log('Eventos retornados:', eventsWithAttendance.length);
-
-  res.json({ events: eventsWithAttendance });
 }));
 
 // Confirmar presença em evento

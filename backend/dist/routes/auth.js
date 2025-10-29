@@ -22,6 +22,8 @@ const registerSchema = joi_1.default.object({
     name: joi_1.default.string().min(2).required(),
     phone: joi_1.default.string().optional(),
     birthDate: joi_1.default.date().optional(),
+    height: joi_1.default.number().min(100).max(250).optional(),
+    weight: joi_1.default.number().min(30).max(200).optional(),
     role: joi_1.default.string().valid('STUDENT', 'ADMIN').default('STUDENT')
 });
 router.post('/login', (0, errorHandler_1.asyncHandler)(async (req, res) => {
@@ -47,7 +49,7 @@ router.post('/login', (0, errorHandler_1.asyncHandler)(async (req, res) => {
         userId: user.id,
         email: user.email,
         role: user.role
-    }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    }, process.env.JWT_SECRET || 'z4_performance_secret_key_2024', { expiresIn: '7d' });
     const { password: _, ...userWithoutPassword } = user;
     res.json({
         message: 'Login realizado com sucesso',
@@ -60,7 +62,7 @@ router.post('/register', auth_1.authenticateToken, auth_1.requireAdmin, (0, erro
     if (error) {
         throw (0, errorHandler_1.createError)(error.details[0].message, 400);
     }
-    const { email, password, name, phone, birthDate, role } = value;
+    const { email, password, name, phone, birthDate, height, weight, role } = value;
     const existingUser = await prisma.user.findUnique({
         where: { email }
     });
@@ -81,7 +83,9 @@ router.post('/register', auth_1.authenticateToken, auth_1.requireAdmin, (0, erro
     if (role === 'STUDENT' || !role) {
         await prisma.studentProfile.create({
             data: {
-                userId: user.id
+                userId: user.id,
+                height: height || null,
+                weight: weight || null
             }
         });
     }

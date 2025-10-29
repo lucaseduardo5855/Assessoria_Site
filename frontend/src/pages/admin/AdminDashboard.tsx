@@ -270,7 +270,7 @@ const AdminDashboard: React.FC = () => {
     <Box>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
         <Typography variant="h4" component="h1">
-          Dashboard Administrativo
+          Painel Administrativo
         </Typography>
         <Box display="flex" gap={2}>
           <Button

@@ -174,13 +174,17 @@ const EvolutionDashboard: React.FC = () => {
         (evaluation: Evaluation) => evaluation.userId === studentId
       ) || [];
       
-      // Calcular estatísticas
+      // Calcular estatísticas gerais
       const totalWorkouts = studentWorkouts.length;
       const totalDistance = studentWorkouts.reduce((sum: number, workout: any) => sum + (workout.distance || 0), 0);
       const averagePace = studentWorkouts.length > 0 
         ? studentWorkouts.reduce((sum: number, workout: any) => sum + (workout.pace || 0), 0) / studentWorkouts.length 
         : 0;
       const totalCalories = studentWorkouts.reduce((sum: number, workout: any) => sum + (workout.calories || 0), 0);
+      
+      // Calcular estatísticas específicas de musculação
+      const muscleWorkouts = studentWorkouts.filter((workout: any) => workout.modality === 'MUSCLE_TRAINING');
+      const totalSets = muscleWorkouts.reduce((sum: number, workout: any) => sum + (workout.totalSets || 0), 0);
       
       const averageWeight = studentEvaluations.length > 0 
         ? studentEvaluations.reduce((sum: number, evaluation: any) => sum + (evaluation.weight || 0), 0) / studentEvaluations.length 
@@ -193,7 +197,14 @@ const EvolutionDashboard: React.FC = () => {
       const paceData = studentWorkouts.map((workout: any, index: number) => ({
         workout: `Treino ${index + 1}`,
         pace: workout.pace || 0,
-        date: new Date(workout.workoutDate).toLocaleDateString('pt-BR')
+        date: new Date(workout.completedAt || workout.workoutDate).toLocaleDateString('pt-BR')
+      }));
+      
+      // Dados específicos para musculação
+      const muscleData = muscleWorkouts.map((workout: any, index: number) => ({
+        workout: `Treino ${index + 1}`,
+        totalSets: workout.totalSets || 0,
+        date: new Date(workout.completedAt || workout.workoutDate).toLocaleDateString('pt-BR')
       }));
       
       const modalityData = Object.entries(
@@ -219,7 +230,11 @@ const EvolutionDashboard: React.FC = () => {
         paceData,
         modalityData,
         distanceData,
-        evaluations: studentEvaluations
+        evaluations: studentEvaluations,
+        // Estatísticas de musculação
+        muscleWorkouts: muscleWorkouts.length,
+        totalSets,
+        muscleData
       });
       
       console.log('Estatísticas calculadas:', {
@@ -341,6 +356,30 @@ const EvolutionDashboard: React.FC = () => {
             </Grid>
           </Grid>
 
+          {/* Estatísticas de Musculação */}
+          {studentStats.muscleWorkouts > 0 && (
+            <Grid container spacing={3} sx={{ mb: 4 }}>
+              <Grid item xs={12}>
+                <Typography variant="h5" gutterBottom sx={{ mt: 3, mb: 2 }}>
+                  📈 Evolução na Musculação
+                </Typography>
+              </Grid>
+              
+              <Grid item xs={12} sm={6} md={3}>
+                <Card>
+                  <CardContent>
+                    <Typography color="textSecondary" gutterBottom>
+                      Treinos de Musculação
+                    </Typography>
+                    <Typography variant="h4">
+                      {studentStats.muscleWorkouts}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
+          )}
+
           {/* Gráficos */}
           <Grid container spacing={3}>
             {/* Gráfico de Evolução do Pace */}
@@ -409,6 +448,35 @@ const EvolutionDashboard: React.FC = () => {
               </Paper>
             </Grid>
           </Grid>
+
+          {/* Gráficos de Musculação */}
+          {studentStats.muscleWorkouts > 0 && (
+            <Grid container spacing={3} sx={{ mt: 2 }}>
+              <Grid item xs={12}>
+                <Typography variant="h5" gutterBottom sx={{ mt: 3, mb: 2 }}>
+                  🏋️ Gráficos de Evolução - Musculação
+                </Typography>
+              </Grid>
+
+              {/* Gráfico de Barras - Séries por Treino */}
+              <Grid item xs={12}>
+                <Paper sx={{ p: 3 }}>
+                  <Typography variant="h6" gutterBottom>
+                    Séries por Treino de Musculação
+                  </Typography>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={studentStats.muscleData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="workout" />
+                      <YAxis />
+                      <Tooltip formatter={(value: any) => [`${value} séries`, 'Séries']} />
+                      <Bar dataKey="totalSets" fill="#f57c00" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </Paper>
+              </Grid>
+            </Grid>
+          )}
 
           {/* Estatísticas de Avaliação */}
           {studentStats.evaluations.length > 0 && (

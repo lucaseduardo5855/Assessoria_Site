@@ -47,6 +47,9 @@ interface EvolutionData {
   calories: number;
   duration: number;
   modality: string;
+  // Dados específicos para musculação
+  workoutType?: string; // Tipo de treino
+  additionalWorkoutType?: string; // Tipo adicional de treino
 }
 
 const StudentEvolutionDashboard: React.FC = () => {
@@ -61,7 +64,11 @@ const StudentEvolutionDashboard: React.FC = () => {
     totalCalories: 0,
     averagePace: 0,
     thisMonthWorkouts: 0,
-    goalProgress: 0
+    goalProgress: 0,
+    // Estatísticas de musculação
+    muscleWorkouts: 0,
+    muscleWorkoutsThisMonth: 0,
+    muscleWorkoutsThisWeek: 0,
   });
 
   useEffect(() => {
@@ -142,13 +149,36 @@ const StudentEvolutionDashboard: React.FC = () => {
         new Date(workout.completedAt) >= thisMonth
       ).length;
 
+      // Calcular estatísticas de musculação
+      const muscleWorkouts = userWorkouts.filter((workout: any) => 
+        workout.modality === 'MUSCLE_TRAINING'
+      );
+      
+      // Calcular treinos de musculação deste mês
+      const muscleThisMonth = new Date();
+      muscleThisMonth.setDate(1);
+      const muscleWorkoutsThisMonth = muscleWorkouts.filter((workout: any) => 
+        new Date(workout.completedAt) >= muscleThisMonth
+      ).length;
+
+      // Calcular treinos de musculação desta semana
+      const thisWeek = new Date();
+      thisWeek.setDate(thisWeek.getDate() - 7);
+      const muscleWorkoutsThisWeek = muscleWorkouts.filter((workout: any) => 
+        new Date(workout.completedAt) >= thisWeek
+      ).length;
+
       setStats({
         totalWorkouts,
         totalDistance,
         totalCalories,
         averagePace,
         thisMonthWorkouts,
-        goalProgress: Math.min(100, (thisMonthWorkouts / 20) * 100) // Meta de 20 treinos
+        goalProgress: Math.min(100, (thisMonthWorkouts / 20) * 100), // Meta de 20 treinos
+        // Estatísticas de musculação
+        muscleWorkouts: muscleWorkouts.length,
+        muscleWorkoutsThisMonth,
+        muscleWorkoutsThisWeek
       });
 
       // Gerar dados de evolução
@@ -180,7 +210,10 @@ const StudentEvolutionDashboard: React.FC = () => {
           distance: workout.distance || 0,
           calories: workout.calories || 0,
           duration: workout.duration || 0,
-          modality: workout.modality
+          modality: workout.modality,
+          // Dados específicos para musculação
+          workoutType: workout.type || null,
+          additionalWorkoutType: workout.additionalWorkoutType || null
         });
       }
     });
@@ -250,8 +283,12 @@ const StudentEvolutionDashboard: React.FC = () => {
         Minha Evolução
       </Typography>
       
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
         Acompanhe seu progresso e evolução nos treinos
+      </Typography>
+      
+      <Typography variant="h5" gutterBottom sx={{ mt: 3, mb: 2 }}>
+        🏃 Evolução Treino Corrida
       </Typography>
 
       {/* Estatísticas Principais */}
@@ -328,6 +365,75 @@ const StudentEvolutionDashboard: React.FC = () => {
           </Card>
         </Grid>
       </Grid>
+
+      {/* Estatísticas de Musculação */}
+      {stats.muscleWorkouts > 0 && (
+        <Grid container spacing={3} sx={{ mb: 3 }}>
+          <Grid item xs={12}>
+            <Typography variant="h5" gutterBottom sx={{ mt: 3, mb: 2 }}>
+              📈 Evolução na Musculação
+            </Typography>
+          </Grid>
+          
+          <Grid item xs={12} sm={6} md={3}>
+            <Card>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Avatar sx={{ bgcolor: '#d32f2f' }}>
+                    <FitnessCenter />
+                  </Avatar>
+                  <Box>
+                    <Typography variant="h6">{stats.muscleWorkouts}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Total de Treinos
+                    </Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* Card de Treinos Este Mês */}
+          <Grid item xs={12} sm={6} md={3}>
+            <Card>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Avatar sx={{ bgcolor: '#1976d2' }}>
+                    <CalendarToday />
+                  </Avatar>
+                  <Box>
+                    <Typography variant="h6">{stats.muscleWorkoutsThisMonth}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Este Mês
+                    </Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* Card de Treinos Semanais */}
+          <Grid item xs={12} sm={6} md={3}>
+            <Card>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Avatar sx={{ bgcolor: '#ff9800' }}>
+                    <CalendarToday />
+                  </Avatar>
+                  <Box>
+                    <Typography variant="h6">{stats.muscleWorkoutsThisWeek}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Treinos Semanais
+                    </Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+          
+          
+        </Grid>
+      )}
 
       {/* Progresso da Meta Mensal */}
       <Card sx={{ mb: 3 }}>

@@ -31,6 +31,7 @@ import {
   Visibility,
   Edit,
   Delete,
+  CheckCircle,
 } from '@mui/icons-material';
 import { Chip, IconButton } from '@mui/material';
 import { useAuth } from '../../contexts/AuthContext';
@@ -65,10 +66,15 @@ const MyWorkoutsPage: React.FC = () => {
     calories: '',
     pace: '',
     notes: '',
+    // Campos específicos para musculação
+    workoutType: '', // Tipo de treino (peito, costas, pernas, etc.)
+    additionalWorkoutType: '', // Tipo adicional (peito e ombro, costas e bíceps, etc.)
+    customAdditionalWorkoutType: '', // Campo personalizado quando "Outro" é selecionado
   });
 
   useEffect(() => {
     fetchWorkouts();
+    fetchAssignedWorkouts();
   }, []);
 
   const fetchWorkouts = async () => {
@@ -162,6 +168,33 @@ const MyWorkoutsPage: React.FC = () => {
     }
   };
 
+  const fetchAssignedWorkouts = async () => {
+    try {
+      console.log('=== BUSCANDO TREINOS ATRIBUÍDOS ===');
+      
+      const response = await fetch('http://localhost:5000/api/workouts/assigned-workouts', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      console.log('Status da resposta (atribuídos):', response.status);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Treinos atribuídos recebidos:', data);
+      
+      setAssignedWorkouts(data.workouts || []);
+    } catch (error) {
+      console.error('Erro ao buscar treinos atribuídos:', error);
+    }
+  };
+
   const handleRegisterWorkout = async () => {
     try {
       console.log('=== REGISTRANDO TREINO DO ALUNO ===');
@@ -181,6 +214,11 @@ const MyWorkoutsPage: React.FC = () => {
         calories: parseInt(workoutForm.calories) || 0,
         pace: workoutForm.pace || '', // Enviar como string vazia se não preenchido
         notes: workoutForm.notes || '',
+        // Campos específicos para musculação
+        type: workoutForm.workoutType || null,
+        additionalWorkoutType: workoutForm.additionalWorkoutType === 'OUTRO' 
+          ? workoutForm.customAdditionalWorkoutType 
+          : workoutForm.additionalWorkoutType || null,
         completedAt: new Date().toISOString()
       };
       
@@ -214,6 +252,10 @@ const MyWorkoutsPage: React.FC = () => {
         calories: '',
         pace: '',
         notes: '',
+        // Limpar campos de musculação
+        workoutType: '',
+        additionalWorkoutType: '',
+        customAdditionalWorkoutType: '',
       });
       
       setSnackbar({
@@ -250,6 +292,177 @@ const MyWorkoutsPage: React.FC = () => {
       case 'FUNCTIONAL': return 'Funcional';
       case 'TRAIL_RUNNING': return 'Trail Running';
       default: return modality;
+    }
+  };
+
+  // Função para renderizar campos baseados na modalidade
+  const renderWorkoutFields = () => {
+    const isMuscleTraining = workoutForm.modality === 'MUSCLE_TRAINING';
+    
+    if (isMuscleTraining) {
+      return (
+        <>
+          <TextField
+            label="Duração (minutos)"
+            type="number"
+            value={workoutForm.duration}
+            onChange={(e) => setWorkoutForm({ ...workoutForm, duration: e.target.value })}
+            fullWidth
+          />
+          <FormControl fullWidth>
+            <InputLabel>Tipo de Treino</InputLabel>
+            <Select
+              value={workoutForm.workoutType}
+              onChange={(e) => setWorkoutForm({ ...workoutForm, workoutType: e.target.value })}
+              label="Tipo de Treino"
+            >
+              <MenuItem value="PEITO">Peito</MenuItem>
+              <MenuItem value="COSTAS">Costas</MenuItem>
+              <MenuItem value="PERNAS">Pernas</MenuItem>
+              <MenuItem value="OMBROS">Ombros</MenuItem>
+              <MenuItem value="BICEPS">Bíceps</MenuItem>
+              <MenuItem value="TRICEPS">Tríceps</MenuItem>
+              <MenuItem value="ABDOMINAIS">Abdominais</MenuItem>
+              <MenuItem value="CORPO_INTEIRO">Corpo Inteiro</MenuItem>
+              <MenuItem value="FUNCIONAL">Funcional</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl fullWidth>
+            <InputLabel>Tipo de Treino Adicional</InputLabel>
+            <Select
+              value={workoutForm.additionalWorkoutType}
+              onChange={(e) => setWorkoutForm({ ...workoutForm, additionalWorkoutType: e.target.value })}
+              label="Tipo de Treino Adicional"
+            >
+              <MenuItem value="PEITO_OMBRO">Peito e Ombros</MenuItem>
+              <MenuItem value="COSTAS_BICEPS">Costas e Bíceps</MenuItem>
+              <MenuItem value="PERNAS_GLUTEOS">Pernas e Glúteos</MenuItem>
+              <MenuItem value="TRICEPS_OMBRO">Tríceps e Ombros</MenuItem>
+              <MenuItem value="CORPO_INTEIRO">Corpo Inteiro</MenuItem>
+              <MenuItem value="ABDOMINAIS_CORE">Abdominais e Core</MenuItem>
+              <MenuItem value="FUNCIONAL_MUSCULACAO">Funcional + Musculação</MenuItem>
+              <MenuItem value="CARDIO_MUSCULACAO">Cardio + Musculação</MenuItem>
+              <MenuItem value="OUTRO">Outro</MenuItem>
+            </Select>
+          </FormControl>
+          {workoutForm.additionalWorkoutType === 'OUTRO' && (
+            <TextField
+              label="Especifique o tipo de treino"
+              value={workoutForm.customAdditionalWorkoutType}
+              onChange={(e) => setWorkoutForm({ ...workoutForm, customAdditionalWorkoutType: e.target.value })}
+              fullWidth
+              placeholder="Digite o tipo de treino personalizado"
+            />
+          )}
+          <TextField
+            label="Calorias"
+            type="number"
+            value={workoutForm.calories}
+            onChange={(e) => setWorkoutForm({ ...workoutForm, calories: e.target.value })}
+            fullWidth
+          />
+          <TextField
+            label="Observações"
+            multiline
+            rows={3}
+            value={workoutForm.notes}
+            onChange={(e) => setWorkoutForm({ ...workoutForm, notes: e.target.value })}
+            fullWidth
+          />
+        </>
+      );
+    } else {
+      // Campos para corrida/funcional/trail
+      return (
+        <>
+          <TextField
+            label="Duração (minutos)"
+            type="number"
+            value={workoutForm.duration}
+            onChange={(e) => setWorkoutForm({ ...workoutForm, duration: e.target.value })}
+            fullWidth
+          />
+          <TextField
+            label="Distância (km)"
+            type="number"
+            value={workoutForm.distance}
+            onChange={(e) => setWorkoutForm({ ...workoutForm, distance: e.target.value })}
+            fullWidth
+          />
+          <TextField
+            label="Pace (min/km)"
+            type="number"
+            value={workoutForm.pace}
+            onChange={(e) => setWorkoutForm({ ...workoutForm, pace: e.target.value })}
+            fullWidth
+            inputProps={{ step: "0.1" }}
+          />
+          <TextField
+            label="Calorias"
+            type="number"
+            value={workoutForm.calories}
+            onChange={(e) => setWorkoutForm({ ...workoutForm, calories: e.target.value })}
+            fullWidth
+          />
+          <TextField
+            label="Observações"
+            multiline
+            rows={3}
+            value={workoutForm.notes}
+            onChange={(e) => setWorkoutForm({ ...workoutForm, notes: e.target.value })}
+            fullWidth
+          />
+        </>
+      );
+    }
+  };
+
+  const handleMarkAsCompleted = async (workout: any) => {
+    try {
+      console.log('=== MARCANDO TREINO COMO CONCLUÍDO ===');
+      console.log('Treino ID:', workout.id);
+      
+      const response = await fetch(`http://localhost:5000/api/workouts/assigned-workouts/${workout.id}/complete`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.message || `Erro HTTP ${response.status}`;
+        throw new Error(errorMessage);
+      }
+      
+      const result = await response.json();
+      console.log('Treino marcado como concluído:', result);
+      
+      // Mostrar notificação de sucesso
+      setSnackbar({ 
+        open: true, 
+        message: 'Treino marcado como concluído!', 
+        severity: 'success' 
+      });
+      
+      // Aguardar um pouco para garantir que o backend processou
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Recarregar lista de treinos atribuídos
+      await fetchAssignedWorkouts();
+      
+      // Mostrar mensagem de sucesso adicional
+      console.log('✅ Status atualizado para: Concluído');
+    } catch (err: any) {
+      console.error('=== ERRO AO MARCAR TREINO COMO CONCLUÍDO ===');
+      console.error('Erro completo:', err);
+      
+      setSnackbar({ 
+        open: true, 
+        message: 'Erro ao marcar treino como concluído: ' + err.message, 
+        severity: 'error' 
+      });
     }
   };
 
@@ -310,6 +523,10 @@ const MyWorkoutsPage: React.FC = () => {
       calories: workout.calories?.toString() || '',
       pace: workout.pace || '',
       notes: workout.notes || '',
+      // Campos específicos para musculação
+      workoutType: workout.type || '',
+      additionalWorkoutType: workout.additionalWorkoutType || '',
+      customAdditionalWorkoutType: '',
     });
     setEditWorkoutOpen(true);
   };
@@ -367,6 +584,10 @@ const MyWorkoutsPage: React.FC = () => {
         calories: '',
         pace: '',
         notes: '',
+        // Limpar campos de musculação
+        workoutType: '',
+        additionalWorkoutType: '',
+        customAdditionalWorkoutType: '',
       });
       
       // Mostrar notificação de sucesso
@@ -558,27 +779,26 @@ const MyWorkoutsPage: React.FC = () => {
       {renderWorkoutsTable()}
 
       {/* Seção de Treinos Atribuídos pelo Admin */}
-      {assignedWorkouts && assignedWorkouts.length > 0 && (
-        <Box mt={4}>
-          <Typography variant="h5" gutterBottom>
-            Treinos Atribuídos pelo Administrador
-          </Typography>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Treino</TableCell>
-                  <TableCell>Modalidade</TableCell>
-                  <TableCell>Tipo</TableCell>
-                  <TableCell>Percurso</TableCell>
-                  <TableCell>Atribuído por</TableCell>
-                  <TableCell>Data de Atribuição</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Ações</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {assignedWorkouts.map((workout, index) => (
+      <Box mt={4}>
+        <Typography variant="h5" gutterBottom>
+          Treinos Atribuídos pelo Administrador
+        </Typography>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Treino</TableCell>
+                <TableCell>Modalidade</TableCell>
+                <TableCell>Tipo</TableCell>
+                <TableCell>Percurso</TableCell>
+                <TableCell>Data de Atribuição</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Ações</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {assignedWorkouts && assignedWorkouts.length > 0 ? (
+                assignedWorkouts.map((workout, index) => (
                   <TableRow key={index}>
                     <TableCell>
                       <Typography variant="body2" fontWeight="medium">
@@ -593,34 +813,56 @@ const MyWorkoutsPage: React.FC = () => {
                     <TableCell>{getModalityLabel(workout.modality)}</TableCell>
                     <TableCell>{workout.type || '-'}</TableCell>
                     <TableCell>{workout.courseType || '-'}</TableCell>
-                    <TableCell>Administrador</TableCell>
                     <TableCell>
                       {new Date(workout.createdAt).toLocaleDateString('pt-BR')}
                     </TableCell>
                     <TableCell>
                       <Chip 
-                        label="Pendente" 
-                        color="warning" 
+                        label={workout.completedAt ? "Concluído" : "Pendente"} 
+                        color={workout.completedAt ? "success" : "warning"} 
                         size="small"
                       />
                     </TableCell>
                     <TableCell>
-                      <IconButton
-                        onClick={() => handleViewWorkoutDetails(workout)}
-                        color="primary"
-                        size="small"
-                        title="Ver detalhes do treino"
-                      >
-                        <Visibility />
-                      </IconButton>
+                      <Box display="flex" gap={1}>
+                        <IconButton
+                          onClick={() => handleViewWorkoutDetails(workout)}
+                          color="primary"
+                          size="small"
+                          title="Ver detalhes do treino"
+                        >
+                          <Visibility />
+                        </IconButton>
+                        {!workout.completedAt && (
+                          <IconButton
+                            onClick={() => handleMarkAsCompleted(workout)}
+                            color="success"
+                            size="small"
+                            title="Marcar como concluído"
+                          >
+                            <CheckCircle />
+                          </IconButton>
+                        )}
+                      </Box>
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Box>
-      )}
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
+                    <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
+                      <FitnessCenter sx={{ fontSize: 48, color: 'text.secondary' }} />
+                      <Typography variant="body1" color="text.secondary">
+                        Nenhum treino atribuído pelo administrador ainda.
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
 
       {/* Modal para registrar treino */}
       <Dialog open={registerWorkoutOpen} onClose={() => setRegisterWorkoutOpen(false)} maxWidth="sm" fullWidth>
@@ -640,42 +882,7 @@ const MyWorkoutsPage: React.FC = () => {
                 <MenuItem value="TRAIL_RUNNING">Trail Running</MenuItem>
               </Select>
             </FormControl>
-            <TextField
-              label="Duração (minutos)"
-              type="number"
-              value={workoutForm.duration}
-              onChange={(e) => setWorkoutForm({ ...workoutForm, duration: e.target.value })}
-              fullWidth
-            />
-            <TextField
-              label="Distância (km)"
-              type="number"
-              value={workoutForm.distance}
-              onChange={(e) => setWorkoutForm({ ...workoutForm, distance: e.target.value })}
-              fullWidth
-            />
-            <TextField
-              label="Pace (min/km)"
-              type="number"
-              value={workoutForm.pace}
-              onChange={(e) => setWorkoutForm({ ...workoutForm, pace: e.target.value })}
-              fullWidth
-            />
-            <TextField
-              label="Calorias"
-              type="number"
-              value={workoutForm.calories}
-              onChange={(e) => setWorkoutForm({ ...workoutForm, calories: e.target.value })}
-              fullWidth
-            />
-            <TextField
-              label="Observações"
-              multiline
-              rows={3}
-              value={workoutForm.notes}
-              onChange={(e) => setWorkoutForm({ ...workoutForm, notes: e.target.value })}
-              fullWidth
-            />
+            {renderWorkoutFields()}
           </Box>
         </DialogContent>
         <DialogActions>
@@ -704,46 +911,7 @@ const MyWorkoutsPage: React.FC = () => {
                 <MenuItem value="TRAIL_RUNNING">Trail Running</MenuItem>
               </Select>
             </FormControl>
-
-            <TextField
-              label="Duração (minutos)"
-              type="number"
-              value={workoutForm.duration}
-              onChange={(e) => setWorkoutForm({ ...workoutForm, duration: e.target.value })}
-              fullWidth
-            />
-
-            <TextField
-              label="Distância (km)"
-              type="number"
-              value={workoutForm.distance}
-              onChange={(e) => setWorkoutForm({ ...workoutForm, distance: e.target.value })}
-              fullWidth
-            />
-
-            <TextField
-              label="Pace (min/km)"
-              value={workoutForm.pace}
-              onChange={(e) => setWorkoutForm({ ...workoutForm, pace: e.target.value })}
-              fullWidth
-            />
-
-            <TextField
-              label="Calorias"
-              type="number"
-              value={workoutForm.calories}
-              onChange={(e) => setWorkoutForm({ ...workoutForm, calories: e.target.value })}
-              fullWidth
-            />
-
-            <TextField
-              label="Observações"
-              multiline
-              rows={3}
-              value={workoutForm.notes}
-              onChange={(e) => setWorkoutForm({ ...workoutForm, notes: e.target.value })}
-              fullWidth
-            />
+            {renderWorkoutFields()}
           </Box>
         </DialogContent>
         <DialogActions>

@@ -514,13 +514,13 @@ section.sobre {
 .btn-sobre {
     /* Cores e Texto */
     /* Degradê do seu Azul (var(--fundo-z4)) para um Amarelo/Ciano */
-    background: linear-gradient(90deg, #003366, #006dd4) !important;
+    background: linear-gradient(90deg, #003366, #006dd4) ;
     color: white;
     font-size: 14px;
     font-weight: bold;
     /* Layout */
     padding: 12px 25px;
-    border: 0px solid transparent !important;
+    border: 0px solid transparent;
     cursor: pointer;
     align-items: center;
     justify-content: center;
@@ -1237,9 +1237,9 @@ section.treinadora-bio {
 /* Esconder botão de fechar no desktop */
 @media (min-width: 993px) {
     .close-menu-item {
-        display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
+        display: none ;
+        visibility: hidden ;
+        opacity: 0 ;
     }
 }
 
@@ -1574,7 +1574,7 @@ content: "";
     cursor: pointer;
     transition: background 0.3s;
     background-color: white;
-    text-decoration: none !important;
+    text-decoration: none ;
 }
 
 .btn-choose:hover {
@@ -1582,7 +1582,7 @@ content: "";
     transition: 0.3s ease;
     border: none;
     outline: none;
-    text-decoration: none !important;
+    text-decoration: none!;
 }
 
 .card-pro .btn-choose {

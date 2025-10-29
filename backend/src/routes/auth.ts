@@ -21,6 +21,8 @@ const registerSchema = Joi.object({
     name: Joi.string().min(2).required(),
     phone: Joi.string().optional(),
     birthDate: Joi.date().optional(),
+    height: Joi.number().min(100).max(250).optional(),
+    weight: Joi.number().min(30).max(200).optional(),
     role: Joi.string().valid('STUDENT', 'ADMIN').default('STUDENT')
 });
 
@@ -59,7 +61,7 @@ router.post('/login', asyncHandler(async (req: Request, res: Response) => {
             email: user.email,
             role: user.role
         },
-        process.env.JWT_SECRET!,
+        process.env.JWT_SECRET || 'z4_performance_secret_key_2024',
         { expiresIn: '7d' }
     );
 
@@ -80,7 +82,7 @@ router.post('/register', authenticateToken, requireAdmin, asyncHandler(async (re
         throw createError(error.details[0].message, 400);
     }
 
-    const { email, password, name, phone, birthDate, role } = value;
+    const { email, password, name, phone, birthDate, height, weight, role } = value;
 
     // Verificar se email já existe
     const existingUser = await prisma.user.findUnique({
@@ -106,11 +108,13 @@ router.post('/register', authenticateToken, requireAdmin, asyncHandler(async (re
         }
     });
 
-    // Se for aluno, criar perfil
+    // Se for aluno, criar perfil com altura e peso
     if (role === 'STUDENT' || !role) {
         await prisma.studentProfile.create({
             data: {
-                userId: user.id
+                userId: user.id,
+                height: height || null,
+                weight: weight || null
             }
         });
     }

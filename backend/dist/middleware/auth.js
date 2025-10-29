@@ -16,7 +16,7 @@ const authenticateToken = async (req, res, next) => {
                 error: 'Token de acesso necessário'
             });
         }
-        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
+        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET || 'z4_performance_secret_key_2024');
         const user = await prisma.user.findUnique({
             where: { id: decoded.userId },
             select: { id: true, email: true, role: true }

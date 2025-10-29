@@ -27,7 +27,7 @@ export const authenticateToken = async (
             });
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'z4_performance_secret_key_2024') as any;
 
         // Verificar se o usuário ainda existe no banco
         const user = await prisma.user.findUnique({

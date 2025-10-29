@@ -113,6 +113,8 @@ model Workout {
   pace        String? // pace realizado
   calories    Int?
   notes       String?
+  // Campos específicos para musculação
+  additionalWorkoutType String? // tipo adicional de treino (peito e ombro, etc.)
   status      String @default("COMPLETED") // ASSIGNED, COMPLETED, CANCELLED
   completedAt DateTime?
   

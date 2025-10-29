@@ -55,7 +55,7 @@ app.use(errorHandler);
 const startServer = async () => {
   try {
     await prisma.$connect();
-    console.log('✅ Conectado ao banco de dados PostgreSQL');
+    console.log('✅ Conectado ao banco de dados SQLite');
     
     app.listen(PORT, () => {
       console.log(`🚀 Servidor rodando na porta ${PORT}`);

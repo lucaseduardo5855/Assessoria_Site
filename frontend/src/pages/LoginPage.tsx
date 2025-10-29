@@ -54,6 +54,7 @@ const LoginPage: React.FC = () => {
     <Box
       sx={{
         minHeight: '100vh',
+        width: '100%',
         background: 'linear-gradient(135deg, #081F3E 0%, #0A2548 100%)',
         display: 'flex',
         alignItems: 'center',
@@ -67,8 +68,9 @@ const LoginPage: React.FC = () => {
           sx={{
             p: 4,
             borderRadius: 3,
-            background: 'rgba(255, 255, 255, 0.95)',
+            background: 'rgba(8, 31, 62, 0.95)',
             backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
           }}
         >
           {/* Logo e título */}
@@ -84,7 +86,7 @@ const LoginPage: React.FC = () => {
               <FitnessCenter
                 sx={{
                   fontSize: 48,
-                  color: 'primary.main',
+                  color: '#FFEA00',
                   mr: 1,
                 }}
               />
@@ -93,7 +95,7 @@ const LoginPage: React.FC = () => {
                 component="h1"
                 sx={{
                   fontWeight: 'bold',
-                  color: 'primary.main',
+                  color: '#FFEA00',
                   fontFamily: 'Poppins, sans-serif',
                 }}
               >
@@ -102,8 +104,10 @@ const LoginPage: React.FC = () => {
             </Box>
             <Typography
               variant="h6"
-              color="text.secondary"
-              sx={{ fontWeight: 400 }}
+              sx={{ 
+                fontWeight: 400,
+                color: 'rgba(255, 255, 255, 0.8)',
+              }}
             >
               Sistema de Assessoria Esportiva
             </Typography>
@@ -116,7 +120,8 @@ const LoginPage: React.FC = () => {
                 <Box sx={{ mb: 3 }}>
                   <TextField
                     fullWidth
-                    label="Email"
+                    label=""
+                    placeholder="Seu email de acesso"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -125,13 +130,52 @@ const LoginPage: React.FC = () => {
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
-                          <Email color="primary" />
+                          <Email sx={{ color: '#FFEA00' }} />
                         </InputAdornment>
                       ),
+                    }}
+                    InputLabelProps={{
+                      sx: {
+                        color: '#FFEA00 !important',
+                        fontWeight: 600,
+                        fontSize: '1.1rem',
+                      }
                     }}
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderRadius: 2,
+                        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                        color: 'white',
+                        '&:hover': {
+                          backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                        },
+                        '&.Mui-focused': {
+                          backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                        },
+                        '& fieldset': {
+                          borderColor: 'rgba(255, 255, 255, 0.3)',
+                        },
+                        '&:hover fieldset': {
+                          borderColor: 'rgba(255, 255, 255, 0.5)',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: '#FFEA00',
+                        },
+                        '& input': {
+                          color: 'white',
+                        },
+                      },
+                      '& label': {
+                        color: '#FFEA00 !important',
+                        fontWeight: 600,
+                        fontSize: '1.1rem',
+                      },
+                      '& label.Mui-focused': {
+                        color: '#FFEA00 !important',
+                        fontSize: '1.1rem',
+                      },
+                      '& label.MuiInputLabel-shrink': {
+                        fontSize: '1.1rem',
                       },
                     }}
                   />
@@ -140,7 +184,8 @@ const LoginPage: React.FC = () => {
                 <Box sx={{ mb: 3 }}>
                   <TextField
                     fullWidth
-                    label="Senha"
+                    label=""
+                    placeholder="Sua senha de acesso"
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -149,7 +194,7 @@ const LoginPage: React.FC = () => {
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
-                          <Lock color="primary" />
+                          <Lock sx={{ color: '#FFEA00' }} />
                         </InputAdornment>
                       ),
                       endAdornment: (
@@ -159,15 +204,55 @@ const LoginPage: React.FC = () => {
                             onClick={handleShowPassword}
                             edge="end"
                             disabled={loading}
+                            sx={{ color: '#FFEA00' }}
                           >
                             {showPassword ? <VisibilityOff /> : <Visibility />}
                           </IconButton>
                         </InputAdornment>
                       ),
                     }}
+                    InputLabelProps={{
+                      sx: {
+                        color: '#FFEA00 !important',
+                        fontWeight: 600,
+                        fontSize: '1.1rem',
+                      }
+                    }}
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderRadius: 2,
+                        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                        color: 'white',
+                        '&:hover': {
+                          backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                        },
+                        '&.Mui-focused': {
+                          backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                        },
+                        '& fieldset': {
+                          borderColor: 'rgba(255, 255, 255, 0.3)',
+                        },
+                        '&:hover fieldset': {
+                          borderColor: 'rgba(255, 255, 255, 0.5)',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: '#FFEA00',
+                        },
+                        '& input': {
+                          color: 'white',
+                        },
+                      },
+                      '& label': {
+                        color: '#FFEA00 !important',
+                        fontWeight: 600,
+                        fontSize: '1.1rem',
+                      },
+                      '& label.Mui-focused': {
+                        color: '#FFEA00 !important',
+                        fontSize: '1.1rem',
+                      },
+                      '& label.MuiInputLabel-shrink': {
+                        fontSize: '1.1rem',
                       },
                     }}
                   />
@@ -190,9 +275,14 @@ const LoginPage: React.FC = () => {
                     borderRadius: 2,
                     fontSize: '1.1rem',
                     fontWeight: 600,
-                    background: 'linear-gradient(45deg, #081F3E 30%, #0A2548 90%)',
+                    background: '#FFEA00',
+                    color: '#081F3E',
                     '&:hover': {
-                      background: 'linear-gradient(45deg, #0A2548 30%, #081F3E 90%)',
+                      background: '#E6D300',
+                    },
+                    '&:disabled': {
+                      background: 'rgba(255, 234, 0, 0.3)',
+                      color: 'rgba(255, 255, 255, 0.5)',
                     },
                   }}
                 >
@@ -204,10 +294,10 @@ const LoginPage: React.FC = () => {
 
           {/* Informações adicionais */}
           <Box sx={{ mt: 4, textAlign: 'center' }}>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
               Acesso restrito a alunos e administradores cadastrados
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            <Typography variant="body2" sx={{ mt: 1, color: 'rgba(255, 255, 255, 0.7)' }}>
               Entre em contato com a assessoria para obter suas credenciais
             </Typography>
           </Box>

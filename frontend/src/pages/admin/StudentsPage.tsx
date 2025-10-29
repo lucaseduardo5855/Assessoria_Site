@@ -33,6 +33,7 @@ import {
   Edit,
   Delete,
   Person,
+  FitnessCenter,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { authService, userService } from '../../services/api';
@@ -48,6 +49,9 @@ const StudentsPage: React.FC = () => {
   const [selectedStudent, setSelectedStudent] = useState<User | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [studentToDelete, setStudentToDelete] = useState<User | null>(null);
+  const [assignWorkoutOpen, setAssignWorkoutOpen] = useState(false);
+  const [selectedStudentForWorkout, setSelectedStudentForWorkout] = useState<User | null>(null);
+  const [workoutPlans, setWorkoutPlans] = useState<any[]>([]);
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
@@ -64,10 +68,18 @@ const StudentsPage: React.FC = () => {
     password: '',
     phone: '',
     birthDate: '',
+    height: '', // Altura em cm
+    weight: '', // Peso em kg
+  });
+
+  const [workoutAssignmentForm, setWorkoutAssignmentForm] = useState({
+    workoutPlanId: '',
+    notes: '',
   });
 
     useEffect(() => {
             fetchStudents();
+            fetchWorkoutPlans();
   }, []);
 
     const fetchStudents = async () => {
@@ -118,6 +130,79 @@ const StudentsPage: React.FC = () => {
         setLoading(false);
     }
 };
+
+  const fetchWorkoutPlans = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/workouts/workout-plans', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      setWorkoutPlans(data.workoutPlans || []);
+    } catch (error) {
+      console.error('Erro ao buscar planos de treino:', error);
+    }
+  };
+
+  const handleAssignWorkout = async () => {
+    if (!selectedStudentForWorkout || !workoutAssignmentForm.workoutPlanId) {
+      setSnackbar({
+        open: true,
+        message: 'Selecione um aluno e um plano de treino',
+        severity: 'error'
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/workouts/assign', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          userId: selectedStudentForWorkout.id,
+          workoutPlanId: workoutAssignmentForm.workoutPlanId,
+          notes: workoutAssignmentForm.notes
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      setSnackbar({
+        open: true,
+        message: 'Treino atribuído com sucesso!',
+        severity: 'success'
+      });
+
+      setAssignWorkoutOpen(false);
+      setWorkoutAssignmentForm({ workoutPlanId: '', notes: '' });
+      setSelectedStudentForWorkout(null);
+    } catch (error) {
+      console.error('Erro ao atribuir treino:', error);
+      setSnackbar({
+        open: true,
+        message: 'Erro ao atribuir treino',
+        severity: 'error'
+      });
+    }
+  };
+
+  const openAssignWorkoutModal = (student: User) => {
+    setSelectedStudentForWorkout(student);
+    setAssignWorkoutOpen(true);
+  };
     
   const handleCreateStudent = async () => {
     if (!validateForm()) return;
@@ -211,7 +296,9 @@ const StudentsPage: React.FC = () => {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
-        birthDate: formData.birthDate
+        birthDate: formData.birthDate,
+        height: formData.height ? parseFloat(formData.height) : null,
+        weight: formData.weight ? parseFloat(formData.weight) : null
       };
       
       // Como não há endpoint específico para admin editar outros usuários,
@@ -220,7 +307,9 @@ const StudentsPage: React.FC = () => {
       const validUpdateData = {
         name: updateData.name,
         phone: updateData.phone,
-        birthDate: updateData.birthDate
+        birthDate: updateData.birthDate,
+        height: updateData.height,
+        weight: updateData.weight
         // Removendo email pois pode causar conflitos
       };
       
@@ -330,6 +419,8 @@ const StudentsPage: React.FC = () => {
       password: '',
       phone: '',
       birthDate: '',
+      height: '',
+      weight: '',
     });
   };
 
@@ -341,6 +432,8 @@ const StudentsPage: React.FC = () => {
       password: '',
       phone: student.phone || '',
       birthDate: student.birthDate ? new Date(student.birthDate).toISOString().split('T')[0] : '',
+      height: student.studentProfile?.height?.toString() || '',
+      weight: student.studentProfile?.weight?.toString() || '',
     });
     setIsEditModalOpen(true);
   };
@@ -390,6 +483,15 @@ const StudentsPage: React.FC = () => {
                     {student.birthDate ? new Date(student.birthDate).toLocaleDateString('pt-BR') : 'Não informado'}
                   </TableCell>
                   <TableCell align="center">
+                    <Tooltip title="Atribuir Treino">
+                      <IconButton
+                        color="success"
+                        onClick={() => openAssignWorkoutModal(student)}
+                        size="small"
+                      >
+                        <FitnessCenter />
+                      </IconButton>
+                    </Tooltip>
                     <Tooltip title="Editar">
                       <IconButton
                         color="primary"
@@ -483,7 +585,25 @@ const StudentsPage: React.FC = () => {
               value={formData.birthDate}
               onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
               InputLabelProps={{ shrink: true }}
-                            fullWidth 
+              fullWidth 
+            />
+            <TextField
+              label="Altura (cm)"
+              type="number"
+              value={formData.height}
+              onChange={(e) => setFormData({ ...formData, height: e.target.value })}
+              fullWidth
+              inputProps={{ min: 100, max: 250, step: 0.1 }}
+              helperText="Exemplo: 175.5"
+            />
+            <TextField
+              label="Peso (kg)"
+              type="number"
+              value={formData.weight}
+              onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
+              fullWidth
+              inputProps={{ min: 30, max: 200, step: 0.1 }}
+              helperText="Exemplo: 70.5"
             />
           </Box>
         </DialogContent>
@@ -534,12 +654,71 @@ const StudentsPage: React.FC = () => {
               InputLabelProps={{ shrink: true }}
               fullWidth
             />
+            <TextField
+              label="Altura (cm)"
+              type="number"
+              value={formData.height}
+              onChange={(e) => setFormData({ ...formData, height: e.target.value })}
+              fullWidth
+              inputProps={{ min: 100, max: 250, step: 0.1 }}
+              helperText="Exemplo: 175.5"
+            />
+            <TextField
+              label="Peso (kg)"
+              type="number"
+              value={formData.weight}
+              onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
+              fullWidth
+              inputProps={{ min: 30, max: 200, step: 0.1 }}
+              helperText="Exemplo: 70.5"
+            />
                     </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setIsEditModalOpen(false)}>Cancelar</Button>
           <Button onClick={handleEditStudent} variant="contained">
             Salvar Alterações
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Modal de Atribuição de Treino */}
+      <Dialog open={assignWorkoutOpen} onClose={() => setAssignWorkoutOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Atribuir Treino</DialogTitle>
+        <DialogContent>
+          <Box display="flex" flexDirection="column" gap={2} pt={1}>
+            <Typography variant="subtitle1">
+              Aluno: {selectedStudentForWorkout?.name}
+            </Typography>
+            <FormControl fullWidth>
+              <InputLabel>Plano de Treino *</InputLabel>
+              <Select
+                value={workoutAssignmentForm.workoutPlanId}
+                onChange={(e) => setWorkoutAssignmentForm({ ...workoutAssignmentForm, workoutPlanId: e.target.value })}
+                label="Plano de Treino *"
+              >
+                {workoutPlans.map((plan) => (
+                  <MenuItem key={plan.id} value={plan.id}>
+                    {plan.title} - {plan.modality}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <TextField
+              label="Observações"
+              multiline
+              rows={3}
+              value={workoutAssignmentForm.notes}
+              onChange={(e) => setWorkoutAssignmentForm({ ...workoutAssignmentForm, notes: e.target.value })}
+              fullWidth
+              placeholder="Adicione observações sobre o treino..."
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setAssignWorkoutOpen(false)}>Cancelar</Button>
+          <Button onClick={handleAssignWorkout} variant="contained" color="success">
+            Atribuir Treino
           </Button>
         </DialogActions>
       </Dialog>

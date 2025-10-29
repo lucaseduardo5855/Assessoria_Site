@@ -21,12 +21,12 @@ const workoutPlanSchema = Joi.object({
     workoutDate: Joi.date().required(),
     userId: Joi.string().optional(), // Campo para associar planilha a um usuário específico
     exercises: Joi.array().items(Joi.object({
-        sequence: Joi.number().optional(),
+        sequence: Joi.alternatives().try(Joi.number(), Joi.string().allow('').optional()).optional(),
         name: Joi.string().allow('').optional(),
         description: Joi.string().allow('').optional(),
-        sets: Joi.number().optional(),
-        reps: Joi.number().optional(),
-        load: Joi.number().optional(),
+        sets: Joi.alternatives().try(Joi.number(), Joi.string().allow('').optional()).optional(),
+        reps: Joi.alternatives().try(Joi.number(), Joi.string().allow('').optional()).optional(),
+        load: Joi.alternatives().try(Joi.number(), Joi.string().allow('').optional()).optional(),
         interval: Joi.string().allow('').optional(),
         instruction: Joi.string().allow('').optional(),
         observation: Joi.string().allow('').optional()
@@ -35,22 +35,36 @@ const workoutPlanSchema = Joi.object({
 
 const workoutRecordSchema = Joi.object({
     modality: Joi.string().valid('RUNNING', 'MUSCLE_TRAINING', 'FUNCTIONAL', 'TRAIL_RUNNING').required(),
-    type: Joi.string().optional(),
-    courseType: Joi.string().optional(),
+    type: Joi.string().allow('').optional(),
+    courseType: Joi.string().allow('').optional(),
     duration: Joi.number().optional(),
     distance: Joi.number().optional(),
     pace: Joi.string().allow('').optional(),
     calories: Joi.number().optional(),
     notes: Joi.string().allow('').optional(),
+    // Campos específicos para musculação
+    additionalWorkoutType: Joi.string().allow('').optional(), // Aceita qualquer string
     completedAt: Joi.date().optional()
+});
+
+const assignWorkoutSchema = Joi.object({
+    userId: Joi.string().required(),
+    workoutPlanId: Joi.string().required(),
+    notes: Joi.string().allow('').optional()
 });
 
 // Criar planilha de treino (apenas admin)
 router.post('/plans', authenticateToken, requireAdmin, asyncHandler(async (req: AuthRequest, res: Response) => {
+    console.log('=== CRIANDO PLANILHA ===');
+    console.log('Dados recebidos:', JSON.stringify(req.body, null, 2));
+    
     const { error, value } = workoutPlanSchema.validate(req.body);
     if (error) {
+        console.log('Erro de validação:', error.details);
         throw createError(error.details[0].message, 400);
     }
+    
+    console.log('Dados validados:', JSON.stringify(value, null, 2));
 
     const { exercises, userId, ...planData } = value;
 
@@ -67,6 +81,11 @@ router.post('/plans', authenticateToken, requireAdmin, asyncHandler(async (req: 
         await prisma.exercise.createMany({
             data: exercises.map((exercise: any) => ({
                 ...exercise,
+                // Converter strings para números de forma segura
+                sequence: exercise.sequence && !isNaN(Number(exercise.sequence)) ? Number(exercise.sequence) : null,
+                sets: exercise.sets && !isNaN(Number(exercise.sets)) ? Number(exercise.sets) : null,
+                reps: exercise.reps && !isNaN(Number(exercise.reps)) ? Number(exercise.reps) : null,
+                load: exercise.load && !isNaN(Number(exercise.load)) ? Number(exercise.load) : null,
                 workoutPlanId: workoutPlan.id
             }))
         });
@@ -101,6 +120,73 @@ router.post('/plans', authenticateToken, requireAdmin, asyncHandler(async (req: 
     return res.status(201).json({
         message: 'Planilha criada com sucesso',
         workoutPlan: planWithExercises
+    });
+}));
+
+// Atribuir treino a um aluno (apenas admin)
+router.post('/assign', authenticateToken, requireAdmin, asyncHandler(async (req: AuthRequest, res: Response) => {
+    console.log('=== ATRIBUINDO TREINO ===');
+    console.log('Dados recebidos:', JSON.stringify(req.body, null, 2));
+    
+    const { error, value } = assignWorkoutSchema.validate(req.body);
+    if (error) {
+        console.log('Erro de validação:', error.details);
+        throw createError(error.details[0].message, 400);
+    }
+    
+    const { userId, workoutPlanId, notes } = value;
+
+    // Verificar se o usuário existe e é um aluno
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+        include: { studentProfile: true }
+    });
+
+    if (!user) {
+        throw createError('Usuário não encontrado', 404);
+    }
+
+    if (user.role !== 'STUDENT') {
+        throw createError('Apenas alunos podem receber treinos atribuídos', 400);
+    }
+
+    // Verificar se o plano de treino existe
+    const workoutPlan = await prisma.workoutPlan.findUnique({
+        where: { id: workoutPlanId },
+        include: { exercises: true }
+    });
+
+    if (!workoutPlan) {
+        throw createError('Plano de treino não encontrado', 404);
+    }
+
+    // Criar o treino atribuído
+    const assignedWorkout = await prisma.workout.create({
+        data: {
+            userId: userId,
+            workoutPlanId: workoutPlanId,
+            assignedBy: req.user!.id,
+            modality: workoutPlan.modality,
+            type: workoutPlan.type,
+            courseType: workoutPlan.courseType,
+            notes: notes,
+            status: 'ASSIGNED'
+        },
+        include: {
+            workoutPlan: {
+                include: { exercises: true }
+            },
+            user: {
+                select: { name: true, email: true }
+            }
+        }
+    });
+
+    console.log('Treino atribuído com sucesso:', assignedWorkout.id);
+
+    return res.status(201).json({
+        message: 'Treino atribuído com sucesso',
+        workout: assignedWorkout
     });
 }));
 
@@ -145,41 +231,57 @@ router.get('/user/:userId', authenticateToken, requireAdmin, asyncHandler(async 
 
 // Listar planilhas
 router.get('/plans', authenticateToken, asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { page = 1, limit = 10, modality, status } = req.query;
-    const skip = (Number(page) - 1) * Number(limit);
+    try {
+        console.log('=== LISTANDO PLANILHAS ===');
+        console.log('User ID:', req.user?.id);
+        console.log('User Role:', req.user?.role);
+        
+        const { page = 1, limit = 10, modality, status } = req.query;
+        const skip = (Number(page) - 1) * Number(limit);
 
-    const where: any = {};
-    if (modality) where.modality = modality;
-    if (status) where.status = status;
+        const where: any = {};
+        if (modality) where.modality = modality;
+        if (status) where.status = status;
 
-    const [plans, total] = await Promise.all([
-        prisma.workoutPlan.findMany({
-            where,
-            include: {
-                exercises: {
-                    orderBy: { sequence: 'asc' }
+        console.log('Where clause:', where);
+        console.log('Skip:', skip, 'Limit:', limit);
+
+        const [plans, total] = await Promise.all([
+            prisma.workoutPlan.findMany({
+                where,
+                include: {
+                    exercises: {
+                        orderBy: { sequence: 'asc' }
+                    },
+                    workouts: {
+                        take: 5,
+                        orderBy: { completedAt: 'desc' }
+                    }
                 },
-                workouts: {
-                    take: 5,
-                    orderBy: { completedAt: 'desc' }
-                }
-            },
-            skip,
-            take: Number(limit),
-            orderBy: { workoutDate: 'desc' }
-        }),
-        prisma.workoutPlan.count({ where })
-    ]);
+                skip,
+                take: Number(limit),
+                orderBy: { workoutDate: 'desc' }
+            }),
+            prisma.workoutPlan.count({ where })
+        ]);
 
-    res.json({
-        plans,
-        pagination: {
-            page: Number(page),
-            limit: Number(limit),
-            total,
-            pages: Math.ceil(total / Number(limit))
-        }
-    });
+        console.log('Plans found:', plans.length);
+        console.log('Total:', total);
+
+        res.json({
+            plans,
+            pagination: {
+                page: Number(page),
+                limit: Number(limit),
+                total,
+                pages: Math.ceil(total / Number(limit))
+            }
+        });
+    } catch (error) {
+        console.error('=== ERRO AO LISTAR PLANILHAS ===');
+        console.error('Erro completo:', error);
+        throw error;
+    }
 }));
 
 // Obter planilha específica
@@ -281,40 +383,130 @@ router.delete('/plans/:id', authenticateToken, requireAdmin, asyncHandler(async 
     res.json({ message: 'Planilha deletada com sucesso' });
 }));
 
-// Registrar treino realizado
-router.post('/record', authenticateToken, asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { error, value } = workoutRecordSchema.validate(req.body);
-    if (error) {
-        throw createError(error.details[0].message, 400);
+// Buscar treinos atribuídos ao usuário logado
+router.get('/assigned-workouts', authenticateToken, asyncHandler(async (req: AuthRequest, res: Response) => {
+    console.log('=== BUSCANDO TREINOS ATRIBUÍDOS ===');
+    console.log('User ID:', req.user?.id);
+    
+    const workouts = await prisma.workout.findMany({
+        where: {
+            userId: req.user!.id,
+            status: 'ASSIGNED'
+        },
+        include: {
+            workoutPlan: {
+                include: {
+                    exercises: {
+                        orderBy: { sequence: 'asc' }
+                    }
+                }
+            },
+            assignedByUser: {
+                select: { name: true }
+            }
+        },
+        orderBy: { createdAt: 'desc' }
+    });
+
+    console.log('Treinos atribuídos encontrados:', workouts.length);
+
+    res.json({ workouts });
+}));
+
+// Marcar treino atribuído como concluído
+router.put('/assigned-workouts/:workoutId/complete', authenticateToken, asyncHandler(async (req: AuthRequest, res: Response) => {
+    console.log('=== MARCANDO TREINO COMO CONCLUÍDO ===');
+    const { workoutId } = req.params;
+    
+    // Verificar se o treino existe e pertence ao usuário
+    const workout = await prisma.workout.findFirst({
+        where: {
+            id: workoutId,
+            userId: req.user!.id,
+            status: 'ASSIGNED'
+        }
+    });
+
+    if (!workout) {
+        throw createError('Treino não encontrado ou já concluído', 404);
     }
 
-    const workout = await prisma.workout.create({
+    // Marcar como concluído
+    const updatedWorkout = await prisma.workout.update({
+        where: { id: workoutId },
         data: {
-            ...value,
-            userId: req.user!.id
-        }
-    });
-
-    // Atualizar estatísticas do perfil do aluno
-    await prisma.studentProfile.upsert({
-        where: { userId: req.user!.id },
-        update: {
-            totalWorkouts: { increment: 1 },
-            totalCalories: { increment: value.calories || 0 },
-            totalDistance: { increment: value.distance || 0 }
+            status: 'COMPLETED',
+            completedAt: new Date()
         },
-        create: {
-            userId: req.user!.id,
-            totalWorkouts: 1,
-            totalCalories: value.calories || 0,
-            totalDistance: value.distance || 0
+        include: {
+            workoutPlan: {
+                include: { exercises: true }
+            }
         }
     });
 
-    res.status(201).json({
-        message: 'Treino registrado com sucesso',
-        workout
+    console.log('Treino marcado como concluído:', workoutId);
+
+    res.json({
+        message: 'Treino marcado como concluído com sucesso',
+        workout: updatedWorkout
     });
+}));
+
+// Endpoint de teste
+router.post('/test', authenticateToken, asyncHandler(async (req: AuthRequest, res: Response) => {
+    console.log('=== TESTE ENDPOINT ===');
+    console.log('Dados recebidos:', req.body);
+    console.log('User ID:', req.user?.id);
+    
+    res.status(200).json({
+        message: 'Teste funcionando',
+        user: req.user?.id,
+        data: req.body
+    });
+}));
+
+// Registrar treino realizado
+router.post('/record', authenticateToken, asyncHandler(async (req: AuthRequest, res: Response) => {
+    try {
+        console.log('=== REGISTRANDO TREINO ===');
+        console.log('Dados recebidos:', req.body);
+        console.log('User ID:', req.user?.id);
+        
+        // Validação básica sem Joi por enquanto
+        if (!req.body.modality) {
+            throw createError('Modalidade é obrigatória', 400);
+        }
+        
+        console.log('Validação básica passou');
+
+        // Criar treino com dados mínimos
+        const workout = await prisma.workout.create({
+            data: {
+                modality: req.body.modality,
+                userId: req.user!.id,
+                duration: req.body.duration || null,
+                distance: req.body.distance || null,
+                calories: req.body.calories || null,
+                pace: req.body.pace || null,
+                notes: req.body.notes || null,
+                type: req.body.type || null,
+                additionalWorkoutType: req.body.additionalWorkoutType || null,
+                completedAt: new Date()
+            }
+        });
+
+        console.log('Treino criado:', workout);
+
+        res.status(201).json({
+            message: 'Treino registrado com sucesso',
+            workout
+        });
+    } catch (error) {
+        console.error('=== ERRO AO REGISTRAR TREINO ===');
+        console.error('Erro completo:', error);
+        throw error;
+    }
 }));
 
 // Atualizar treino do usuário
@@ -433,6 +625,49 @@ router.get('/my-workouts', authenticateToken, asyncHandler(async (req: AuthReque
             pages: Math.ceil(total / Number(limit))
         }
     });
+}));
+
+// Marcar treino atribuído como concluído
+router.put('/assigned-workouts/:id/complete', authenticateToken, asyncHandler(async (req: AuthRequest, res: Response) => {
+    try {
+        const { id } = req.params;
+        console.log('=== MARCANDO TREINO COMO CONCLUÍDO ===');
+        console.log('Treino ID:', id);
+        console.log('User ID:', req.user?.id);
+        
+        // Verificar se o treino existe e pertence ao usuário
+        const workout = await prisma.workout.findFirst({
+            where: { 
+                id: id,
+                userId: req.user!.id,
+                workoutPlanId: { not: null } // Apenas treinos atribuídos
+            }
+        });
+        
+        if (!workout) {
+            throw createError('Treino não encontrado ou não autorizado', 404);
+        }
+        
+        // Atualizar o treino para marcá-lo como concluído
+        const updatedWorkout = await prisma.workout.update({
+            where: { id },
+            data: {
+                completedAt: new Date(),
+                status: 'COMPLETED'
+            }
+        });
+        
+        console.log('Treino atualizado:', updatedWorkout);
+        
+        res.json({
+            message: 'Treino marcado como concluído com sucesso',
+            workout: updatedWorkout
+        });
+    } catch (error) {
+        console.error('=== ERRO AO MARCAR TREINO COMO CONCLUÍDO ===');
+        console.error('Erro completo:', error);
+        throw error;
+    }
 }));
 
 // Listar treinos atribuídos pelo admin

@@ -33,12 +33,16 @@ const StudentDashboard: React.FC = () => {
   const { user } = useAuth();
   const [stats, setStats] = useState<WorkoutStats | null>(null);
   const [recentWorkouts, setRecentWorkouts] = useState<Workout[]>([]);
-  const [assignedWorkouts, setAssignedWorkouts] = useState<Workout[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
+      if (!user) {
+        console.log('Usuário não autenticado, pulando busca de dados');
+        return;
+      }
+      
       try {
         setLoading(true);
         
@@ -66,26 +70,6 @@ const StudentDashboard: React.FC = () => {
           setRecentWorkouts(workoutsData.workouts || []);
         }
 
-        // Buscar treinos atribuídos pelo admin
-        const assignedResponse = await fetch('http://localhost:5000/api/workouts/my-workouts?page=1&limit=5', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        
-        console.log('=== DEBUG TREINOS ATRIBUÍDOS ===');
-        console.log('Status da resposta:', assignedResponse.status);
-        
-        if (assignedResponse.ok) {
-          const assignedData = await assignedResponse.json();
-          // Filtrar apenas treinos que têm workoutPlanId (atribuídos pelo admin)
-          const assignedWorkouts = (assignedData.workouts || []).filter((workout: any) => workout.workoutPlanId);
-          console.log('Treinos atribuídos encontrados:', assignedWorkouts.length);
-          console.log('Dados dos treinos atribuídos:', assignedWorkouts);
-          setAssignedWorkouts(assignedWorkouts);
-        } else {
-          console.error('Erro ao buscar treinos atribuídos:', assignedResponse.status);
-        }
 
         // Buscar eventos próximos
         const eventsResponse = await fetch('http://localhost:5000/api/events/my-events', {
@@ -122,7 +106,7 @@ const StudentDashboard: React.FC = () => {
     return () => {
       window.removeEventListener('workoutRegistered', handleWorkoutRegistered);
     };
-  }, []);
+  }, [user]);
 
   const getModalityIcon = (modality: string) => {
     switch (modality) {
@@ -164,6 +148,7 @@ const StudentDashboard: React.FC = () => {
         return '#666';
     }
   };
+
 
   if (loading) {
     return (
@@ -356,72 +341,6 @@ const StudentDashboard: React.FC = () => {
           </Paper>
         </Grid>
 
-        {/* Treinos Atribuídos pelo Admin */}
-        <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Treinos Atribuídos
-            </Typography>
-            
-            {assignedWorkouts && assignedWorkouts.length > 0 ? (
-              <List>
-                {assignedWorkouts.map((workout, index) => (
-                  <ListItem key={index} sx={{ px: 0 }}>
-                    <ListItemIcon>
-                      <Avatar
-                        sx={{
-                          backgroundColor: '#ff9800', // Cor laranja para treinos atribuídos
-                          width: 32,
-                          height: 32,
-                        }}
-                      >
-                        <FitnessCenter />
-                      </Avatar>
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={
-                        <Box display="flex" alignItems="center" gap={1}>
-                          <Typography variant="body2" fontWeight="medium">
-                            {workout.workoutPlan?.title || 
-                             (workout.modality === 'RUNNING' ? 'Corrida' : 
-                              workout.modality === 'MUSCLE_TRAINING' ? 'Musculação' : 
-                              workout.modality === 'FUNCTIONAL' ? 'Funcional' : workout.modality)}
-                          </Typography>
-                          <Chip
-                            label="Atribuído"
-                            size="small"
-                            sx={{ 
-                              fontSize: '0.7rem',
-                              backgroundColor: '#ff9800',
-                              color: 'white'
-                            }}
-                          />
-                        </Box>
-                      }
-                      secondary={
-                        <Box>
-                          <Typography variant="caption" color="text.secondary">
-                            Por: Administrador
-                          </Typography>
-                          <br />
-                          <Typography variant="caption" color="text.secondary">
-                            {new Date(workout.createdAt).toLocaleDateString('pt-BR')}
-                          </Typography>
-                        </Box>
-                      }
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            ) : (
-              <Box textAlign="center" py={2}>
-                <Typography variant="body2" color="text.secondary">
-                  Nenhum treino atribuído
-                </Typography>
-              </Box>
-            )}
-          </Paper>
-        </Grid>
 
         {/* Próximos eventos */}
         <Grid item xs={12} md={4}>
@@ -503,6 +422,7 @@ const StudentDashboard: React.FC = () => {
           </Typography>
         </Paper>
       )}
+
     </Box>
   );
 };

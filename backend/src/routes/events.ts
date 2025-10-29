@@ -205,16 +205,68 @@ router.put('/:id/attendance', authenticateToken, asyncHandler(async (req: AuthRe
 
 // Listar eventos do aluno com status de presença
 router.get('/my-events', authenticateToken, asyncHandler(async (req: AuthRequest, res: Response) => {
+  console.log('=== BUSCANDO EVENTOS DO ALUNO ===');
+  console.log('User ID:', req.user!.id);
+  
+  // Buscar TODOS os alunos para garantir que todos estão associados aos eventos
+  const allStudents = await prisma.user.findMany({
+    where: { role: 'STUDENT' },
+    select: { id: true }
+  });
+
+  console.log('Total de alunos cadastrados:', allStudents.length);
+
+  // Buscar TODOS os eventos
+  const allEvents = await prisma.event.findMany({
+    select: { id: true }
+  });
+
+  console.log('Total de eventos no sistema:', allEvents.length);
+
+  // Garantir que TODOS os alunos tenham attendance em TODOS os eventos
+  if (allStudents.length > 0 && allEvents.length > 0) {
+    for (const student of allStudents) {
+      for (const event of allEvents) {
+        // Verificar se já existe o registro
+        const existing = await prisma.eventAttendance.findUnique({
+          where: {
+            eventId_userId: {
+              eventId: event.id,
+              userId: student.id
+            }
+          }
+        });
+
+        // Se não existe, criar
+        if (!existing) {
+          await prisma.eventAttendance.create({
+            data: {
+              eventId: event.id,
+              userId: student.id,
+              confirmed: false
+            }
+          });
+        }
+      }
+    }
+  }
+
+  // Agora buscar os eventos com a presença do usuário logado
   const events = await prisma.event.findMany({
     include: {
       attendances: {
         where: {
           userId: req.user!.id
         }
+      },
+      _count: {
+        select: { attendances: true }
       }
     },
     orderBy: { date: 'asc' }
   });
+
+  console.log('Total de eventos encontrados:', events.length);
 
   // Formatar resposta para incluir status de presença
   const eventsWithAttendance = events.map(event => ({
@@ -222,6 +274,8 @@ router.get('/my-events', authenticateToken, asyncHandler(async (req: AuthRequest
     myAttendance: event.attendances[0] || null,
     attendances: undefined // Remover para não expor dados de outros alunos
   }));
+
+  console.log('Eventos retornados:', eventsWithAttendance.length);
 
   res.json({ events: eventsWithAttendance });
 }));

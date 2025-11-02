@@ -62,6 +62,7 @@ const MyWorkoutsPage: React.FC = () => {
   const [workoutForm, setWorkoutForm] = useState({
     modality: '',
     duration: '',
+    durationUnit: 'MINUTES', // MINUTES ou HOURS
     distance: '',
     calories: '',
     pace: '',
@@ -76,6 +77,48 @@ const MyWorkoutsPage: React.FC = () => {
     fetchWorkouts();
     fetchAssignedWorkouts();
   }, []);
+
+  // Calcular pace automaticamente quando duração ou distância mudarem
+  useEffect(() => {
+    if (workoutForm.modality !== 'MUSCLE_TRAINING' && workoutForm.duration && workoutForm.distance) {
+      const durationValue = parseFloat(workoutForm.duration);
+      const distanceValue = parseFloat(workoutForm.distance);
+      
+      if (durationValue > 0 && distanceValue > 0) {
+        // Converter para minutos se estiver em horas
+        let totalMinutes = durationValue;
+        if (workoutForm.durationUnit === 'HOURS') {
+          totalMinutes = durationValue * 60;
+        }
+        
+        // Calcular pace: tempo em minutos / distância em km
+        const paceInMinutes = totalMinutes / distanceValue;
+        const minutes = Math.floor(paceInMinutes);
+        const seconds = Math.round((paceInMinutes - minutes) * 60);
+        
+        // Formatar como MM:SS
+        const formattedPace = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        
+        setWorkoutForm(prev => ({
+          ...prev,
+          pace: formattedPace
+        }));
+      } else {
+        setWorkoutForm(prev => ({
+          ...prev,
+          pace: ''
+        }));
+      }
+    } else {
+      // Se não for corrida ou campos não estiverem preenchidos, limpar pace
+      if (!workoutForm.duration || !workoutForm.distance) {
+        setWorkoutForm(prev => ({
+          ...prev,
+          pace: ''
+        }));
+      }
+    }
+  }, [workoutForm.duration, workoutForm.distance, workoutForm.durationUnit, workoutForm.modality]);
 
   const fetchWorkouts = async () => {
     try {
@@ -206,13 +249,24 @@ const MyWorkoutsPage: React.FC = () => {
         throw new Error('Por favor, selecione uma modalidade');
       }
 
+      // Calcular duração em minutos para enviar ao backend
+      let durationInMinutes = 0;
+      if (workoutForm.duration) {
+        const durationValue = parseFloat(workoutForm.duration);
+        if (workoutForm.durationUnit === 'HOURS') {
+          durationInMinutes = Math.round(durationValue * 60);
+        } else {
+          durationInMinutes = Math.round(durationValue);
+        }
+      }
+
       // Criar dados do treino
       const workoutData = {
         modality: workoutForm.modality, // Já está no formato correto (RUNNING, MUSCLE_TRAINING, etc.)
-        duration: parseInt(workoutForm.duration) || 0,
+        duration: durationInMinutes,
         distance: parseFloat(workoutForm.distance) || 0,
         calories: parseInt(workoutForm.calories) || 0,
-        pace: workoutForm.pace || '', // Enviar como string vazia se não preenchido
+        pace: workoutForm.pace || '', // Pace calculado automaticamente
         notes: workoutForm.notes || '',
         // Campos específicos para musculação
         type: workoutForm.workoutType || null,
@@ -248,6 +302,7 @@ const MyWorkoutsPage: React.FC = () => {
       setWorkoutForm({
         modality: '',
         duration: '',
+        durationUnit: 'MINUTES',
         distance: '',
         calories: '',
         pace: '',
@@ -375,27 +430,44 @@ const MyWorkoutsPage: React.FC = () => {
       // Campos para corrida/funcional/trail
       return (
         <>
-          <TextField
-            label="Duração (minutos)"
-            type="number"
-            value={workoutForm.duration}
-            onChange={(e) => setWorkoutForm({ ...workoutForm, duration: e.target.value })}
-            fullWidth
-          />
+          <Box display="flex" gap={2}>
+            <TextField
+              label="Duração"
+              type="number"
+              value={workoutForm.duration}
+              onChange={(e) => setWorkoutForm({ ...workoutForm, duration: e.target.value })}
+              fullWidth
+              inputProps={{ min: 0, step: "0.1" }}
+            />
+            <FormControl sx={{ minWidth: 140 }}>
+              <InputLabel>Unidade</InputLabel>
+              <Select
+                value={workoutForm.durationUnit}
+                onChange={(e) => setWorkoutForm({ ...workoutForm, durationUnit: e.target.value })}
+                label="Unidade"
+              >
+                <MenuItem value="MINUTES">Minutos</MenuItem>
+                <MenuItem value="HOURS">Horas</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
           <TextField
             label="Distância (km)"
             type="number"
             value={workoutForm.distance}
             onChange={(e) => setWorkoutForm({ ...workoutForm, distance: e.target.value })}
             fullWidth
+            inputProps={{ min: 0, step: "0.1" }}
           />
           <TextField
             label="Pace (min/km)"
-            type="number"
-            value={workoutForm.pace}
-            onChange={(e) => setWorkoutForm({ ...workoutForm, pace: e.target.value })}
+            value={workoutForm.pace || ''}
             fullWidth
-            inputProps={{ step: "0.1" }}
+            disabled
+            helperText="Calculado automaticamente: Tempo ÷ Distância"
+            InputProps={{
+              readOnly: true,
+            }}
           />
           <TextField
             label="Calorias"
@@ -403,6 +475,7 @@ const MyWorkoutsPage: React.FC = () => {
             value={workoutForm.calories}
             onChange={(e) => setWorkoutForm({ ...workoutForm, calories: e.target.value })}
             fullWidth
+            inputProps={{ min: 0 }}
           />
           <TextField
             label="Observações"
@@ -516,9 +589,16 @@ const MyWorkoutsPage: React.FC = () => {
     }
 
     setSelectedWorkoutToEdit(workout);
+    
+    // Determinar unidade baseado na duração (se > 120 minutos, assumir horas)
+    const durationValue = workout.duration || 0;
+    const durationUnit = durationValue >= 120 ? 'HOURS' : 'MINUTES';
+    const durationDisplay = durationUnit === 'HOURS' ? (durationValue / 60).toFixed(1) : durationValue.toString();
+    
     setWorkoutForm({
       modality: workout.modality,
-      duration: workout.duration?.toString() || '',
+      duration: durationDisplay,
+      durationUnit: durationUnit,
       distance: workout.distance?.toString() || '',
       calories: workout.calories?.toString() || '',
       pace: workout.pace || '',
@@ -542,13 +622,24 @@ const MyWorkoutsPage: React.FC = () => {
         throw new Error('Por favor, selecione uma modalidade');
       }
 
+      // Calcular duração em minutos para enviar ao backend
+      let durationInMinutes = 0;
+      if (workoutForm.duration) {
+        const durationValue = parseFloat(workoutForm.duration);
+        if (workoutForm.durationUnit === 'HOURS') {
+          durationInMinutes = Math.round(durationValue * 60);
+        } else {
+          durationInMinutes = Math.round(durationValue);
+        }
+      }
+
       // Criar dados do treino
       const workoutData = {
         modality: workoutForm.modality,
-        duration: parseInt(workoutForm.duration) || 0,
+        duration: durationInMinutes,
         distance: parseFloat(workoutForm.distance) || 0,
         calories: parseInt(workoutForm.calories) || 0,
-        pace: workoutForm.pace || '',
+        pace: workoutForm.pace || '', // Pace calculado automaticamente
         notes: workoutForm.notes || '',
         completedAt: new Date().toISOString()
       };
@@ -580,6 +671,7 @@ const MyWorkoutsPage: React.FC = () => {
       setWorkoutForm({
         modality: '',
         duration: '',
+        durationUnit: 'MINUTES',
         distance: '',
         calories: '',
         pace: '',

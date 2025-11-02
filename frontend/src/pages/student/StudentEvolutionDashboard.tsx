@@ -88,7 +88,7 @@ const StudentEvolutionDashboard: React.FC = () => {
 
   const fetchDashboardData = async () => {
     try {
-      // Buscar treinos do usuário
+      // Buscar treinos do usuário (incluindo atribuídos pelo admin)
       const workoutsResponse = await fetch('http://localhost:5000/api/workouts/my-workouts?page=1&limit=100', {
         method: 'GET',
         headers: {
@@ -97,7 +97,7 @@ const StudentEvolutionDashboard: React.FC = () => {
         }
       });
       
-      let userWorkouts = [];
+      let userWorkouts: any[] = [];
       if (workoutsResponse.ok) {
         const workoutsData = await workoutsResponse.json();
         if (workoutsData.workouts) {
@@ -105,6 +105,33 @@ const StudentEvolutionDashboard: React.FC = () => {
         } else if (Array.isArray(workoutsData)) {
           userWorkouts = workoutsData;
         }
+      }
+      
+      // Também buscar treinos atribuídos pelo admin que foram concluídos
+      try {
+        const assignedResponse = await fetch('http://localhost:5000/api/workouts/assigned-workouts', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        
+        if (assignedResponse.ok) {
+          const assignedData = await assignedResponse.json();
+          const completedAssigned = (assignedData.workouts || []).filter((w: any) => 
+            w.status === 'COMPLETED' && (w.completedAt || w.createdAt)
+          );
+          
+          // Adicionar treinos atribuídos concluídos que não estão na lista principal
+          completedAssigned.forEach((assigned: any) => {
+            if (!userWorkouts.find((w: any) => w.id === assigned.id)) {
+              userWorkouts.push(assigned);
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Erro ao buscar treinos atribuídos:', error);
       }
       
       // Se não há treinos reais, usar dados vazios
@@ -143,11 +170,18 @@ const StudentEvolutionDashboard: React.FC = () => {
         : 0;
 
       // Calcular treinos deste mês
-      const thisMonth = new Date();
-      thisMonth.setDate(1);
-      const thisMonthWorkouts = userWorkouts.filter((workout: any) => 
-        new Date(workout.completedAt) >= thisMonth
-      ).length;
+      const now = new Date();
+      const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+      
+      const thisMonthWorkouts = userWorkouts.filter((workout: any) => {
+        // Usar completedAt se disponível, senão usar createdAt
+        const workoutDate = workout.completedAt || workout.createdAt;
+        if (!workoutDate) return false;
+        
+        const date = new Date(workoutDate);
+        return date >= firstDayOfMonth && date <= lastDayOfMonth;
+      }).length;
 
       // Calcular estatísticas de musculação
       const muscleWorkouts = userWorkouts.filter((workout: any) => 
@@ -155,18 +189,26 @@ const StudentEvolutionDashboard: React.FC = () => {
       );
       
       // Calcular treinos de musculação deste mês
-      const muscleThisMonth = new Date();
-      muscleThisMonth.setDate(1);
-      const muscleWorkoutsThisMonth = muscleWorkouts.filter((workout: any) => 
-        new Date(workout.completedAt) >= muscleThisMonth
-      ).length;
+      const muscleWorkoutsThisMonth = muscleWorkouts.filter((workout: any) => {
+        // Usar completedAt se disponível, senão usar createdAt
+        const workoutDate = workout.completedAt || workout.createdAt;
+        if (!workoutDate) return false;
+        
+        const date = new Date(workoutDate);
+        return date >= firstDayOfMonth && date <= lastDayOfMonth;
+      }).length;
 
       // Calcular treinos de musculação desta semana
-      const thisWeek = new Date();
-      thisWeek.setDate(thisWeek.getDate() - 7);
-      const muscleWorkoutsThisWeek = muscleWorkouts.filter((workout: any) => 
-        new Date(workout.completedAt) >= thisWeek
-      ).length;
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      const muscleWorkoutsThisWeek = muscleWorkouts.filter((workout: any) => {
+        // Usar completedAt se disponível, senão usar createdAt
+        const workoutDate = workout.completedAt || workout.createdAt;
+        if (!workoutDate) return false;
+        
+        const date = new Date(workoutDate);
+        return date >= weekAgo;
+      }).length;
 
       setStats({
         totalWorkouts,
@@ -274,6 +316,17 @@ const StudentEvolutionDashboard: React.FC = () => {
     return `${hours}h ${mins}min`;
   };
 
+  // Função para traduzir nomes de modalidades
+  const getModalityDisplayName = (modality: string) => {
+    const translations: { [key: string]: string } = {
+      'RUNNING': 'Corrida',
+      'MUSCLE_TRAINING': 'Musculação',
+      'FUNCTIONAL': 'Funcional',
+      'TRAIL_RUNNING': 'Trail Running'
+    };
+    return translations[modality] || modality;
+  };
+
   // Dados para gráfico de pizza (distribuição de modalidades)
   const modalityData = evolutionData.reduce((acc: any, workout: any) => {
     const modality = workout.modality || 'RUNNING';
@@ -282,10 +335,29 @@ const StudentEvolutionDashboard: React.FC = () => {
   }, {});
 
   const pieData = Object.entries(modalityData).map(([modality, count]) => ({
-    name: modality,
+    name: getModalityDisplayName(modality),
     value: count,
     color: getModalityColor(modality)
   }));
+
+  // Dados para gráfico de distância por dia (apenas corrida)
+  const distanceByDayData = evolutionData
+    .filter((item: EvolutionData) => item.modality === 'RUNNING')
+    .reduce((acc: any, workout: EvolutionData) => {
+      const date = workout.date.split('-').slice(0, 3).join('-'); // Extrair apenas a data (YYYY-MM-DD)
+      if (!acc[date]) {
+        acc[date] = { date, distance: 0 };
+      }
+      acc[date].distance += workout.distance || 0;
+      return acc;
+    }, {});
+
+  const distanceByDay = Object.values(distanceByDayData).sort((a: any, b: any) => 
+    new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+
+  // Dados para gráfico de Pace (apenas corrida)
+  const paceData = evolutionData.filter((item: EvolutionData) => item.modality === 'RUNNING');
 
   if (loading) {
     return (
@@ -483,7 +555,7 @@ const StudentEvolutionDashboard: React.FC = () => {
                 Evolução do Pace (últimos 30 dias)
               </Typography>
               <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={evolutionData}>
+                <LineChart data={paceData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" tickFormatter={(value) => value.split('-').slice(0, 3).join('-')} />
                   <YAxis />
@@ -548,7 +620,7 @@ const StudentEvolutionDashboard: React.FC = () => {
                 Distância por Dia (últimos 30 dias)
               </Typography>
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={evolutionData}>
+                <BarChart data={distanceByDay}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" tickFormatter={(value) => value.split('-').slice(0, 3).join('-')} />
                   <YAxis />

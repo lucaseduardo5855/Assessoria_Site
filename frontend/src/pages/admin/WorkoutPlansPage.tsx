@@ -344,7 +344,7 @@ const WorkoutPlansPage: React.FC = () => {
     setTabValue(0);
   };
 
-  const openEditModal = (plan: any) => {
+  const openEditModal = async (plan: any) => {
     setSelectedPlan(plan);
     setFormData({
       title: plan.title,
@@ -356,6 +356,75 @@ const WorkoutPlansPage: React.FC = () => {
       workoutDate: new Date(plan.workoutDate).toISOString().split('T')[0],
       studentId: '',
     });
+
+    // Buscar exercícios da planilha se não vierem no objeto plan
+    try {
+      let planExercises: any[] = [];
+      
+      // Verificar se os exercícios já vêm no objeto plan
+      if (plan.exercises && Array.isArray(plan.exercises) && plan.exercises.length > 0) {
+        planExercises = plan.exercises;
+      } else {
+        // Buscar planilha completa com exercícios
+        const response = await fetch(`http://localhost:5000/api/workouts/plans/${plan.id}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.workoutPlan?.exercises) {
+            planExercises = data.workoutPlan.exercises;
+          }
+        }
+      }
+
+      // Carregar exercícios existentes ou iniciar com um exercício vazio
+      if (planExercises.length > 0) {
+        setExercises(planExercises.map((ex: any) => ({
+          id: ex.id,
+          sequence: ex.sequence || 1,
+          name: ex.name || '',
+          description: ex.description || '',
+          sets: ex.sets || 0,
+          reps: ex.reps || 0,
+          load: ex.load || 0,
+          interval: ex.interval || '',
+          instruction: ex.instruction || '',
+          observation: ex.observation || '',
+        })));
+      } else {
+        // Se não houver exercícios, iniciar com um exercício vazio
+        setExercises([{
+          sequence: 1,
+          name: '',
+          description: '',
+          sets: 0,
+          reps: 0,
+          load: 0,
+          interval: '',
+          instruction: '',
+          observation: '',
+        }]);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar exercícios:', error);
+      // Em caso de erro, iniciar com um exercício vazio
+      setExercises([{
+        sequence: 1,
+        name: '',
+        description: '',
+        sets: 0,
+        reps: 0,
+        load: 0,
+        interval: '',
+        instruction: '',
+        observation: '',
+      }]);
+    }
+
+    setTabValue(0);
     setIsEditModalOpen(true);
   };
 
@@ -370,6 +439,7 @@ const WorkoutPlansPage: React.FC = () => {
     try {
       console.log('=== EDITANDO PLANILHA ===');
       console.log('ID da planilha:', selectedPlan.id);
+      console.log('Exercícios:', exercises);
       
       const planData = {
         title: formData.title,
@@ -379,6 +449,18 @@ const WorkoutPlansPage: React.FC = () => {
         courseType: formData.courseType || undefined,
         status: formData.status,
         workoutDate: new Date(formData.workoutDate).toISOString(),
+        // Incluir exercícios filtrados (apenas os que têm nome)
+        exercises: exercises.filter(ex => ex.name && ex.name.trim() !== '').map(ex => ({
+          sequence: ex.sequence || 1,
+          name: ex.name || '',
+          description: ex.description || '',
+          sets: ex.sets || 0,
+          reps: ex.reps || 0,
+          load: ex.load || 0,
+          interval: ex.interval || '',
+          instruction: ex.instruction || '',
+          observation: ex.observation || '',
+        })),
       };
       
       const response = await fetch(`http://localhost:5000/api/workouts/plans/${selectedPlan.id}`, {
@@ -460,9 +542,21 @@ const WorkoutPlansPage: React.FC = () => {
     }
   };
 
-  const updateExercise = (index: number, field: keyof Exercise, value: string) => {
+  const updateExercise = (index: number, field: keyof Exercise, value: string | number) => {
     const updatedExercises = [...exercises];
-    updatedExercises[index] = { ...updatedExercises[index], [field]: value };
+    const exercise = updatedExercises[index];
+    
+    // Converter strings para números para campos numéricos
+    if (field === 'sets' || field === 'reps') {
+      const numValue = value === '' || value === null || value === undefined ? 0 : Number(value);
+      updatedExercises[index] = { ...exercise, [field]: isNaN(numValue) ? 0 : numValue };
+    } else if (field === 'load' || field === 'sequence') {
+      const numValue = value === '' || value === null || value === undefined ? 0 : Number(value);
+      updatedExercises[index] = { ...exercise, [field]: isNaN(numValue) ? 0 : numValue };
+    } else {
+      updatedExercises[index] = { ...exercise, [field]: value };
+    }
+    
     setExercises(updatedExercises);
   };
 
@@ -815,95 +909,211 @@ const WorkoutPlansPage: React.FC = () => {
       </Snackbar>
 
       {/* Modal de Edição */}
-      <Dialog open={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} maxWidth="md" fullWidth>
+      <Dialog 
+        open={isEditModalOpen} 
+        onClose={() => {
+          setIsEditModalOpen(false);
+          resetForm();
+        }} 
+        maxWidth="md" 
+        fullWidth
+      >
         <DialogTitle>Editar Planilha</DialogTitle>
         <DialogContent>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-            <TextField
-              label="Título *"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              fullWidth
-            />
-            <TextField
-              label="Descrição"
-              multiline
-              rows={3}
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              fullWidth
-            />
-            <FormControl fullWidth>
-              <InputLabel>Modalidade *</InputLabel>
-              <Select
-                value={formData.modality}
-                onChange={(e) => setFormData({ ...formData, modality: e.target.value })}
-                label="Modalidade *"
-              >
-                <MenuItem value="RUNNING">Corrida</MenuItem>
-                <MenuItem value="MUSCLE_TRAINING">Musculação</MenuItem>
-                <MenuItem value="FUNCTIONAL">Funcional</MenuItem>
-                <MenuItem value="TRAIL_RUNNING">Trail Running</MenuItem>
-              </Select>
-            </FormControl>
-            
-            {formData.modality === 'RUNNING' && (
-              <>
-                <FormControl fullWidth>
-                  <InputLabel>Tipo de Treino</InputLabel>
-                  <Select
-                    value={formData.type}
-                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                    label="Tipo de Treino"
-                  >
-                    <MenuItem value="RAMP">Rampa</MenuItem>
-                    <MenuItem value="SPRINT">Tiro</MenuItem>
-                    <MenuItem value="BASE">Base</MenuItem>
-                    <MenuItem value="RECOVERY">Recuperação</MenuItem>
-                  </Select>
-                </FormControl>
-                <FormControl fullWidth>
-                  <InputLabel>Tipo de Percurso</InputLabel>
-                  <Select
-                    value={formData.courseType}
-                    onChange={(e) => setFormData({ ...formData, courseType: e.target.value })}
-                    label="Tipo de Percurso"
-                  >
-                    <MenuItem value="UPHILL">Subida</MenuItem>
-                    <MenuItem value="DOWNHILL">Descida</MenuItem>
-                    <MenuItem value="MIXED">Misto</MenuItem>
-                    <MenuItem value="TRACK">Pista</MenuItem>
-                    <MenuItem value="TRAIL">Trilha</MenuItem>
-                  </Select>
-                </FormControl>
-              </>
-            )}
-            
-            <FormControl fullWidth>
-              <InputLabel>Status</InputLabel>
-              <Select
-                value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                label="Status"
-              >
-                <MenuItem value="PROPOSED">Proposta</MenuItem>
-                <MenuItem value="ACTIVE">Ativo</MenuItem>
-                <MenuItem value="COMPLETED">Concluído</MenuItem>
-                <MenuItem value="CANCELLED">Cancelado</MenuItem>
-              </Select>
-            </FormControl>
-            <TextField
-              label="Data do Treino *"
-              type="date"
-              value={formData.workoutDate}
-              onChange={(e) => setFormData({ ...formData, workoutDate: e.target.value })}
-              fullWidth
-              InputLabelProps={{ shrink: true }}
-            />
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)}>
+              <Tab label="Informações Básicas" />
+              <Tab label="Exercícios" />
+            </Tabs>
           </Box>
+
+          <TabPanel value={tabValue} index={0}>
+            <Box display="flex" flexDirection="column" gap={2}>
+              <TextField
+                label="Título *"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                fullWidth
+              />
+              <TextField
+                label="Descrição"
+                multiline
+                rows={3}
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                fullWidth
+              />
+              <FormControl fullWidth>
+                <InputLabel>Modalidade *</InputLabel>
+                <Select
+                  value={formData.modality}
+                  onChange={(e) => setFormData({ ...formData, modality: e.target.value })}
+                  label="Modalidade *"
+                >
+                  <MenuItem value="RUNNING">Corrida</MenuItem>
+                  <MenuItem value="MUSCLE_TRAINING">Musculação</MenuItem>
+                  <MenuItem value="FUNCTIONAL">Funcional</MenuItem>
+                  <MenuItem value="TRAIL_RUNNING">Trail Running</MenuItem>
+                </Select>
+              </FormControl>
+              
+              {formData.modality === 'RUNNING' && (
+                <>
+                  <FormControl fullWidth>
+                    <InputLabel>Tipo de Treino</InputLabel>
+                    <Select
+                      value={formData.type}
+                      onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                      label="Tipo de Treino"
+                    >
+                      <MenuItem value="BASE">Base</MenuItem>
+                      <MenuItem value="RAMP">Rampa</MenuItem>
+                      <MenuItem value="SPEED">Tiro</MenuItem>
+                      <MenuItem value="ENDURANCE">Resistência</MenuItem>
+                      <MenuItem value="INTERVAL">Intervalado</MenuItem>
+                      <MenuItem value="RECOVERY">Recuperação</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <FormControl fullWidth>
+                    <InputLabel>Tipo de Percurso</InputLabel>
+                    <Select
+                      value={formData.courseType}
+                      onChange={(e) => setFormData({ ...formData, courseType: e.target.value })}
+                      label="Tipo de Percurso"
+                    >
+                      <MenuItem value="FLAT">Plano</MenuItem>
+                      <MenuItem value="UPHILL">Subida</MenuItem>
+                      <MenuItem value="DOWNHILL">Descida</MenuItem>
+                      <MenuItem value="MIXED">Misto</MenuItem>
+                      <MenuItem value="TRACK">Pista</MenuItem>
+                      <MenuItem value="TRAIL">Trilha</MenuItem>
+                    </Select>
+                  </FormControl>
+                </>
+              )}
+              
+              <FormControl fullWidth>
+                <InputLabel>Status</InputLabel>
+                <Select
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  label="Status"
+                >
+                  <MenuItem value="PROPOSED">Proposta</MenuItem>
+                  <MenuItem value="ACTIVE">Ativo</MenuItem>
+                  <MenuItem value="COMPLETED">Concluído</MenuItem>
+                  <MenuItem value="CANCELLED">Cancelado</MenuItem>
+                </Select>
+              </FormControl>
+              <TextField
+                label="Data do Treino *"
+                type="date"
+                value={formData.workoutDate}
+                onChange={(e) => setFormData({ ...formData, workoutDate: e.target.value })}
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+              />
+            </Box>
+          </TabPanel>
+
+          <TabPanel value={tabValue} index={1}>
+            <Box display="flex" flexDirection="column" gap={2}>
+              <Box display="flex" justifyContent="space-between" alignItems="center">
+                <Typography variant="h6">Exercícios</Typography>
+                <Button variant="outlined" onClick={addExercise}>
+                  Adicionar Exercício
+                </Button>
+              </Box>
+              
+              {exercises.map((exercise, index) => (
+                <Card key={index} sx={{ p: 2 }}>
+                  <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                    <Typography variant="subtitle1">Exercício {index + 1}</Typography>
+                    {exercises.length > 1 && (
+                      <IconButton onClick={() => removeExercise(index)} color="error" size="small">
+                        <Delete />
+                      </IconButton>
+                    )}
+                  </Box>
+                  
+                  <Box display="flex" flexDirection="column" gap={2}>
+                    <TextField
+                      label="Nome do Exercício"
+                      value={exercise.name || ''}
+                      onChange={(e) => updateExercise(index, 'name', e.target.value)}
+                      fullWidth
+                      size="small"
+                    />
+                    <TextField
+                      label="Descrição"
+                      multiline
+                      rows={2}
+                      value={exercise.description || ''}
+                      onChange={(e) => updateExercise(index, 'description', e.target.value)}
+                      fullWidth
+                      size="small"
+                    />
+                    <Box display="flex" gap={2}>
+                      <TextField
+                        label="Séries"
+                        value={exercise.sets || ''}
+                        onChange={(e) => updateExercise(index, 'sets', e.target.value)}
+                        size="small"
+                        sx={{ flex: 1 }}
+                      />
+                      <TextField
+                        label="Repetições"
+                        value={exercise.reps || ''}
+                        onChange={(e) => updateExercise(index, 'reps', e.target.value)}
+                        size="small"
+                        sx={{ flex: 1 }}
+                      />
+                      <TextField
+                        label="Carga (kg)"
+                        value={exercise.load || ''}
+                        onChange={(e) => updateExercise(index, 'load', e.target.value)}
+                        size="small"
+                        sx={{ flex: 1 }}
+                      />
+                    </Box>
+                    <Box display="flex" gap={2}>
+                      <TextField
+                        label="Intervalo"
+                        value={exercise.interval || ''}
+                        onChange={(e) => updateExercise(index, 'interval', e.target.value)}
+                        size="small"
+                        sx={{ flex: 1 }}
+                      />
+                    </Box>
+                    <TextField
+                      label="Instruções"
+                      value={exercise.instruction || ''}
+                      onChange={(e) => updateExercise(index, 'instruction', e.target.value)}
+                      fullWidth
+                      size="small"
+                    />
+                    <TextField
+                      label="Observações"
+                      value={exercise.observation || ''}
+                      onChange={(e) => updateExercise(index, 'observation', e.target.value)}
+                      fullWidth
+                      size="small"
+                    />
+                  </Box>
+                </Card>
+              ))}
+            </Box>
+          </TabPanel>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setIsEditModalOpen(false)}>Cancelar</Button>
+          <Button 
+            onClick={() => {
+              setIsEditModalOpen(false);
+              resetForm();
+            }}
+          >
+            Cancelar
+          </Button>
           <Button onClick={handleEditPlan} variant="contained" color="primary">
             Salvar Alterações
           </Button>

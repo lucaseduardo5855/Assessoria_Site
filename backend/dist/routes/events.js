@@ -28,28 +28,64 @@ router.post('/', auth_1.authenticateToken, auth_1.requireAdmin, (0, errorHandler
         throw (0, errorHandler_1.createError)(error.details[0].message, 400);
     }
     const { userIds, ...eventData } = value;
+    console.log('=== CRIANDO EVENTO ===');
+    console.log('Event data:', eventData);
+    console.log('UserIds recebidos:', userIds);
+    console.log('Tipo de userIds:', Array.isArray(userIds) ? 'array' : typeof userIds);
+    console.log('Quantidade de userIds:', userIds ? userIds.length : 0);
     const event = await prisma.event.create({
         data: eventData
     });
+    console.log('Evento criado com ID:', event.id);
     let studentsToNotify = [];
-    if (userIds && userIds.length > 0) {
-        studentsToNotify = userIds;
+    if (userIds && Array.isArray(userIds) && userIds.length > 0) {
+        console.log('Usando alunos selecionados:', userIds);
+        studentsToNotify = userIds.filter(id => id && id.trim() !== '');
     }
     else {
+        console.log('Nenhum aluno selecionado, buscando todos os alunos');
         const allStudents = await prisma.user.findMany({
             where: { role: 'STUDENT' },
             select: { id: true }
         });
         studentsToNotify = allStudents.map(s => s.id);
+        console.log('Todos os alunos encontrados:', studentsToNotify.length);
     }
+    console.log('Alunos que receberão notificação:', studentsToNotify.length);
+    console.log('IDs dos alunos:', studentsToNotify);
     if (studentsToNotify.length > 0) {
-        await prisma.eventAttendance.createMany({
-            data: studentsToNotify.map((userId) => ({
+        try {
+            const attendanceData = studentsToNotify.map((userId) => ({
                 userId,
                 eventId: event.id,
                 confirmed: false
-            }))
-        });
+            }));
+            console.log('Dados de attendance a serem criados:', attendanceData);
+            const existingAttendances = await prisma.eventAttendance.findMany({
+                where: {
+                    eventId: event.id,
+                    userId: { in: studentsToNotify }
+                },
+                select: { userId: true }
+            });
+            const existingUserIds = existingAttendances.map(ea => ea.userId);
+            const newAttendanceData = attendanceData.filter(ad => !existingUserIds.includes(ad.userId));
+            if (newAttendanceData.length > 0) {
+                const result = await prisma.eventAttendance.createMany({
+                    data: newAttendanceData
+                });
+                console.log('EventAttendances criados:', result.count);
+            }
+            else {
+                console.log('Todos os EventAttendances já existem');
+            }
+        }
+        catch (error) {
+            console.error('Erro ao criar eventAttendances:', error);
+        }
+    }
+    else {
+        console.log('Nenhum aluno para notificar');
     }
     res.status(201).json({
         message: 'Evento criado com sucesso',

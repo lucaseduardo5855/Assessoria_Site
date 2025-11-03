@@ -99,8 +99,8 @@ const EventsPage: React.FC = () => {
     try {
       console.log('=== BUSCANDO EVENTOS ===');
       
-      // Buscar eventos diretamente
-      const response = await fetch('http://localhost:5000/api/events', {
+      // Buscar eventos diretamente (admin vê todos os eventos, não apenas futuros)
+      const response = await fetch('http://localhost:5000/api/events?upcoming=false&limit=1000', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -121,17 +121,17 @@ const EventsPage: React.FC = () => {
       console.log('É array?', Array.isArray(data));
       console.log('Chaves disponíveis:', Object.keys(data));
       
-      // Tentar diferentes estruturas de dados
+      // A resposta vem no formato { events: [...], pagination: {...} }
       let eventsData = [];
-      if (data.data) {
+      if (data.events && Array.isArray(data.events)) {
+        eventsData = data.events;
+        console.log('Usando data.events:', eventsData.length);
+      } else if (data.data && Array.isArray(data.data)) {
         eventsData = data.data;
         console.log('Usando data.data:', eventsData.length);
       } else if (Array.isArray(data)) {
         eventsData = data;
         console.log('Usando array direto:', eventsData.length);
-      } else if (data.events) {
-        eventsData = data.events;
-        console.log('Usando data.events:', eventsData.length);
       }
       
       console.log('=== RESULTADO FINAL DE EVENTOS ===');
@@ -172,7 +172,13 @@ const EventsPage: React.FC = () => {
         userIds: formData.selectedStudents.length > 0 ? formData.selectedStudents : undefined,
       };
       
+      console.log('=== DADOS DO EVENTO ===');
+      console.log('FormData completo:', formData);
+      console.log('selectedStudents:', formData.selectedStudents);
+      console.log('Quantidade de alunos selecionados:', formData.selectedStudents.length);
       console.log('Dados do evento criados:', eventData);
+      console.log('userIds que serão enviados:', eventData.userIds);
+      console.log('Tipo de userIds:', Array.isArray(eventData.userIds) ? 'array' : typeof eventData.userIds);
       console.log('Data convertida:', new Date(formData.date).toISOString());
       
       // Fazer requisição direta para criar evento
@@ -212,15 +218,17 @@ const EventsPage: React.FC = () => {
       setSnackbar({ open: true, message: 'Evento criado com sucesso!', severity: 'success' });
       
       // Recarregar a lista imediatamente após sucesso
-      try {
-        console.log('=== RECARREGANDO LISTA DE EVENTOS ===');
-        console.log('Token para recarregar:', localStorage.getItem('token') ? 'Presente' : 'Ausente');
-        await fetchEvents();
-        console.log('Lista de eventos recarregada com sucesso');
-        console.log('Eventos após recarregamento:', events.length);
-      } catch (error) {
-        console.error('Erro ao recarregar lista:', error);
-      }
+      // Usar setTimeout para garantir que o estado seja atualizado
+      setTimeout(async () => {
+        try {
+          console.log('=== RECARREGANDO LISTA DE EVENTOS ===');
+          console.log('Token para recarregar:', localStorage.getItem('token') ? 'Presente' : 'Ausente');
+          await fetchEvents();
+          console.log('Lista de eventos recarregada com sucesso');
+        } catch (error) {
+          console.error('Erro ao recarregar lista:', error);
+        }
+      }, 300);
       
     } catch (err: any) {
       console.error('=== ERRO AO CRIAR EVENTO ===');

@@ -38,7 +38,33 @@ const LoginPage: React.FC = () => {
 
     try {
       await login(email, password);
-      // O redirecionamento será feito automaticamente pelo AuthProvider
+      console.log('Login realizado com sucesso');
+      
+      // Aguardar um momento para garantir que o estado foi atualizado
+      setTimeout(() => {
+        // O redirecionamento será feito automaticamente pelo PublicRoute
+        // Mas vamos forçar navegação se necessário
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+          try {
+            const user = JSON.parse(userStr);
+            console.log('Usuário após login:', user);
+            console.log('Role do usuário:', user.role);
+            
+            if (user.role === 'ADMIN' || user.role === 'admin') {
+              console.log('Redirecionando para /admin');
+              navigate('/admin', { replace: true });
+            } else {
+              console.log('Redirecionando para /dashboard');
+              navigate('/dashboard', { replace: true });
+            }
+          } catch (err) {
+            console.error('Erro ao parsear usuário:', err);
+          }
+        } else {
+          console.error('Usuário não encontrado no localStorage após login');
+        }
+      }, 200);
     } catch (error) {
       console.error('Erro no login:', error);
     } finally {

@@ -75,6 +75,18 @@ const MyEventsPage: React.FC = () => {
       const data = await response.json();
       const allEvents = data.events || [];
       
+      console.log('=== EVENTOS RECEBIDOS ===');
+      console.log('Total de eventos:', allEvents.length);
+      allEvents.forEach((event: EventData, index: number) => {
+        console.log(`Evento ${index + 1}:`, {
+          id: event.id,
+          title: event.title,
+          hasMyAttendance: !!event.myAttendance,
+          myAttendance: event.myAttendance,
+          confirmed: event.myAttendance?.confirmed
+        });
+      });
+      
       // Filtrar eventos muito antigos (anterior a 2020) como proteção adicional
       const minDate = new Date('2020-01-01');
       const filteredEvents = allEvents.filter((event: EventData) => {
@@ -82,6 +94,7 @@ const MyEventsPage: React.FC = () => {
         return eventDate >= minDate;
       });
       
+      console.log('Eventos filtrados:', filteredEvents.length);
       setEvents(filteredEvents);
     } catch (error: any) {
       console.error('Erro ao carregar eventos:', error);
@@ -121,20 +134,8 @@ const MyEventsPage: React.FC = () => {
         throw new Error('Erro ao atualizar presença');
       }
 
-      // Atualizar lista local
-      setEvents(prevEvents =>
-        prevEvents.map(event =>
-          event.id === confirmDialog.eventId
-            ? {
-                ...event,
-                myAttendance: {
-                  id: event.myAttendance?.id || '',
-                  confirmed: confirmDialog.confirmed
-                }
-              }
-            : event
-        )
-      );
+      // Recarregar eventos para obter dados atualizados do servidor
+      await fetchEvents();
 
       setSnackbar({
         open: true,
@@ -177,12 +178,20 @@ const MyEventsPage: React.FC = () => {
   };
 
   const getAttendanceStatus = (event: EventData) => {
+    // Se não tem myAttendance, o aluno não foi atribuído ao evento
     if (!event.myAttendance) {
-      return { label: 'Pendente', color: 'default' as const };
+      return { label: 'Não atribuído', color: 'default' as const };
     }
-    return event.myAttendance.confirmed
-      ? { label: 'Confirmado', color: 'success' as const }
-      : { label: 'Negado', color: 'error' as const };
+    // Se confirmed é true, está confirmado
+    if (event.myAttendance.confirmed === true) {
+      return { label: 'Confirmado', color: 'success' as const };
+    }
+    // Se confirmed é false, pode ser:
+    // - Pendente: evento criado pelo admin, aluno ainda não respondeu
+    // - Negado: aluno explicitamente negou a presença
+    // Como não temos como distinguir inicialmente, vamos mostrar como "Pendente"
+    // Mas quando o aluno negar explicitamente, o status será atualizado e mostrará corretamente
+    return { label: 'Pendente', color: 'warning' as const };
   };
 
   if (loading) {
@@ -269,7 +278,7 @@ const MyEventsPage: React.FC = () => {
                     </Box>
                   </CardContent>
 
-                  {!isPastEvent && (
+                  {!isPastEvent && event.myAttendance && (
                     <CardActions sx={{ display: 'flex', gap: 1, p: 2, pt: 0 }}>
                       <Button
                         size="medium"
@@ -277,7 +286,7 @@ const MyEventsPage: React.FC = () => {
                         color="success"
                         variant={event.myAttendance?.confirmed === true ? "contained" : "outlined"}
                         onClick={() => handleAttendance(event.id, event.title, true)}
-                        disabled={event.myAttendance?.confirmed === true}
+                        disabled={false}
                         sx={{ flex: 1 }}
                       >
                         Confirmar
@@ -288,7 +297,7 @@ const MyEventsPage: React.FC = () => {
                         color="error"
                         variant={event.myAttendance?.confirmed === false ? "contained" : "outlined"}
                         onClick={() => handleAttendance(event.id, event.title, false)}
-                        disabled={event.myAttendance?.confirmed === false}
+                        disabled={false}
                         sx={{ flex: 1 }}
                       >
                         Negar

@@ -143,7 +143,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         } 
       });
     } catch (error: any) {
-      const errorMessage = error.response?.data?.error || 'Erro ao fazer login';
+      console.error('Erro completo no login:', error);
+      console.error('Response data:', error.response?.data);
+      console.error('Response status:', error.response?.status);
+      console.error('Request URL:', error.config?.url);
+      
+      let errorMessage = 'Erro ao fazer login';
+      
+      if (error.response) {
+        // Servidor respondeu com erro
+        errorMessage = error.response.data?.error || error.response.data?.message || `Erro ${error.response.status}: ${error.response.statusText}`;
+      } else if (error.request) {
+        // Requisição foi feita mas não houve resposta
+        errorMessage = 'Servidor não está respondendo. Verifique se o backend está rodando.';
+      } else {
+        // Erro ao configurar a requisição
+        errorMessage = error.message || 'Erro ao fazer login';
+      }
+      
       dispatch({ type: 'AUTH_FAILURE', payload: errorMessage });
       throw error;
     }

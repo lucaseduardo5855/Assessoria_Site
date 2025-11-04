@@ -11,42 +11,42 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
+  id        String    @id @default(cuid())
+  email     String    @unique
   password  String
   name      String
-  role      String   @default("STUDENT") // ADMIN ou STUDENT
+  role      String    @default("STUDENT") // ADMIN ou STUDENT
   phone     String?
   birthDate DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   // Relacionamentos
-  studentProfile StudentProfile?
-  workouts       Workout[]
-  assignedWorkouts Workout[] @relation("AssignedWorkouts")
-  evaluations    Evaluation[]
+  studentProfile   StudentProfile?
+  workouts         Workout[]
+  assignedWorkouts Workout[]         @relation("AssignedWorkouts")
+  evaluations      Evaluation[]
   eventAttendances EventAttendance[]
 
   @@map("users")
 }
 
 model StudentProfile {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   // Informações pessoais
   height      Float?
   weight      Float?
   goals       String?
   limitations String?
-  
+
   // Dados de treino
-  totalWorkouts    Int @default(0)
-  totalCalories    Int @default(0)
-  totalDistance    Float @default(0)
-  
+  totalWorkouts Int   @default(0)
+  totalCalories Int   @default(0)
+  totalDistance Float @default(0)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -57,18 +57,18 @@ model WorkoutPlan {
   id          String   @id @default(cuid())
   title       String
   description String?
-  modality    String   // RUNNING, MUSCLE_TRAINING, FUNCTIONAL, TRAIL_RUNNING
+  modality    String // RUNNING, MUSCLE_TRAINING, FUNCTIONAL, TRAIL_RUNNING
   type        String? // Tipo de treino
   courseType  String? // Tipo de percurso (para corrida)
   status      String   @default("PROPOSED") // PROPOSED, ACTIVE, COMPLETED, CANCELLED
   order       Int?
-  isFavorite  Boolean @default(false)
+  isFavorite  Boolean  @default(false)
   workoutDate DateTime
-  
+
   // Relacionamentos
-  exercises   Exercise[]
-  workouts    Workout[]
-  
+  exercises Exercise[]
+  workouts  Workout[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -76,20 +76,22 @@ model WorkoutPlan {
 }
 
 model Exercise {
-  id          String   @id @default(cuid())
+  id            String      @id @default(cuid())
   workoutPlanId String
   workoutPlan   WorkoutPlan @relation(fields: [workoutPlanId], references: [id], onDelete: Cascade)
-  
+
   sequence    Int
   name        String
   description String?
   sets        Int?
   reps        Int?
   load        Float?
+  time        String? // Tempo em minutos ou horas (ex: "30 min" ou "1h 30min")
+  distance    Float? // Distância em quilômetros
   interval    String?
   instruction String?
   observation String?
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -97,27 +99,27 @@ model Exercise {
 }
 
 model Workout {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  workoutPlanId String?
-  workoutPlan   WorkoutPlan? @relation(fields: [workoutPlanId], references: [id])
-  assignedBy  String?  // ID do admin que atribuiu o treino
-  assignedByUser User? @relation("AssignedWorkouts", fields: [assignedBy], references: [id])
-  
-  modality    String   // RUNNING, MUSCLE_TRAINING, FUNCTIONAL, TRAIL_RUNNING
-  type        String?
-  courseType  String?
-  duration    Int? // em minutos
-  distance    Float? // em km
-  pace        String? // pace realizado
-  calories    Int?
-  notes       String?
+  id             String       @id @default(cuid())
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workoutPlanId  String?
+  workoutPlan    WorkoutPlan? @relation(fields: [workoutPlanId], references: [id])
+  assignedBy     String? // ID do admin que atribuiu o treino
+  assignedByUser User?        @relation("AssignedWorkouts", fields: [assignedBy], references: [id])
+
+  modality              String // RUNNING, MUSCLE_TRAINING, FUNCTIONAL, TRAIL_RUNNING
+  type                  String?
+  courseType            String?
+  duration              Int? // em minutos
+  distance              Float? // em km
+  pace                  String? // pace realizado
+  calories              Int?
+  notes                 String?
   // Campos específicos para musculação
   additionalWorkoutType String? // tipo adicional de treino (peito e ombro, etc.)
-  status      String @default("COMPLETED") // ASSIGNED, COMPLETED, CANCELLED
-  completedAt DateTime?
-  
+  status                String    @default("COMPLETED") // ASSIGNED, COMPLETED, CANCELLED
+  completedAt           DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -125,17 +127,17 @@ model Workout {
 }
 
 model Event {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  date        DateTime
-  location    String?
-  type        String   // TRAINING, COMPETITION, WORKSHOP, SOCIAL
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  date         DateTime
+  location     String?
+  type         String // TRAINING, COMPETITION, WORKSHOP, SOCIAL
   maxAttendees Int?
-  
+
   // Relacionamentos
   attendances EventAttendance[]
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -148,8 +150,8 @@ model EventAttendance {
   event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
   userId  String
   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  confirmed Boolean @default(false)
+
+  confirmed Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -158,20 +160,20 @@ model EventAttendance {
 }
 
 model Evaluation {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  type        String   // INITIAL, MONTHLY, FINAL
-  weight      Float?
-  height      Float?
-  bodyFat     Float?
-  muscleMass  Float?
-  notes       String?
-  
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type       String // INITIAL, MONTHLY, FINAL
+  weight     Float?
+  height     Float?
+  bodyFat    Float?
+  muscleMass Float?
+  notes      String?
+
   evaluatedAt DateTime @default(now())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@map("evaluations")
 }

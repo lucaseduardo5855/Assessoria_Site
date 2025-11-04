@@ -50,6 +50,8 @@ export interface Exercise {
   sets?: number;
   reps?: number;
   load?: number;
+  time?: string; // Tempo em minutos ou horas (ex: "30 min" ou "1h 30min")
+  distance?: number; // Distância em quilômetros
   interval?: string;
   instruction?: string;
   observation?: string;

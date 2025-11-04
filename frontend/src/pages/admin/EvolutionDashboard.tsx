@@ -33,6 +33,28 @@ import { WorkoutPlan, Evaluation } from '../../types';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
+// Componente customizado para label do PieChart
+const CustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, name }: any) => {
+  const RADIAN = Math.PI / 180;
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+  return (
+    <text 
+      x={x} 
+      y={y} 
+      fill="white" 
+      textAnchor={x > cx ? 'start' : 'end'} 
+      dominantBaseline="central"
+      fontSize={12}
+      fontWeight="bold"
+    >
+      {`${name} ${(percent * 100).toFixed(0)}%`}
+    </text>
+  );
+};
+
 const EvolutionDashboard: React.FC = () => {
   const [selectedStudentId, setSelectedStudentId] = useState<string>('');
   const [students, setStudents] = useState<any[]>([]);
@@ -413,8 +435,8 @@ const EvolutionDashboard: React.FC = () => {
                       data={studentStats.modalityData}
                       cx="50%"
                       cy="50%"
+                      label={<CustomLabel />}
                       labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent as number * 100).toFixed(0)}%`}
                       outerRadius={80}
                       fill="#8884d8"
                       dataKey="value"

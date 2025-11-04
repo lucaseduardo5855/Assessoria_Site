@@ -29,6 +29,8 @@ const workoutPlanSchema = joi_1.default.object({
         sets: joi_1.default.alternatives().try(joi_1.default.number(), joi_1.default.string().allow('').optional()).optional(),
         reps: joi_1.default.alternatives().try(joi_1.default.number(), joi_1.default.string().allow('').optional()).optional(),
         load: joi_1.default.alternatives().try(joi_1.default.number(), joi_1.default.string().allow('').optional()).optional(),
+        time: joi_1.default.string().allow('').optional(),
+        distance: joi_1.default.alternatives().try(joi_1.default.number(), joi_1.default.string().allow('').optional()).optional(),
         interval: joi_1.default.string().allow('').optional(),
         instruction: joi_1.default.string().allow('').optional(),
         observation: joi_1.default.string().allow('').optional()
@@ -75,6 +77,7 @@ router.post('/plans', auth_1.authenticateToken, auth_1.requireAdmin, (0, errorHa
                 sets: exercise.sets && !isNaN(Number(exercise.sets)) ? Number(exercise.sets) : null,
                 reps: exercise.reps && !isNaN(Number(exercise.reps)) ? Number(exercise.reps) : null,
                 load: exercise.load && !isNaN(Number(exercise.load)) ? Number(exercise.load) : null,
+                distance: exercise.distance && !isNaN(Number(exercise.distance)) ? Number(exercise.distance) : null,
                 workoutPlanId: workoutPlan.id
             }))
         });

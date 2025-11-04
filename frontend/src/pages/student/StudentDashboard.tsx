@@ -26,7 +26,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { workoutService, eventService, evaluationService } from '../../services/api';
-import { Workout, Event, Evaluation, WorkoutStats } from '@/types';
+import { Workout, Event, Evaluation, WorkoutStats } from '../../types';
 
 const StudentDashboard: React.FC = () => {
   const navigate = useNavigate();

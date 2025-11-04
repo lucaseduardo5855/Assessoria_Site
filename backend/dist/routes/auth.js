@@ -113,5 +113,58 @@ router.get('/verify', auth_1.authenticateToken, (0, errorHandler_1.asyncHandler)
 router.post('/logout', (req, res) => {
     res.json({ message: 'Logout realizado com sucesso' });
 });
+const forgotPasswordSchema = joi_1.default.object({
+    email: joi_1.default.string().email().required()
+});
+router.post('/forgot-password', (0, errorHandler_1.asyncHandler)(async (req, res) => {
+    const { error, value } = forgotPasswordSchema.validate(req.body);
+    if (error) {
+        throw (0, errorHandler_1.createError)(error.details[0].message, 400);
+    }
+    const { email } = value;
+    const user = await prisma.user.findUnique({
+        where: { email }
+    });
+    if (user) {
+        console.log(`Solicitação de reset de senha para: ${email}`);
+    }
+    res.json({
+        message: 'Se o email estiver cadastrado, você receberá instruções para redefinir sua senha.'
+    });
+}));
+const resetPasswordSchema = joi_1.default.object({
+    token: joi_1.default.string().required(),
+    newPassword: joi_1.default.string().min(6).required()
+});
+router.post('/reset-password', (0, errorHandler_1.asyncHandler)(async (req, res) => {
+    const { error, value } = resetPasswordSchema.validate(req.body);
+    if (error) {
+        throw (0, errorHandler_1.createError)(error.details[0].message, 400);
+    }
+    const { token, newPassword } = value;
+    try {
+        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET || 'z4_performance_secret_key_2024');
+        const user = await prisma.user.findUnique({
+            where: { id: decoded.userId }
+        });
+        if (!user) {
+            throw (0, errorHandler_1.createError)('Token inválido ou expirado', 400);
+        }
+        const hashedPassword = await bcryptjs_1.default.hash(newPassword, 12);
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { password: hashedPassword }
+        });
+        res.json({
+            message: 'Senha redefinida com sucesso'
+        });
+    }
+    catch (err) {
+        if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
+            throw (0, errorHandler_1.createError)('Token inválido ou expirado', 400);
+        }
+        throw err;
+    }
+}));
 exports.default = router;
 //# sourceMappingURL=auth.js.map

@@ -107,32 +107,18 @@ const StudentEvolutionDashboard: React.FC = () => {
         }
       }
       
-      // Também buscar treinos atribuídos pelo admin que foram concluídos
-      try {
-        const assignedResponse = await fetch('http://localhost:5000/api/workouts/assigned-workouts', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
+      // Filtrar apenas treinos registrados pelo aluno com dados válidos
+      // Remover treinos com pace 0, distância 0 e duração 0 (treinos atribuídos não completados)
+      userWorkouts = userWorkouts.filter((workout: any) => {
+        // Verificar se o treino tem dados válidos registrados
+        const hasValidPace = workout.pace && workout.pace !== '0' && workout.pace !== 0;
+        const hasValidDistance = workout.distance && workout.distance > 0;
+        const hasValidDuration = workout.duration && workout.duration > 0;
+        const hasValidCalories = workout.calories && workout.calories > 0;
         
-        if (assignedResponse.ok) {
-          const assignedData = await assignedResponse.json();
-          const completedAssigned = (assignedData.workouts || []).filter((w: any) => 
-            w.status === 'COMPLETED' && (w.completedAt || w.createdAt)
-          );
-          
-          // Adicionar treinos atribuídos concluídos que não estão na lista principal
-          completedAssigned.forEach((assigned: any) => {
-            if (!userWorkouts.find((w: any) => w.id === assigned.id)) {
-              userWorkouts.push(assigned);
-            }
-          });
-        }
-      } catch (error) {
-        console.error('Erro ao buscar treinos atribuídos:', error);
-      }
+        // Incluir apenas treinos que têm pelo menos um dado válido (pace, distância ou duração)
+        return hasValidPace || hasValidDistance || hasValidDuration || hasValidCalories;
+      });
       
       // Se não há treinos reais, usar dados vazios
       if (userWorkouts.length === 0) {
@@ -155,8 +141,15 @@ const StudentEvolutionDashboard: React.FC = () => {
         sum + (workout.distance || 0), 0);
       const totalCalories = userWorkouts.reduce((sum: number, workout: any) => 
         sum + (workout.calories || 0), 0);
-      const averagePace = userWorkouts.length > 0 
-        ? userWorkouts.reduce((sum: number, workout: any) => {
+      // Calcular pace médio apenas dos treinos com pace válido
+      const workoutsWithValidPace = userWorkouts.filter((workout: any) => {
+        if (!workout.pace) return false;
+        const paceStr = workout.pace.toString();
+        return paceStr !== '0' && paceStr !== 0 && paceStr !== '';
+      });
+      
+      const averagePace = workoutsWithValidPace.length > 0 
+        ? workoutsWithValidPace.reduce((sum: number, workout: any) => {
             if (workout.pace) {
               const paceStr = workout.pace.toString();
               if (paceStr.includes(':')) {
@@ -166,7 +159,7 @@ const StudentEvolutionDashboard: React.FC = () => {
               return sum + parseFloat(paceStr);
             }
             return sum;
-          }, 0) / userWorkouts.length
+          }, 0) / workoutsWithValidPace.length
         : 0;
 
       // Calcular treinos deste mês
@@ -243,13 +236,20 @@ const StudentEvolutionDashboard: React.FC = () => {
     }
     
     workouts.forEach((workout: any, index: number) => {
-      if (workout.completedAt) {
+      // Verificar se o treino tem dados válidos antes de incluir
+      const hasValidPace = workout.pace && workout.pace !== '0' && workout.pace !== 0;
+      const hasValidDistance = workout.distance && workout.distance > 0;
+      const hasValidDuration = workout.duration && workout.duration > 0;
+      const hasValidCalories = workout.calories && workout.calories > 0;
+      
+      // Incluir apenas treinos que têm pelo menos um dado válido e foram completados
+      if (workout.completedAt && (hasValidPace || hasValidDistance || hasValidDuration || hasValidCalories)) {
         // Usar timestamp completo para evitar agrupamento
         const date = new Date(workout.completedAt).toISOString().split('T')[0];
         
-        // Converter pace para número
+        // Converter pace para número (apenas se válido)
         let paceValue = 0;
-        if (workout.pace) {
+        if (hasValidPace && workout.pace) {
           if (typeof workout.pace === 'string') {
             // Se contém ":", converter mm:ss para minutos decimais
             if (workout.pace.includes(':')) {
@@ -340,9 +340,9 @@ const StudentEvolutionDashboard: React.FC = () => {
     color: getModalityColor(modality)
   }));
 
-  // Dados para gráfico de distância por dia (apenas corrida)
+  // Dados para gráfico de distância por dia (apenas corrida com distância válida)
   const distanceByDayData = evolutionData
-    .filter((item: EvolutionData) => item.modality === 'RUNNING')
+    .filter((item: EvolutionData) => item.modality === 'RUNNING' && item.distance > 0)
     .reduce((acc: any, workout: EvolutionData) => {
       const date = workout.date.split('-').slice(0, 3).join('-'); // Extrair apenas a data (YYYY-MM-DD)
       if (!acc[date]) {
@@ -356,8 +356,10 @@ const StudentEvolutionDashboard: React.FC = () => {
     new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 
-  // Dados para gráfico de Pace (apenas corrida)
-  const paceData = evolutionData.filter((item: EvolutionData) => item.modality === 'RUNNING');
+  // Dados para gráfico de Pace (apenas corrida e com pace válido)
+  const paceData = evolutionData.filter((item: EvolutionData) => 
+    item.modality === 'RUNNING' && item.pace > 0
+  );
 
   if (loading) {
     return (
@@ -557,7 +559,7 @@ const StudentEvolutionDashboard: React.FC = () => {
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={paceData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" tickFormatter={(value) => value.split('-').slice(0, 3).join('-')} />
+                  <XAxis dataKey="date" tickFormatter={(value: string) => value.split('-').slice(0, 3).join('-')} />
                   <YAxis />
                   <Tooltip 
                     formatter={(value: any) => {
@@ -566,7 +568,7 @@ const StudentEvolutionDashboard: React.FC = () => {
                       }
                       return ['Sem dados', 'Pace'];
                     }}
-                    labelFormatter={(label) => `Data: ${label.split('-').slice(0, 3).join('-')}`}
+                    labelFormatter={(label: string) => `Data: ${label.split('-').slice(0, 3).join('-')}`}
                   />
                   <Legend />
                   <Line 
@@ -640,7 +642,7 @@ const StudentEvolutionDashboard: React.FC = () => {
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={distanceByDay}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" tickFormatter={(value) => value.split('-').slice(0, 3).join('-')} />
+                  <XAxis dataKey="date" tickFormatter={(value: string) => value.split('-').slice(0, 3).join('-')} />
                   <YAxis />
                   <Tooltip 
                     formatter={(value: any) => {
@@ -649,7 +651,7 @@ const StudentEvolutionDashboard: React.FC = () => {
                       }
                       return ['0 km', 'Distância'];
                     }}
-                    labelFormatter={(label) => `Data: ${label.split('-').slice(0, 3).join('-')}`}
+                    labelFormatter={(label: string) => `Data: ${label.split('-').slice(0, 3).join('-')}`}
                   />
                   <Bar dataKey="distance" fill="#4caf50" />
                 </BarChart>

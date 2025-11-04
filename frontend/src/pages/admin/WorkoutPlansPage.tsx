@@ -108,6 +108,8 @@ const WorkoutPlansPage: React.FC = () => {
       sets: 0,
       reps: 0,
       load: 0,
+      time: '',
+      distance: 0,
       interval: '',
       instruction: '',
       observation: '',
@@ -338,6 +340,8 @@ const WorkoutPlansPage: React.FC = () => {
         sets: 0,
         reps: 0,
         load: 0,
+        time: '',
+        distance: 0,
         interval: '',
         instruction: '',
         observation: '',
@@ -406,6 +410,8 @@ const WorkoutPlansPage: React.FC = () => {
           sets: ex.sets || 0,
           reps: ex.reps || 0,
           load: ex.load || 0,
+          time: ex.time || '',
+          distance: ex.distance || 0,
           interval: ex.interval || '',
           instruction: ex.instruction || '',
           observation: ex.observation || '',
@@ -419,6 +425,8 @@ const WorkoutPlansPage: React.FC = () => {
           sets: 0,
           reps: 0,
           load: 0,
+          time: '',
+          distance: 0,
           interval: '',
           instruction: '',
           observation: '',
@@ -473,6 +481,8 @@ const WorkoutPlansPage: React.FC = () => {
           sets: ex.sets || 0,
           reps: ex.reps || 0,
           load: ex.load || 0,
+          time: ex.time || '',
+          distance: ex.distance || 0,
           interval: ex.interval || '',
           instruction: ex.instruction || '',
           observation: ex.observation || '',
@@ -547,6 +557,8 @@ const WorkoutPlansPage: React.FC = () => {
       sets: 0,
       reps: 0,
       load: 0,
+      time: '',
+      distance: 0,
       interval: '',
       instruction: '',
       observation: '',
@@ -567,7 +579,7 @@ const WorkoutPlansPage: React.FC = () => {
     if (field === 'sets' || field === 'reps') {
       const numValue = value === '' || value === null || value === undefined ? 0 : Number(value);
       updatedExercises[index] = { ...exercise, [field]: isNaN(numValue) ? 0 : numValue };
-    } else if (field === 'load' || field === 'sequence') {
+    } else if (field === 'load' || field === 'sequence' || field === 'distance') {
       const numValue = value === '' || value === null || value === undefined ? 0 : Number(value);
       updatedExercises[index] = { ...exercise, [field]: isNaN(numValue) ? 0 : numValue };
     } else {
@@ -875,6 +887,25 @@ const WorkoutPlansPage: React.FC = () => {
                     </Box>
                     <Box display="flex" gap={2}>
                       <TextField
+                        label="Tempo (ex: 30 min ou 1h 30min)"
+                        value={exercise.time || ''}
+                        onChange={(e) => updateExercise(index, 'time', e.target.value)}
+                        size="small"
+                        sx={{ flex: 1 }}
+                        placeholder="30 min"
+                        helperText="Informe o tempo em minutos ou horas"
+                      />
+                      <TextField
+                        label="Distância (km)"
+                        type="number"
+                        value={exercise.distance || ''}
+                        onChange={(e) => updateExercise(index, 'distance', e.target.value)}
+                        size="small"
+                        sx={{ flex: 1 }}
+                        inputProps={{ step: "0.1", min: "0" }}
+                        placeholder="0"
+                      />
+                      <TextField
                         label="Intervalo"
                         value={exercise.interval || ''}
                         onChange={(e) => updateExercise(index, 'interval', e.target.value)}
@@ -1114,6 +1145,25 @@ const WorkoutPlansPage: React.FC = () => {
                       />
                     </Box>
                     <Box display="flex" gap={2}>
+                      <TextField
+                        label="Tempo (ex: 30 min ou 1h 30min)"
+                        value={exercise.time || ''}
+                        onChange={(e) => updateExercise(index, 'time', e.target.value)}
+                        size="small"
+                        sx={{ flex: 1 }}
+                        placeholder="30 min"
+                        helperText="Informe o tempo em minutos ou horas"
+                      />
+                      <TextField
+                        label="Distância (km)"
+                        type="number"
+                        value={exercise.distance || ''}
+                        onChange={(e) => updateExercise(index, 'distance', e.target.value)}
+                        size="small"
+                        sx={{ flex: 1 }}
+                        inputProps={{ step: "0.1", min: "0" }}
+                        placeholder="0"
+                      />
                       <TextField
                         label="Intervalo"
                         value={exercise.interval || ''}

@@ -58,6 +58,7 @@ const StudentEvolutionDashboard: React.FC = () => {
   const [recentWorkouts, setRecentWorkouts] = useState<WorkoutPlan[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<EventType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [assignedCompletedWorkouts, setAssignedCompletedWorkouts] = useState<any[]>([]);
   const [stats, setStats] = useState({
     totalWorkouts: 0,
     totalDistance: 0,
@@ -107,18 +108,32 @@ const StudentEvolutionDashboard: React.FC = () => {
         }
       }
       
-      // Filtrar apenas treinos registrados pelo aluno com dados válidos
-      // Remover treinos com pace 0, distância 0 e duração 0 (treinos atribuídos não completados)
-      userWorkouts = userWorkouts.filter((workout: any) => {
+      // Separar treinos com dados de performance e treinos atribuídos confirmados
+      const workoutsWithData: any[] = [];
+      const assignedCompleted: any[] = [];
+      
+      userWorkouts.forEach((workout: any) => {
         // Verificar se o treino tem dados válidos registrados
         const hasValidPace = workout.pace && workout.pace !== '0' && workout.pace !== 0;
         const hasValidDistance = workout.distance && workout.distance > 0;
         const hasValidDuration = workout.duration && workout.duration > 0;
         const hasValidCalories = workout.calories && workout.calories > 0;
         
-        // Incluir apenas treinos que têm pelo menos um dado válido (pace, distância ou duração)
-        return hasValidPace || hasValidDistance || hasValidDuration || hasValidCalories;
+        // Se tem dados válidos, incluir nos treinos com dados
+        if (hasValidPace || hasValidDistance || hasValidDuration || hasValidCalories) {
+          workoutsWithData.push(workout);
+        } 
+        // Se é um treino atribuído (tem workoutPlan) e foi concluído, incluir mesmo sem dados
+        else if (workout.workoutPlan && workout.completedAt && workout.status === 'COMPLETED') {
+          assignedCompleted.push(workout);
+        }
       });
+      
+      // Salvar treinos atribuídos concluídos no estado para usar na distribuição de modalidades
+      setAssignedCompletedWorkouts(assignedCompleted);
+      
+      // Usar treinos com dados para cálculos de estatísticas
+      userWorkouts = workoutsWithData;
       
       // Se não há treinos reais, usar dados vazios
       if (userWorkouts.length === 0) {
@@ -328,11 +343,18 @@ const StudentEvolutionDashboard: React.FC = () => {
   };
 
   // Dados para gráfico de pizza (distribuição de modalidades)
+  // Incluir treinos de evolutionData (com dados) e treinos atribuídos concluídos
   const modalityData = evolutionData.reduce((acc: any, workout: any) => {
     const modality = workout.modality || 'RUNNING';
     acc[modality] = (acc[modality] || 0) + 1;
     return acc;
   }, {});
+
+  // Adicionar treinos atribuídos concluídos à distribuição de modalidades
+  assignedCompletedWorkouts.forEach((workout: any) => {
+    const modality = workout.workoutPlan?.modality || workout.modality || 'RUNNING';
+    modalityData[modality] = (modalityData[modality] || 0) + 1;
+  });
 
   const pieData: Array<{ name: string; value: number; color: string }> = Object.entries(modalityData).map(([modality, count]) => ({
     name: getModalityDisplayName(modality),

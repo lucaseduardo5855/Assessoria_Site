@@ -72,6 +72,18 @@ main {
     background-repeat: no-repeat;
 }
 
+.modalidade-hero.trail-hero {
+    background: linear-gradient(135deg, rgba(9, 27, 51, 0.9) 0%, rgba(15, 48, 71, 0.9) 100%);
+}
+
+.modalidade-hero.musculacao-hero {
+    background: linear-gradient(135deg, rgba(12, 18, 40, 0.92) 0%, rgba(36, 52, 100, 0.92) 50%, rgba(66, 88, 163, 0.92) 100%);
+}
+
+.modalidade-hero.funcional-hero {
+    background: linear-gradient(135deg, rgba(12, 36, 60, 0.92) 0%, rgba(26, 74, 106, 0.92) 50%, rgba(52, 115, 140, 0.92) 100%);
+}
+
 .modalidade-hero-content {
     max-width: 1100px;
     margin: 0 auto;
@@ -109,6 +121,10 @@ main {
     grid-template-columns: minmax(320px, 1.1fr) minmax(280px, 1fr);
 }
 
+.modalidade-layout.funcional-layout {
+    grid-template-columns: minmax(300px, 1fr) minmax(340px, 1.25fr);
+}
+
 .modalidade-photo {
     overflow: hidden;
 }
@@ -118,6 +134,10 @@ main {
     display: block;
     object-fit: cover;
     border-radius: 30px
+}
+
+.modalidade-photo-large img {
+    min-height: 420px;
 }
 
 .modalidade-content {
@@ -276,6 +296,10 @@ main {
 }
 
 @media (max-width: 640px) {
+    .modalidade-photo-large img {
+        min-height: 260px;
+    }
+
     .top-bar {
         padding: 24px 20px 0;
         flex-direction: column;

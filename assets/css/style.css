@@ -12,6 +12,7 @@ html {
     --amarelo-z4: #FFEA00;
     --darkBk: #191919;
     scroll-behavior: smooth;
+    scroll-padding-top: 100px;
 }
 
 /* Código reutilizavel INICIO */
@@ -663,21 +664,22 @@ section.servicos {
     padding: 8px 0;
     background-color: white;
     text-align: center;
-    /* Linha de destaque para o estilo final */
-    border-top: 2px solid var(--fundo-z4);
     z-index: 5;
     /* Arredondamento inferior */
     border-radius: 0 0 5px 5px;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
 }
 
 .servico-box .image-title-overlay span {
     font-size: 16px;
     font-weight: 600;
-    /* COR DO TEXTO ESCURO, pois o fundo é branco */
     color: var(--darkBk);
     text-transform: uppercase;
-    display: block;
+    display: inline-block;
     margin: 0;
+    text-decoration: none;
 }
 
 /* Estilos removidos/simplificados */
@@ -816,9 +818,7 @@ section.treinadora-bio {
     /* Faz a imagem cobrir todo o fundo */
     background-repeat: no-repeat;
     /* Evita que a imagem se repita */
-
-    /* CORREÇÃO CRÍTICA: Foca no centro horizontal e no topo vertical para priorizar o rosto/corpo */
-    background-position: 5 0% top;
+    background-position: center right;
 
     /* Overlay para legibilidade (Mantido) */
     background-blend-mode: multiply;
@@ -1136,8 +1136,8 @@ section.treinadora-bio {
 .section-header .title::after {
     content: "";
     display: block;
-    width: 240px;
-    height: 3px;
+    width: 320px;
+    height: 4px;
     background-color: var(--amarelo-z4);
     margin: 10px auto 0;
     border-radius: 2px;
@@ -1160,8 +1160,7 @@ section.treinadora-bio {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    min-height: 280px;
-    max-height: 320px;
+    min-height: 320px;
 }
 
 .testimonials-item .info {
@@ -1209,11 +1208,7 @@ section.treinadora-bio {
     font-size: 14px;
     margin: 0;
     padding: 0;
-    max-height: 140px;
     overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 7;
-    -webkit-box-orient: vertical;
 }
 
 .testimonials-item .rating {
@@ -1847,6 +1842,19 @@ section.pagina-footer {
 
 /* Inicio das Media Querys */
 @media (max-width: 968px) {
+    section .section-header h1::after {
+        width: 160px;
+        height: 3px;
+        margin-top: 12px;
+    }
+    .section-header-treinadora h1::after {
+        width: 200px;
+        height: 3px;
+    }
+    .section-title::after {
+        width: 200px;
+        height: 3px;
+    }
 
     /* No tablet, empilha as colunas */
     .bio-conteudo {
@@ -1872,6 +1880,18 @@ section.pagina-footer {
 }
 
 @media(max-width: 868px) {
+    section .section-header h1::after {
+        width: 140px;
+        height: 3px;
+    }
+    .section-header-treinadora h1::after {
+        width: 170px;
+        height: 3px;
+    }
+    .section-title::after {
+        width: 170px;
+        height: 3px;
+    }
 
     /* home Section */
     .main-navbar .hamburguer-btn {
@@ -1971,6 +1991,19 @@ section.pagina-footer {
 }
 
 @media(max-width: 668px) {
+    section .section-header h1::after {
+        width: 110px;
+        height: 2px;
+        margin-top: 10px;
+    }
+    .section-header-treinadora h1::after {
+        width: 140px;
+        height: 2px;
+    }
+    .section-title::after {
+        width: 150px;
+        height: 2px;
+    }
 
     /* Servicos Section - Mude para 1 coluna */
     .servicos .servicos-conteudo {
@@ -1993,6 +2026,21 @@ section.pagina-footer {
 }
 
 @media(max-width: 568px) {
+    section .section-header h1::after {
+        width: 90px;
+        height: 2px;
+        margin-top: 8px;
+    }
+    .section-header-treinadora h1::after {
+        width: 120px;
+        height: 2px;
+        margin-top: 8px;
+    }
+    .section-title::after {
+        width: 120px;
+        height: 2px;
+        margin-top: 8px;
+    }
 
     /*Home section */
     .banner .banner-conteudo h2 {

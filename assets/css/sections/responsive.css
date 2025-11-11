@@ -22,12 +22,12 @@
     }
     
     .sobre {
-        padding: 60px 4%;
+        padding: 60px 3%;
     }
     
     .sobre .sobre-conteudo {
         flex-direction: column;
-        padding: 60px 4%;
+        padding: 60px 3%;
         text-align: center;
     }
     
@@ -77,6 +77,10 @@
         width: 100%;
         margin-top: 0;
     }
+
+    .bio-fundo-colorido {
+        background-position: center;
+    }
     
     .consultoria-online {
         padding: 50px 4%;
@@ -95,8 +99,8 @@
     .consultoria-online .consultoria-coluna-esquerda img {
         width: 100% !important;
         height: auto !important;
-        max-width: 350px;
-        margin: 0 auto;
+        max-width: 380px;
+        margin: 0 auto 20px;
         display: block;
     }
     
@@ -220,6 +224,10 @@
         width: 100%;
         margin-top: 0;
     }
+
+    .bio-fundo-colorido {
+        background-position: center;
+    }
     
     /* Seção Consultoria */
     .consultoria-online {
@@ -239,8 +247,8 @@
     .consultoria-online .consultoria-coluna-esquerda img {
         width: 100% !important;
         height: auto !important;
-        max-width: 400px;
-        margin: 0 auto;
+        max-width: 420px;
+        margin: 0 auto 20px;
         display: block;
     }
     
@@ -352,7 +360,7 @@
     .treinadora-bio .treinadora-coluna-esquerda img {
         width: 100% !important;
         height: auto !important;
-        max-width: 300px;
+        max-width: 340px;
         margin: 0 auto;
         display: block;
     }
@@ -380,8 +388,8 @@
     .consultoria-online .consultoria-coluna-esquerda img {
         width: 100% !important;
         height: auto !important;
-        max-width: 350px;
-        margin: 0 auto;
+        max-width: 360px;
+        margin: 0 auto 18px;
         display: block;
     }
     
@@ -453,8 +461,7 @@
     /* Feedbacks */
     .testimonials-item {
         padding: 20px 15px;
-        min-height: 220px;
-        max-height: 250px;
+        min-height: 260px;
     }
     
     .testimonials-item .info {
@@ -474,14 +481,16 @@
     
     .testimonials-item p {
         font-size: 12px;
-        max-height: 100px;
-        -webkit-line-clamp: 5;
     }
     
     /* Linha amarela dos feedbacks responsiva */
     .section-header .title::after {
-        width: 60px;
-        height: 3px;
+        width: 160px;
+        height: 4px;
+    }
+
+    .feedbacks .section-header .title::after {
+        width: 200px;
     }
     
     /* Footer */
@@ -513,11 +522,11 @@
     
     /* Seção Sobre */
     .sobre {
-        padding: 40px 3%;
+        padding: 40px 2.5%;
     }
     
     .sobre .sobre-conteudo {
-        padding: 40px 3%;
+        padding: 40px 2.5%;
     }
     
     .sobre-conteudo .sobre-coluna-esquerda img {
@@ -546,7 +555,7 @@
     .treinadora-bio .treinadora-coluna-esquerda img {
         width: 100% !important;
         height: auto !important;
-        max-width: 250px;
+        max-width: 300px;
         margin: 0 auto;
         display: block;
     }
@@ -568,8 +577,8 @@
     .consultoria-online .consultoria-coluna-esquerda img {
         width: 100% !important;
         height: auto !important;
-        max-width: 300px;
-        margin: 0 auto;
+        max-width: 320px;
+        margin: 0 auto 16px;
         display: block;
     }
     
@@ -637,8 +646,7 @@
     /* Feedbacks */
     .testimonials-item {
         padding: 15px 10px;
-        min-height: 200px;
-        max-height: 220px;
+        min-height: 220px;
     }
     
     .testimonials-item .info img {
@@ -652,14 +660,16 @@
     
     .testimonials-item p {
         font-size: 11px;
-        max-height: 80px;
-        -webkit-line-clamp: 4;
     }
     
     /* Linha amarela dos feedbacks responsiva - mobile pequeno */
     .section-header .title::after {
-        width: 50px;
-        height: 2px;
+        width: 140px;
+        height: 3px;
+    }
+
+    .feedbacks .section-header .title::after {
+        width: 180px;
     }
     
     /* Footer */

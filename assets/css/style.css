@@ -1149,6 +1149,7 @@ section.treinadora-bio {
     display: block;
     width: 420px;
     height: 4px;
+    height: 5px;
     background-color: var(--amarelo-z4);
     margin: 14px auto 0;
     border-radius: 2px;

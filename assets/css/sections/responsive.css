@@ -676,6 +676,19 @@
     .btn-noticia-btn,
     .btn-area-footer {
         width: 100%;
-        max-width: 280px;
+        max-width: 320px;
+        min-width: auto;
+        padding: 18px 40px;
+        font-size: 17px;
+    }
+}
+
+@media (max-width: 480px) {
+    .btn-noticia-btn,
+    .btn-area-footer {
+        width: 100%;
+        max-width: 100%;
+        padding: 18px 36px;
+        font-size: 17px;
     }
 }

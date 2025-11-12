@@ -34,6 +34,7 @@
         rgba(8, 31, 62, 0.9) 100%
     );
     z-index: 2;
+    pointer-events: none;
 }
 
 /* Banner central */

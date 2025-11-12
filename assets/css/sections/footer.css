@@ -106,10 +106,12 @@ section.pagina-footer {
 
 .btn-noticia-btn {
     background-color: white;
-    height: auto;
-    width: 400px;
+    border-radius: 999px;
+    padding: 16px 36px;
+    min-width: 260px;
     text-align: center;
-    font-size: 15px;
+    font-size: 16px;
+    font-weight: 600;
     margin-top: 20px;
 }
 
@@ -119,11 +121,13 @@ section.pagina-footer {
 }
 
 .btn-area-footer {
-    height: auto;
-    width: 400px;
+    border-radius: 999px;
+    padding: 16px 36px;
+    min-width: 260px;
     text-align: center;
-    font-size: 15px;
-    margin-top: 20px;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 10px;
 }
 
 .btn-area-footer:hover {

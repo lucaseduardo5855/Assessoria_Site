@@ -40,6 +40,17 @@ function listItemClicked() {
 
 // Junta todos os blocos DOMContentLoaded em um único
 document.addEventListener('DOMContentLoaded', function () {
+    if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
+
+    window.addEventListener('load', function () {
+        if (window.location.hash) {
+            history.replaceState(null, document.title, window.location.pathname + window.location.search);
+        }
+        window.scrollTo(0, 0);
+    });
+
     // =========================================================
     // 1. CÓDIGO DA NAVBAR E EFEITO SCROLL
     // =========================================================
@@ -142,18 +153,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const priceData = {
         corrida: {
             mensal: { price: "80,00", period: "/mês", currency: "R$" },
-            semestral: { price: "336,00", period: "/6 meses", currency: "R$" },
-            anual: { price: "576,00", period: "/ano", currency: "R$" }
+            semestral: { price: "350,00", period: "/6 meses", currency: "R$" },
+            anual: { price: "700,00", period: "/ano", currency: "R$" }
         },
         musculacao: {
             mensal: { price: "80,00", period: "/mês", currency: "R$" },
-            semestral: { price: "336,00", period: "/6 meses", currency: "R$" },
-            anual: { price: "576,00", period: "/ano", currency: "R$" }
+            semestral: { price: "350,00", period: "/6 meses", currency: "R$" },
+            anual: { price: "700,00", period: "/ano", currency: "R$" }
         },
         combo: {
             mensal: { price: "120,00", period: "/mês", currency: "R$" },
-            semestral: { price: "504,00", period: "/6 meses", currency: "R$" },
-            anual: { price: "864,00", period: "/ano", currency: "R$" }
+            semestral: { price: "650,00", period: "/6 meses", currency: "R$" },
+            anual: { price: "920,00", period: "/ano", currency: "R$" }
         }
     };
 
@@ -192,28 +203,7 @@ document.addEventListener('DOMContentLoaded', function () {
     updatePrices('mensal');
 
     // =========================================================
-    // 6. Animação de entrada por rolagem
-    // =========================================================
-    const sectionsToReveal = document.querySelectorAll('section:not(.home)');
-
-    const scrollRevealObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, {
-        threshold: 0.2
-    });
-
-    sectionsToReveal.forEach(section => {
-        section.classList.add('scroll-reveal');
-        scrollRevealObserver.observe(section);
-    });
-
-    // =========================================================
-    // 7. BOTÃO "QUERO TREINAR COM VOCÊS"
+    // 6. BOTÃO "QUERO TREINAR COM VOCÊS"
     // =========================================================
     const btnSobre = document.querySelector('.btn-sobre[data-whatsapp]');
     if (btnSobre) {

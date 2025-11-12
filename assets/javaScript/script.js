@@ -65,6 +65,13 @@ document.addEventListener('DOMContentLoaded', function () {
         effect: 'fade',
         speed: 500, // Transição da foto (rápida)
 
+        // Habilita arrasto com o dedo no mobile/tablet
+        touchEventsTarget: 'container',
+        allowTouchMove: true,
+        touchRatio: 1,
+        touchAngle: 45,
+        grabCursor: true,
+
         pagination: {
             el: '.home-pagination',
             clickable: true,
@@ -142,18 +149,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const priceData = {
         corrida: {
             mensal: { price: "80,00", period: "/mês", currency: "R$" },
-            semestral: { price: "336,00", period: "/6 meses", currency: "R$" },
-            anual: { price: "576,00", period: "/ano", currency: "R$" }
+            semestral: { price: "350,00", period: "/6 meses", currency: "R$" },
+            anual: { price: "760,00", period: "/ano", currency: "R$" }
         },
         musculacao: {
             mensal: { price: "80,00", period: "/mês", currency: "R$" },
-            semestral: { price: "336,00", period: "/6 meses", currency: "R$" },
-            anual: { price: "576,00", period: "/ano", currency: "R$" }
+            semestral: { price: "350,00", period: "/6 meses", currency: "R$" },
+            anual: { price: "760,00", period: "/ano", currency: "R$" }
         },
         combo: {
             mensal: { price: "120,00", period: "/mês", currency: "R$" },
-            semestral: { price: "504,00", period: "/6 meses", currency: "R$" },
-            anual: { price: "864,00", period: "/ano", currency: "R$" }
+            semestral: { price: "615,00", period: "/6 meses", currency: "R$" },
+            anual: { price: "900,00", period: "/ano", currency: "R$" }
         }
     };
 
@@ -192,31 +199,10 @@ document.addEventListener('DOMContentLoaded', function () {
     updatePrices('mensal');
 
     // =========================================================
-    // 6. Animação de entrada por rolagem
-    // =========================================================
-    const sectionsToReveal = document.querySelectorAll('section:not(.home)');
-
-    const scrollRevealObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, {
-        threshold: 0.2
-    });
-
-    sectionsToReveal.forEach(section => {
-        section.classList.add('scroll-reveal');
-        scrollRevealObserver.observe(section);
-    });
-
-    // =========================================================
     // 7. WHATSAPP DINÂMICO
     // =========================================================
 
-    const whatsappBaseUrl = "https://wa.me/5543996905705?text=";
+    const whatsappBaseUrl = "https://wa.me/5542998489857?text=";
     const whatsappButtons = document.querySelectorAll('.btn-choose-link');
 
     whatsappButtons.forEach(link => {

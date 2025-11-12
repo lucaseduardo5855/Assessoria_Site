@@ -79,16 +79,7 @@ body {
     overflow-x: hidden;
 }
 
-.scroll-reveal {
-    opacity: 0;
-    transform: translateY(60px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-}
-
-.scroll-reveal.is-visible {
-    opacity: 1;
-    transform: translateY(0);
-}
+/* Animação de scroll removida - estava causando travamentos */
 
 .land-wrapper {
     width: 100%;
@@ -1149,7 +1140,6 @@ section.treinadora-bio {
     display: block;
     width: 420px;
     height: 4px;
-    height: 5px;
     background-color: var(--amarelo-z4);
     margin: 14px auto 0;
     border-radius: 2px;
@@ -1644,6 +1634,7 @@ section.pagina-footer {
     display: flex;
     flex-direction: column;
 }
+
 
 .footer-col-desc i {
     color: var(--amarelo-z4);

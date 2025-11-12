@@ -138,6 +138,11 @@ section.pagina-footer {
     margin-bottom: 10px;
 }
 
+/* Diminui o tamanho da fonte apenas do email */
+.footer-col-2 .footer-col-desc a.email-link {
+    font-size: 13.9px;
+}
+
 .footer-col-2 .footer-col-desc a:hover {
     color: var(--amarelo-z4);
 }

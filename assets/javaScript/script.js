@@ -76,6 +76,13 @@ document.addEventListener('DOMContentLoaded', function () {
         effect: 'fade',
         speed: 500, // Transição da foto (rápida)
 
+        // Habilita arrasto com o dedo no mobile/tablet
+        touchEventsTarget: 'container',
+        allowTouchMove: true,
+        touchRatio: 1,
+        touchAngle: 45,
+        grabCursor: true,
+
         pagination: {
             el: '.home-pagination',
             clickable: true,
@@ -154,17 +161,30 @@ document.addEventListener('DOMContentLoaded', function () {
         corrida: {
             mensal: { price: "80,00", period: "/mês", currency: "R$" },
             semestral: { price: "350,00", period: "/6 meses", currency: "R$" },
+<<<<<<< HEAD
             anual: { price: "700,00", period: "/ano", currency: "R$" }
+=======
+            anual: { price: "760,00", period: "/ano", currency: "R$" }
+>>>>>>> c7795c04a594254be5ea9385b9dea8bbcf6af65b
         },
         musculacao: {
             mensal: { price: "80,00", period: "/mês", currency: "R$" },
             semestral: { price: "350,00", period: "/6 meses", currency: "R$" },
+<<<<<<< HEAD
             anual: { price: "700,00", period: "/ano", currency: "R$" }
         },
         combo: {
             mensal: { price: "120,00", period: "/mês", currency: "R$" },
             semestral: { price: "650,00", period: "/6 meses", currency: "R$" },
             anual: { price: "920,00", period: "/ano", currency: "R$" }
+=======
+            anual: { price: "760,00", period: "/ano", currency: "R$" }
+        },
+        combo: {
+            mensal: { price: "120,00", period: "/mês", currency: "R$" },
+            semestral: { price: "615,00", period: "/6 meses", currency: "R$" },
+            anual: { price: "900,00", period: "/ano", currency: "R$" }
+>>>>>>> c7795c04a594254be5ea9385b9dea8bbcf6af65b
         }
     };
 
@@ -203,6 +223,7 @@ document.addEventListener('DOMContentLoaded', function () {
     updatePrices('mensal');
 
     // =========================================================
+<<<<<<< HEAD
     // 6. BOTÃO "QUERO TREINAR COM VOCÊS"
     // =========================================================
     const btnSobre = document.querySelector('.btn-sobre[data-whatsapp]');
@@ -217,9 +238,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // =========================================================
     // 8. WHATSAPP DINÂMICO
+=======
+    // 7. WHATSAPP DINÂMICO
+>>>>>>> c7795c04a594254be5ea9385b9dea8bbcf6af65b
     // =========================================================
 
-    const whatsappBaseUrl = "https://wa.me/5543996905705?text=";
+    const whatsappBaseUrl = "https://wa.me/5542998489857?text=";
     const whatsappButtons = document.querySelectorAll('.btn-choose-link');
 
     whatsappButtons.forEach(link => {

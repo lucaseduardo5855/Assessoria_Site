@@ -79,6 +79,11 @@ body {
     overflow-x: hidden;
 }
 
+<<<<<<< HEAD
+=======
+/* Animação de scroll removida - estava causando travamentos */
+
+>>>>>>> c7795c04a594254be5ea9385b9dea8bbcf6af65b
 .land-wrapper {
     width: 100%;
     max-width: auto;
@@ -1176,9 +1181,12 @@ section.treinadora-bio {
     width: 420px;
 <<<<<<< Updated upstream
     height: 4px;
+<<<<<<< HEAD
 =======
 >>>>>>> Stashed changes
     height: 5px;
+=======
+>>>>>>> c7795c04a594254be5ea9385b9dea8bbcf6af65b
     background-color: var(--amarelo-z4);
     margin: 14px auto 0;
     border-radius: 2px;
@@ -1673,6 +1681,7 @@ section.pagina-footer {
     display: flex;
     flex-direction: column;
 }
+
 
 .footer-col-desc i {
     color: var(--amarelo-z4);

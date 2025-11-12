@@ -486,11 +486,12 @@
     /* Linha amarela dos feedbacks responsiva */
     .section-header .title::after {
         width: 300px;
-        height: 5px;
+        height: 4px !important;
     }
 
     .feedbacks .section-header .title::after {
         width: 340px;
+        height: 4px !important;
     }
     
     /* Footer */
@@ -505,6 +506,11 @@
    MOBILE PEQUENO (até 480px)
    =========================================== */
 @media (max-width: 480px) {
+    /* Linha amarela dos feedbacks - mobile muito pequeno */
+    .feedbacks .section-header .title::after {
+        height: 4px !important;
+    }
+    
     /* Header muito pequeno */
     .main-navbar {
         height: 60px;
@@ -665,11 +671,12 @@
     /* Linha amarela dos feedbacks responsiva - mobile pequeno */
     .section-header .title::after {
         width: 240px;
-        height: 4px;
+        height: 4px !important;
     }
 
     .feedbacks .section-header .title::after {
         width: 280px;
+        height: 4px !important;
     }
     
     /* Footer */

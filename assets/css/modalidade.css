@@ -37,6 +37,7 @@ a {
     font-weight: 600;
     color: var(--modalidade-primary);
     transition: transform 0.2s ease, color 0.2s ease;
+    margin-bottom: 20px;
 }
 
 .back-link svg {

@@ -213,7 +213,20 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // =========================================================
-    // 7. WHATSAPP DINÂMICO
+    // 7. BOTÃO "QUERO TREINAR COM VOCÊS"
+    // =========================================================
+    const btnSobre = document.querySelector('.btn-sobre[data-whatsapp]');
+    if (btnSobre) {
+        btnSobre.addEventListener('click', () => {
+            const waUrl = btnSobre.getAttribute('data-whatsapp');
+            if (waUrl) {
+                window.open(waUrl, '_blank', 'noopener');
+            }
+        });
+    }
+
+    // =========================================================
+    // 8. WHATSAPP DINÂMICO
     // =========================================================
 
     const whatsappBaseUrl = "https://wa.me/5543996905705?text=";

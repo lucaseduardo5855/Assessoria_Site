@@ -479,6 +479,7 @@ section.sobre {
     margin-top: -90px;
     /* Ajuste este valor (-60px) para subir ou descer mais */
     left: 10px;
+    z-index: 3;
     /* ... o restante do estilo da coluna direita ... */
 }
 
@@ -524,6 +525,10 @@ section.sobre {
 }
 
 .btn-sobre {
+    position: relative;
+    z-index: 4;
+    pointer-events: auto;
+    display: inline-flex;
     /* Cores e Texto */
     /* Degradê do seu Azul (var(--fundo-z4)) para um Amarelo/Ciano */
     background: linear-gradient(90deg, #003366, #006dd4) ;
@@ -553,13 +558,9 @@ section.sobre {
 }
 
 
-.btn-sobre a {
-    color: white;
-    background-color: transparent;
-    outline: none;
-    border: none;
+.btn-sobre strong {
+    color: inherit;
     text-decoration: none;
-    margin-right: 5px;
 }
 
 

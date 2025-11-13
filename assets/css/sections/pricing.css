@@ -44,7 +44,6 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
-    align-items: stretch;
 }
 
 .pricing-card {
@@ -133,31 +132,23 @@
     font-weight: bold;
 }
 
-.features li.feature-disabled {
-    opacity: 0.6;
-    color: rgba(255, 255, 255, 0.5);
-}
-
-.features li.feature-disabled::before {
-    content: '✗';
-    color: rgba(255, 255, 255, 0.4);
-}
-
-.features li.feature-disabled del {
-    position: relative;
-    text-decoration: none;
-    color: rgba(255, 255, 255, 0.5);
-}
-
-.features li.feature-disabled del::after {
+/* Remove o check dos itens que contêm <del> ou <s> */
+.features li:has(del)::before,
+.features li:has(s)::before {
     content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    width: 100%;
-    height: 4px;
-    background-color: rgba(255, 255, 255, 0.5);
-    transform: translateY(-50%);
+    display: none;
+}
+
+.features li:has(del),
+.features li:has(s) {
+    padding-left: 0;
+}
+
+.features li del,
+.features li s {
+    text-decoration: line-through;
+    color: rgba(255, 255, 255, 0.4);
+    opacity: 0.6;
 }
 
 .btn-choose {
@@ -196,7 +187,9 @@
     /* 4. CRÍTICO: Remove o sublinhado padrão dos links */
     text-decoration: none !important;
     
-
+    /* Nota: Se o seu efeito de pulinho depender do box-shadow, você terá que redefinir 
+       o box-shadow específico do pulinho no :hover, removendo o !important.
+       Por exemplo: box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4); */
 }
 
 /* Responsive */
@@ -217,47 +210,5 @@
     
     .section-title {
         font-size: 2rem;
-    }
-    
-    /* Remove flexbox em mobile para comportamento normal */
-    .pricing-card {
-        display: block;
-    }
-    
-    .features {
-        flex-grow: 0;
-    }
-    
-    .btn-choose {
-        margin-top: 0;
-    }
-    
-    /* Mantém a mesma espessura da linha amarela no mobile */
-    .features li.feature-disabled del::after {
-        height: 4px;
-    }
-}
-
-/* Alinhamento dos botões apenas em telas maiores */
-@media (min-width: 769px) {
-    .pricing-card {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-    }
-    
-    .description {
-        flex-shrink: 0;
-    }
-    
-    .features {
-        flex: 1 1 auto;
-        margin-bottom: 30px;
-        min-height: 0;
-    }
-    
-    .btn-choose {
-        margin-top: auto;
-        flex-shrink: 0;
     }
 }

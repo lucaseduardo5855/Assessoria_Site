@@ -79,11 +79,6 @@ body {
     overflow-x: hidden;
 }
 
-<<<<<<< HEAD
-=======
-/* Animação de scroll removida - estava causando travamentos */
-
->>>>>>> c7795c04a594254be5ea9385b9dea8bbcf6af65b
 .land-wrapper {
     width: 100%;
     max-width: auto;
@@ -126,6 +121,7 @@ section.home {
     height: 100%;
     z-index: 1;
     overflow: hidden;
+    touch-action: pan-x pan-y;
 }
 
 /* swiper-slide e Imagem */
@@ -455,9 +451,11 @@ section.facilities {
 section.sobre {
     padding: 100px 8%;
     background-color: #F5F5F5;
+    overflow-x: hidden;
+    box-sizing: border-box;
 }
 
-/* 1. FLEXBOX CORRIGIDO: Garante colunas lado a lado, centralizadas e com espaçamento */
+/* Container Principal - Flexbox */
 .sobre .sobre-conteudo {
     display: flex;
     justify-content: space-between;
@@ -465,14 +463,16 @@ section.sobre {
     max-width: 1200px;
     margin: 0 auto;
     padding: 100px 8%;
-    /* Mantém o padding geral da seção */
+    box-sizing: border-box;
+    overflow-x: hidden;
 }
 
-/* 2. COLUNA ESQUERDA (IMAGEM): Largura da imagem e contêiner */
+/* Coluna Esquerda - Imagem */
 .sobre-conteudo .sobre-coluna-esquerda {
     width: 50%;
-    /* CORREÇÃO: Remova o padding à esquerda para que a foto encoste na borda da seção */
     padding-left: 0;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .sobre-conteudo .sobre-coluna-esquerda img {
@@ -480,15 +480,14 @@ section.sobre {
     display: block;
     width: 120%;
     height: auto;
-    /* Garante que a imagem mantenha proporção */
     object-fit: cover;
     z-index: 2;
     border-radius: 12px;
     right: 130px;
-    max-width: 100%;
+    max-width: none;
 }
 
-/* Pseudo-elemento da imagem (mantido) */
+/* Pseudo-elemento da imagem (opcional - decorativo) */
 .sobre-conteudo .sobre-coluna-esquerda::before {
     position: absolute;
     content: '';
@@ -499,83 +498,75 @@ section.sobre {
     z-index: 2;
 }
 
-
-/* 3. COLUNA DIREITA (TEXTO): Largura do texto e alinhamentos */
+/* Coluna Direita - Texto */
 .sobre-conteudo .sobre-coluna-direita {
     position: relative;
     width: 55%;
     padding-left: 30px;
-    /* Adiciona margem negativa para puxar todo o bloco para cima */
     margin-top: -90px;
-    /* Ajuste este valor (-60px) para subir ou descer mais */
     left: 10px;
-    z-index: 3;
-    /* ... o restante do estilo da coluna direita ... */
 }
 
-/* 4. AJUSTE DO TEXTO E ESPAÇAMENTO */
+/* Título h4 com pílula */
 .sobre-conteudo .sobre-coluna-direita h4 {
     font-size: 20px;
     color: var(--fundo-z4);
     font-weight: 700;
-
-    /* CORREÇÃO DE ALINHAMENTO: Força o H4 a se centralizar dentro da sua coluna */
     text-align: center;
     right: 10px;
     margin-bottom: 0;
     margin-top: 0;
     position: relative;
     padding-bottom: 22px;
-    text-align: center;
     position: static;
 }
 
+/* Estilo da Pílula (Pill Title) */
 .pill-title {
-    /* --- Estilos da Pílula --- */
     background-color: #003366;
     color: white;
-    /* Cor escura do texto (Azul, como na pílula original) */
-
     padding: 8px 20px;
     border-radius: 20px;
-    /* Arredondamento */
-
-    /* --- Layout e Sombra --- */
     display: inline-block;
-    /* Faz o fundo se ajustar ao texto */
     text-transform: uppercase;
     font-size: 14px;
     font-weight: 600;
-
-    /* Sombra para flutuar (opcional) */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-
-    /* Margem para separar do título principal */
     margin-bottom: 10px;
 }
 
+/* Título h1 */
+.sobre-conteudo .sobre-coluna-direita h1 {
+    font-size: 34px;
+    font-weight: 500;
+    color: var(--fundo-z4);
+    margin-top: 20px;
+    margin-bottom: 20px;
+    line-height: 1.2;
+    text-align: left;
+}
+
+/* Parágrafos */
+.sobre-conteudo .sobre-coluna-direita p {
+    text-align: left;
+    max-width: 100%;
+    margin: 0 0 15px 0;
+    color: rgb(117, 100, 100);
+}
+
+/* Botão */
 .btn-sobre {
-    position: relative;
-    z-index: 4;
-    pointer-events: auto;
-    display: inline-flex;
-    /* Cores e Texto */
-    /* Degradê do seu Azul (var(--fundo-z4)) para um Amarelo/Ciano */
-    background: linear-gradient(90deg, #003366, #006dd4) ;
+    background: linear-gradient(90deg, #003366, #006dd4);
     color: white;
     font-size: 14px;
     font-weight: bold;
-    /* Layout */
     padding: 12px 25px;
     border: 0px solid transparent;
     cursor: pointer;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    /* Forma */
     border-radius: 8px;
-    /* Cantos arredondados normais */
-    /* Sombra Externa (como na primeira imagem) */
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
     margin-top: 40px;
@@ -587,32 +578,13 @@ section.sobre {
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
 }
 
-
-.btn-sobre strong {
-    color: inherit;
+.btn-sobre a {
+    color: white;
+    background-color: transparent;
+    outline: none;
+    border: none;
     text-decoration: none;
-}
-
-
-.sobre-conteudo .sobre-coluna-direita h1 {
-    font-size: 34px;
-    font-weight: 500;
-    color: var(--fundo-z4);
-    margin-top: 20px;
-    margin-bottom: 20px;
-    line-height: 1.2;
-    /* GARANTE ALINHAMENTO À ESQUERDA: */
-    text-align: left;
-}
-
-.sobre-conteudo .sobre-coluna-direita p {
-    /* Garante que os parágrafos também fiquem alinhados à esquerda */
-    text-align: left;
-    max-width: 100%;
-    /* Permite que ocupe a largura total da coluna */
-    margin: 0 0 15px 0;
-    /* Remove a centralização por margem */
-    color: rgb(117, 100, 100);
+    margin-right: 5px;
 }
 
 
@@ -1179,14 +1151,7 @@ section.treinadora-bio {
     content: "";
     display: block;
     width: 420px;
-<<<<<<< Updated upstream
-    height: 4px;
-<<<<<<< HEAD
-=======
->>>>>>> Stashed changes
     height: 5px;
-=======
->>>>>>> c7795c04a594254be5ea9385b9dea8bbcf6af65b
     background-color: var(--amarelo-z4);
     margin: 14px auto 0;
     border-radius: 2px;
@@ -1680,8 +1645,9 @@ section.pagina-footer {
 .footer-conteudo .footer-col-desc {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
 }
-
 
 .footer-col-desc i {
     color: var(--amarelo-z4);
@@ -1708,83 +1674,29 @@ section.pagina-footer {
     margin-top: 20px;
 }
 
-.footer-col-1 .footer-social-media a {
-    text-decoration: none;
-    color: var(--amarelo-z4);
-    margin-right: 10px;
-    margin-bottom: 90px;
-    width: 50px;
-    height: 50px;
-}
-
-.footer-col-1 .footer-social-media a i {
-    width: 35px;
-    height: 35px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 16px;
-    background-color: var(--fundo-z4);
-    color: aliceblue;
-    border: 1px solid transparent;
-    border-radius: 10px;
-    transition: all 0.3s;
-}
-
-
-.footer-col-1 .footer-social-media a i:hover {
-    background-color: transparent;
-    border: 1px solid var(--amarelo-z4);
-    /* amarelo quando passa o mouse MUDAR DPS */
-}
+/* Estilos das redes sociais movidos para footer.css */
 
 .footer-col-1 .social-media-title {
     font-size: 18px;
     font-weight: 500;
     margin-top: 20px;
     margin-bottom: 15px;
-    margin-left: -15px;
+    padding: 6px 18px;
     background-color: #F7F7F7;
     color: var(--fundo-z4);
-    border-radius: 20px 90px;
+    border-radius: 70px 10px 70px 10px;
+    display: inline-block;
 }
 
 .noticia-info {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    align-items: center;
+    gap: 24px;
+    width: 100%;
 }
 
-.btn-noticia-btn {
-    background-color: white;
-    border-radius: 999px;
-    padding: 16px 36px;
-    min-width: 260px;
-    text-align: center;
-    font-size: 16px;
-    font-weight: 600;
-    margin-top: 20px;
-}
-
-.btn-noticia-btn:hover{
-        background-color: white;
-        transform: translateY(-2px);
-}
-
-
-.btn-area-footer {
-    border-radius: 999px;
-    padding: 16px 36px;
-    min-width: 260px;
-    text-align: center;
-    font-size: 16px;
-    font-weight: 600;
-    margin-top: 10px;
-}
-
-.btn-area-footer:hover {
-    transform: translateY(-2px);
-}
+/* Estilos dos botões do footer movidos para footer.css */
 
 
 
@@ -1797,7 +1709,7 @@ section.pagina-footer {
     transition: 0.3s;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 
@@ -1814,52 +1726,62 @@ section.pagina-footer {
     /* Centraliza qualquer texto que ainda esteja nesta coluna */
 }
 
+.footer-logo {
+    max-width: 140px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.footer-social-media {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.footer-col-1 .social-media-title {
+    margin-left: 0;
+}
+
 .footer-col.footer-col-2 {
     display: flex;
     flex-direction: column;
     /* Centraliza o CONTEÚDO DA COLUNA (Título e Lista) Verticalmente no espaço */
     justify-content: flex-start;
+    align-items: flex-start;
 }
 
 .footer-col-2 .contact-list {
     display: flex;
     flex-direction: column;
-    /* Alinha os itens da lista ao centro (horizontalmente) */
-    align-items: center;
-    text-align: center;
-    /* Centraliza o texto dos links */
-    /* Remove a margem superior padrão do Flexbox */
+    align-items: flex-start;
+    text-align: left;
+    gap: 12px;
     margin-top: 0;
 }
 
 .footer-col-2 .footer-col-titulo {
-    /* Define o alinhamento horizontal do container do título */
-    text-align: center;
+    text-align: left;
     margin-bottom: 25px;
-    /* Espaço abaixo do título */
 }
 
 .footer-col-2 .footer-col-titulo h3 {
-    /* Centraliza o texto do título */
-    text-align: center;
-    /* Garante que o texto não seja afetado pelo tamanho da coluna */
-    margin: 0 auto;
+    text-align: left;
+    margin: 0;
 }
 
-.footer-col-2 .footer-col-desc a {
-    text-decoration: none;
-    font-size: 16px;
-    color: white;
-    letter-spacing: 1px;
-    margin-bottom: 16px;
-    transition: 0.3s;
+.footer-col-2 .footer-col-desc p {
+    margin: 0 0 12px 32px;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.5;
+    text-align: left;
 }
 
 .direito-copia {
-    background-color: #FFFFFF;
-    padding: 20px 0;
+    background-color: var(--amarelo-z4);
+    padding: 14px 0;
     text-align: center;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: none;
     display: block;
     visibility: visible;
     opacity: 1;
@@ -1869,7 +1791,8 @@ section.pagina-footer {
 
 .direito-copia p {
     color: var(--fundo-z4);
-    font-size: 0.9rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.03em;
 }
 
 .whatsappLink {

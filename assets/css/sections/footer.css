@@ -13,6 +13,8 @@ section.pagina-footer {
     width: 150px;
     height: auto;
     margin-bottom: 20px;
+    display: block;
+    margin-left: 0;
 }
 
 .footer-conteudo {
@@ -35,6 +37,7 @@ section.pagina-footer {
 .footer-conteudo .footer-col-titulo h3 {
     font-size: 24px;
     text-transform: capitalize;
+    color: var(--amarelo-z4);
 }
 
 .footer-conteudo .footer-col-desc {
@@ -64,37 +67,52 @@ section.pagina-footer {
 .footer-col-1 .footer-social-media {
     display: flex;
     margin-top: 20px;
+    margin-bottom: 40px;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
 }
 
 .footer-col-1 .footer-social-media a {
     text-decoration: none;
-    color: var(--amarelo-z4);
-    margin-right: 10px;
-    margin-bottom: 10px;
-    height: 50px;
+    margin-right: 0;
+    margin-bottom: 0;
+    height: auto;
 }
 
 .footer-col-1 .footer-social-media a i {
-    width: 35px;
-    height: 35px;
+    width: auto;
+    height: auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    border-radius: 0;
     background-color: transparent;
-    border: 1px solid white;
+    border: none;
+    font-size: 24px;
+    color: white;
     transition: all 0.3s ease;
 }
 
 .footer-col-1 .footer-social-media a i:hover {
     background-color: transparent;
+    color: var(--amarelo-z4);
+    transform: scale(1.1);
 }
 
 .footer-col-1 .social-media-title {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 500;
     margin-top: 20px;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    padding: 6px 18px;
+    background-color: #F7F7F7;
+    color: var(--fundo-z4);
+    border-radius: 70px 10px 70px 10px;
+    display: inline-block;
+    text-align: center;
+    width: auto;
 }
 
 .noticia-info {
@@ -106,12 +124,12 @@ section.pagina-footer {
 
 .btn-noticia-btn {
     background-color: white;
-    border-radius: 999px;
-    padding: 16px 36px;
+    border-radius: 15px;
+    padding: 13px 36px;
     min-width: 260px;
     text-align: center;
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 400;
     margin-top: 20px;
 }
 
@@ -121,12 +139,12 @@ section.pagina-footer {
 }
 
 .btn-area-footer {
-    border-radius: 999px;
-    padding: 16px 36px;
+    border-radius: 15px;
+    padding: 13px 36px;
     min-width: 260px;
     text-align: center;
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 400;
     margin-top: 10px;
 }
 
@@ -142,11 +160,6 @@ section.pagina-footer {
     margin-bottom: 10px;
 }
 
-/* Diminui o tamanho da fonte apenas do email */
-.footer-col-2 .footer-col-desc a.email-link {
-    font-size: 13.9px;
-}
-
 .footer-col-2 .footer-col-desc a:hover {
     color: var(--amarelo-z4);
 }
@@ -156,12 +169,31 @@ section.pagina-footer {
     flex-direction: column;
     align-items: center;
     text-align: center;
+    width: 100%;
+}
+
+.footer-col-1 .footer-col-titulo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.footer-col-1 .footer-col-desc {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
 }
 
 .footer-col.footer-col-2 {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 }
 
 .footer-col-2 .contact-list {
@@ -175,20 +207,89 @@ section.pagina-footer {
 .footer-col-2 .footer-col-titulo {
     text-align: center;
     margin-bottom: 25px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
 .footer-col-2 .footer-col-titulo h3 {
     text-align: center;
     margin: 0 auto;
+    width: fit-content;
+}
+
+.footer-col-2 .footer-col-desc {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
 }
 
 .footer-col-2 .footer-col-desc a {
     text-decoration: none;
-    font-size: 16px;
-    color: white;
-    letter-spacing: 1px;
+    font-size: 15px;
+    letter-spacing: 0.5px;
     margin-bottom: 10px;
     transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    width: fit-content;
+    max-width: 100%;
+    gap: 10px;
+    white-space: nowrap;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.footer-col-2 .footer-col-desc a i {
+    flex-shrink: 0;
+    width: 16px;
+    display: inline-block;
+    text-align: center;
+}
+
+.footer-col-2 .footer-col-desc p {
+    text-align: center;
+    margin: 0 auto;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    position: relative;
+    padding-left: 0;
+    white-space: nowrap;
+}
+
+.footer-col-2 .footer-col-desc p::before {
+    content: '\f3c5';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    color: var(--amarelo-z4);
+    margin-right: 10px;
+    flex-shrink: 0;
+    width: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer-col.footer-col-3 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+}
+
+.footer-col-3 .footer-col-desc {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
 }
 
 .direito-copia {
@@ -214,5 +315,50 @@ section.pagina-footer {
 @media (max-width: 768px) {
     .pagina-footer .footer-conteudo {
         grid-template-columns: 1fr;
+    }
+    
+    .footer-col-2 .footer-col-titulo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    }
+    
+    .footer-col-2 .footer-col-titulo h3 {
+        text-align: center;
+        margin: 0 auto;
+        padding-left: 0;
+        width: fit-content;
+    }
+    
+    .footer-col-2 .footer-col-desc {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+    }
+    
+    .footer-col-2 .footer-col-desc a {
+        font-size: 14px;
+        justify-content: center;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .footer-col-2 .footer-col-desc p {
+        justify-content: center;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .footer-col.footer-col-1 {
+        align-items: center;
+        text-align: center;
+    }
+    
+    .footer-col.footer-col-2 {
+        align-items: center;
+        text-align: center;
     }
 }

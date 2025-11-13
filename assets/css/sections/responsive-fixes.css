@@ -75,26 +75,6 @@ img {
     border-radius: 2px;
 }
 
-/* Garantir que feedbacks tenha 4px no mobile - regra mais específica */
-@media (max-width: 768px) {
-    section.feedbacks .section-header h2.title::after,
-    .feedbacks .section-header .title::after,
-    section#feedbacks-c .section-header .title::after {
-        height: 4px !important;
-        max-height: 4px !important;
-        width: 150px;
-    }
-}
-
-@media (max-width: 480px) {
-    section.feedbacks .section-header h2.title::after,
-    .feedbacks .section-header .title::after,
-    section#feedbacks-c .section-header .title::after {
-        height: 3px !important;
-        max-height: 4px !important;
-    }
-}
-
 
 
 /* Treinadora - garantir responsividade */

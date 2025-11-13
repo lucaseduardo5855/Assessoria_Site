@@ -7,11 +7,13 @@
 
 .home-slider {
     height: 100%;
+    touch-action: pan-y pinch-zoom;
 }
 
 .swiper-slide {
     position: relative;
     height: 100%;
+    touch-action: pan-y pinch-zoom;
 }
 
 .slide-image {
@@ -19,6 +21,7 @@
     height: 100%;
     object-fit: cover;
     object-position: center;
+    touch-action: pan-y pinch-zoom;
 }
 
 .home-overlay {
@@ -47,6 +50,11 @@
     z-index: 3;
     width: 100%;
     padding: 0 20px;
+    pointer-events: none;
+}
+
+.banner-conteudo {
+    pointer-events: none;
 }
 
 .banner-conteudo h1 {
@@ -92,17 +100,100 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-    .banner-conteudo h1 {
-        font-size: 2.5rem;
+    .home {
+        height: 100dvh; /* Dynamic viewport height para mobile */
+        min-height: 500px;
+        max-height: 100vh;
+        overflow: hidden;
+    }
+    
+    .home-slider {
+        height: 100%;
+        touch-action: pan-y pinch-zoom;
+    }
+    
+    .swiper-slide {
+        touch-action: pan-y pinch-zoom;
+    }
+    
+    .slide-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        touch-action: pan-y pinch-zoom;
     }
     
     .banner {
-        padding: 0 15px;
+        padding: 0 20px;
+        width: 100%;
+        pointer-events: none;
+    }
+    
+    .banner-conteudo {
+        pointer-events: none;
+    }
+    
+    .banner-conteudo h1 {
+        font-size: 2.5rem;
+        line-height: 1.2;
+        word-wrap: break-word;
+    }
+    
+    .home-pagination {
+        bottom: 20px;
+        pointer-events: auto;
+    }
+    
+    .swiper-pagination-bullet {
+        width: 10px;
+        height: 10px;
+        pointer-events: auto;
     }
 }
 
 @media (max-width: 480px) {
+    .home {
+        height: 100dvh; /* Dynamic viewport height para mobile */
+        min-height: 400px;
+        max-height: 100vh;
+        overflow: hidden;
+    }
+    
+    .home-slider {
+        height: 100%;
+        touch-action: pan-y pinch-zoom;
+    }
+    
+    .banner {
+        padding: 0 15px;
+        pointer-events: none;
+    }
+    
+    .banner-conteudo {
+        pointer-events: none;
+    }
+    
     .banner-conteudo h1 {
-        font-size: 2rem;
+        font-size: 1.8rem;
+        line-height: 1.3;
+        word-wrap: break-word;
+    }
+    
+    .home-pagination {
+        bottom: 15px;
+        pointer-events: auto;
+    }
+    
+    .swiper-pagination-bullet {
+        width: 8px;
+        height: 8px;
+        pointer-events: auto;
+    }
+}
+
+@media (max-width: 360px) {
+    .banner-conteudo h1 {
+        font-size: 1.5rem;
     }
 }

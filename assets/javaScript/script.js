@@ -75,13 +75,10 @@ document.addEventListener('DOMContentLoaded', function () {
         loop: true,
         effect: 'fade',
         speed: 500, // Transição da foto (rápida)
-
-        // Habilita arrasto com o dedo no mobile/tablet
-        touchEventsTarget: 'container',
-        allowTouchMove: true,
-        touchRatio: 1,
-        touchAngle: 45,
-        grabCursor: true,
+        allowTouchMove: true, // Permite movimento com toque
+        touchRatio: 1, // Sensibilidade do toque
+        touchAngle: 45, // Ângulo permitido para swipe
+        grabCursor: true, // Mostra cursor de "mão" no desktop
 
         pagination: {
             el: '.home-pagination',
@@ -159,32 +156,19 @@ document.addEventListener('DOMContentLoaded', function () {
     // =========================================================
     const priceData = {
         corrida: {
-            mensal: { price: "80,00", period: "/mês", currency: "R$" },
-            semestral: { price: "350,00", period: "/6 meses", currency: "R$" },
-<<<<<<< HEAD
-            anual: { price: "700,00", period: "/ano", currency: "R$" }
-=======
-            anual: { price: "760,00", period: "/ano", currency: "R$" }
->>>>>>> c7795c04a594254be5ea9385b9dea8bbcf6af65b
+            mensal: { price: "79,90", period: "/mês", currency: "R$" },
+            semestral: { price: "349,90", period: "/6 meses", currency: "R$" },
+            anual: { price: "719,90", period: "/ano", currency: "R$" }
         },
         musculacao: {
-            mensal: { price: "80,00", period: "/mês", currency: "R$" },
-            semestral: { price: "350,00", period: "/6 meses", currency: "R$" },
-<<<<<<< HEAD
-            anual: { price: "700,00", period: "/ano", currency: "R$" }
+            mensal: { price: "79,90", period: "/mês", currency: "R$" },
+            semestral: { price: "349,00", period: "/6 meses", currency: "R$" },
+            anual: { price: "719,00", period: "/ano", currency: "R$" }
         },
         combo: {
-            mensal: { price: "120,00", period: "/mês", currency: "R$" },
-            semestral: { price: "650,00", period: "/6 meses", currency: "R$" },
-            anual: { price: "920,00", period: "/ano", currency: "R$" }
-=======
-            anual: { price: "760,00", period: "/ano", currency: "R$" }
-        },
-        combo: {
-            mensal: { price: "120,00", period: "/mês", currency: "R$" },
-            semestral: { price: "615,00", period: "/6 meses", currency: "R$" },
-            anual: { price: "900,00", period: "/ano", currency: "R$" }
->>>>>>> c7795c04a594254be5ea9385b9dea8bbcf6af65b
+            mensal: { price: "119,90", period: "/mês", currency: "R$" },
+            semestral: { price: "614,90", period: "/6 meses", currency: "R$" },
+            anual: { price: "899,90", period: "/ano", currency: "R$" }
         }
     };
 
@@ -223,7 +207,6 @@ document.addEventListener('DOMContentLoaded', function () {
     updatePrices('mensal');
 
     // =========================================================
-<<<<<<< HEAD
     // 6. BOTÃO "QUERO TREINAR COM VOCÊS"
     // =========================================================
     const btnSobre = document.querySelector('.btn-sobre[data-whatsapp]');
@@ -238,12 +221,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // =========================================================
     // 8. WHATSAPP DINÂMICO
-=======
-    // 7. WHATSAPP DINÂMICO
->>>>>>> c7795c04a594254be5ea9385b9dea8bbcf6af65b
     // =========================================================
 
-    const whatsappBaseUrl = "https://wa.me/5542998489857?text=";
+    const whatsappBaseUrl = "https://wa.me/5543996905705?text=";
     const whatsappButtons = document.querySelectorAll('.btn-choose-link');
 
     whatsappButtons.forEach(link => {

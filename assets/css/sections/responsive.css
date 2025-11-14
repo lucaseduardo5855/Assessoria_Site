@@ -559,12 +559,12 @@
     
     /* Linha amarela dos feedbacks responsiva */
     .section-header .title::after {
-        width: 300px;
+        width: 240px;
         height: 5px;
     }
 
     .feedbacks .section-header .title::after {
-        width: 340px;
+        width: 5px;
     }
     
     /* Footer */
@@ -713,17 +713,60 @@
         padding: 40px 3%;
     }
     
+    /* Seção Consultoria Mobile - ordem correta: título, subtítulo, imagem, lista */
     .consultoria-online .consultoria-content {
-        flex-direction: column;
+        display: flex !important;
+        flex-direction: column !important;
         text-align: center;
+        gap: 30px;
     }
     
-    .consultoria-online .consultoria-coluna-esquerda img {
+    /* Forçar ordem correta no mobile - usar display: contents para que order funcione */
+    .consultoria-online .consultoria-coluna-direita {
+        order: 1;
+        display: contents !important;
+        width: 100%;
+    }
+    
+    /* Título e subtítulo aparecem primeiro */
+    .consultoria-online .consultoria-header-mobile {
+        order: 1 !important;
+        width: 100% !important;
+        display: block;
+    }
+    
+    /* Imagem vem logo depois do subtítulo */
+    .consultoria-online .consultoria-coluna-esquerda,
+    .consultoria-online .consultoria-imagem-mobile {
+        order: 2 !important;
+        width: 100%;
+        margin: 30px 0 !important;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    /* Lista vem depois da imagem */
+    .consultoria-online .consultoria-passos-mobile {
+        order: 3 !important;
+        width: 100% !important;
+        margin-top: 0 !important;
+        display: block;
+    }
+    
+    .consultoria-online .consultoria-coluna-esquerda img,
+    .consultoria-online .consultoria-imagem-mobile img,
+    .consultoria-online .consultoria-imagem img {
         width: 100% !important;
         height: auto !important;
-        max-width: 320px;
-        margin: 0 auto 16px;
+        max-width: 100%;
+        min-height: 500px;
+        max-height: 650px;
+        margin: 0 auto;
         display: block;
+        object-fit: cover;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
     
     .consultoria-online .consultoria-coluna-direita h1 {
@@ -813,7 +856,7 @@
     }
 
     .feedbacks .section-header .title::after {
-        width: 280px;
+        width: 180px;
     }
     
     /* Footer */

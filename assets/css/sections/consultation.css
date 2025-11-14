@@ -8,7 +8,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 60px;
-    align-items: center;
+    align-items: start;
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
@@ -91,19 +91,124 @@
     box-shadow: 0 5px 15px rgba(255, 234, 0, 0.3);
 }
 
-/* Responsive */
+/* Desktop: layout com imagem à esquerda e texto à direita */
+@media (min-width: 769px) {
+    .consultoria-coluna-esquerda {
+        grid-column: 1;
+        grid-row: 1;
+    }
+    
+    .consultoria-coluna-direita {
+        grid-column: 2;
+        grid-row: 1;
+    }
+}
+
+/* Responsive - Mobile */
 @media (max-width: 768px) {
     .consultoria-content {
-        grid-template-columns: 1fr;
-        gap: 40px;
+        display: flex !important;
+        flex-direction: column !important;
+        grid-template-columns: none !important;
+        gap: 30px;
         text-align: center;
+        position: relative;
+    }
+    
+    /* Reorganizar estrutura no mobile - a coluna-direita precisa ser um wrapper */
+    .consultoria-coluna-direita {
+        order: 1 !important;
+        display: contents !important;
+        width: 100% !important;
+    }
+    
+    /* Título e subtítulo aparecem primeiro */
+    .consultoria-coluna-direita .consultoria-header-mobile {
+        order: 1 !important;
+        width: 100% !important;
+        text-align: center;
+        display: block;
+    }
+    
+    /* Imagem vem depois do subtítulo */
+    .consultoria-coluna-esquerda.consultoria-imagem-mobile,
+    .consultoria-imagem-mobile,
+    .consultoria-coluna-esquerda {
+        order: 2 !important;
+        width: 100% !important;
+        margin: 30px 0 !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        position: relative !important;
+        flex-shrink: 0;
+    }
+    
+    /* Lista vem depois da imagem */
+    .consultoria-coluna-direita .consultoria-passos-mobile {
+        order: 3 !important;
+        width: 100% !important;
+        margin-top: 0 !important;
+        display: block;
     }
     
     .consultoria-titulo {
         font-size: 2rem;
+        margin-bottom: 15px;
+    }
+    
+    .consultoria-subtitulo {
+        margin-bottom: 30px;
+    }
+    
+    /* Imagem centralizada no mobile */
+    .consultoria-imagem {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
     
     .consultoria-imagem img {
-        height: 300px;
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        min-height: 500px;
+        max-height: 650px;
+        object-fit: cover;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        margin: 0 auto;
+        display: block;
+    }
+    
+    .consultoria-passos {
+        margin-top: 30px;
+        text-align: left;
+        padding: 0 20px;
+    }
+    
+    .consultoria-passos dt {
+        text-align: left;
+        margin-top: 25px;
+    }
+    
+    .consultoria-passos dt:first-child {
+        margin-top: 0;
+    }
+    
+    .consultoria-passos dd {
+        text-align: left;
+        padding-left: 20px;
+        position: relative;
+    }
+    
+    .consultoria-passos dd::before {
+        display: block;
+        content: '→';
+        position: absolute;
+        left: 0;
+        color: var(--amarelo-z4);
+        font-weight: bold;
     }
 }

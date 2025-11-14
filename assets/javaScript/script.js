@@ -1,6 +1,3 @@
-// =========================================================
-// CÓDIGO JS COMPLETO
-// =========================================================
 
 // =========================================================
 // 0. NAVEGAÇÃO MOBILE E HAMBURGUER
@@ -40,15 +37,57 @@ function listItemClicked() {
 
 // Junta todos os blocos DOMContentLoaded em um único
 document.addEventListener('DOMContentLoaded', function () {
+    // Permitir que o navegador mantenha a posição de scroll ao usar botão voltar/avançar (desktop e mobile)
     if ('scrollRestoration' in history) {
-        history.scrollRestoration = 'manual';
+        history.scrollRestoration = 'auto';
     }
 
-    window.addEventListener('load', function () {
-        if (window.location.hash) {
-            history.replaceState(null, document.title, window.location.pathname + window.location.search);
+    // Variável para controlar se é a primeira carga da página
+    let isFirstLoad = !sessionStorage.getItem('pageLoaded');
+    
+    // Só rola para o topo na primeira carga da página (sem hash)
+    if (isFirstLoad) {
+        window.addEventListener('load', function () {
+            if (!window.location.hash) {
+                window.scrollTo(0, 0);
+            }
+            sessionStorage.setItem('pageLoaded', 'true');
+        });
+    }
+    
+    // Garantir que o botão voltar no mobile mantenha a posição
+    window.addEventListener('pageshow', function(event) {
+        // Se for uma navegação usando cache (botão voltar), não faz nada
+        // O navegador já mantém a posição de scroll automaticamente
+        if (event.persisted) {
+            // Página foi carregada do cache (botão voltar)
+            // Não interfere com a posição de scroll
+            return;
         }
-        window.scrollTo(0, 0);
+    });
+    
+    // Scroll suave para links de âncora
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            if (href !== '#' && href !== '#inicio') {
+                const target = document.querySelector(href);
+                if (target) {
+                    e.preventDefault();
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            } else {
+                // Para #inicio ou #, ir direto ao topo
+                e.preventDefault();
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }
+        });
     });
 
     // =========================================================
@@ -156,12 +195,12 @@ document.addEventListener('DOMContentLoaded', function () {
     // =========================================================
     const priceData = {
         corrida: {
-            mensal: { price: "79,90", period: "/mês", currency: "R$" },
+            mensal: { price: "80,00", period: "/mês", currency: "R$" },
             semestral: { price: "349,90", period: "/6 meses", currency: "R$" },
             anual: { price: "719,90", period: "/ano", currency: "R$" }
         },
         musculacao: {
-            mensal: { price: "79,90", period: "/mês", currency: "R$" },
+            mensal: { price: "80,00", period: "/mês", currency: "R$" },
             semestral: { price: "349,00", period: "/6 meses", currency: "R$" },
             anual: { price: "719,00", period: "/ano", currency: "R$" }
         },

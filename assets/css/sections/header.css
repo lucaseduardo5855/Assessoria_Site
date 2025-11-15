@@ -214,7 +214,9 @@
     .main-navbar {
         padding: calc(12px + env(safe-area-inset-top, 0px)) 5% 12px;
         justify-content: space-between;
+        align-items: center;
         background-color: #1B293F !important;
+        flex-wrap: nowrap;
     }
 
     /* Garantir que navbar no mobile sempre tenha cor azul fixa */
@@ -225,6 +227,7 @@
     .main-navbar .logo {
         margin-right: auto;
         flex-shrink: 0;
+        order: 1;
     }
 
     .main-navbar .logo img {
@@ -232,15 +235,16 @@
         max-height: 40px;
     }
 
+    .junte-se-btn {
+        display: none !important;
+    }
+
     .hamburguer-btn {
         display: flex !important;
         margin-left: auto;
         margin-right: 0;
         order: 2;
-    }
-
-    .junte-se-btn {
-        display: none;
+        flex-shrink: 0;
     }
 
     /* Botão Área do Atleta no menu mobile */
@@ -282,12 +286,6 @@
         color: #1B293F !important;
     }
 
-    /* Garantir que o link wrapper não interfira */
-    .mobile-area-atleta .mobile-area-btn:hover {
-        background-color: transparent !important;
-    }
-
-    /* Remover fundo escuro do item de lista no mobile */
     .main-navbar .nav-list li.mobile-area-atleta a {
         background-color: transparent !important;
         border-bottom: none !important;
@@ -305,3 +303,4 @@
         display: none !important;
     }
 }
+

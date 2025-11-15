@@ -1950,10 +1950,6 @@ section.pagina-footer {
         letter-spacing: 2px;
     }
 
-    .home .main-navbar .junte-se-btn {
-        margin-left: auto;
-    }
-
     /* ICON 'X' no hamburguer quando tiver desativado */
     .main-navbar .hamburguer-btn.active span:nth-child(1) {
         transform: translateY(8px) rotate(45deg);

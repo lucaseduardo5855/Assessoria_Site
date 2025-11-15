@@ -4,14 +4,15 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 80px;
-    background-color: var(--fundo-z4);
+    padding: calc(12px + env(safe-area-inset-top, 0px)) 8% 12px;
+    margin: 0px auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: #1B293F;
     z-index: 9999;
     transition: all 0.3s ease-in-out;
+    min-height: 70px;
 }
 
 .main-navbar .logo {
@@ -20,8 +21,12 @@
 }
 
 .main-navbar .logo img {
-    width: 120px;
+    width: auto;
+    max-width: 110px;
+    max-height: 44px;
     height: auto;
+    display: block;
+    object-fit: contain;
 }
 
 .main-navbar .nav-list {
@@ -43,6 +48,7 @@
     color: white;
     font-size: 14px;
     transition: all 0.3s;
+    position: relative;
 }
 
 .main-navbar .nav-list li a:hover {
@@ -68,6 +74,13 @@
     flex-direction: column;
     gap: 5px;
     z-index: 10000;
+    margin-left: auto;
+}
+
+.scrolled-navbar {
+    background-color: var(--fundo-z4);
+    opacity: 1;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .hamburguer-btn span {
@@ -135,19 +148,33 @@
         width: 100%;
     }
 
-    .main-navbar .nav-list li a {
+    .main-navbar .nav-list li a,
+    .main-navbar .nav-list li a:link,
+    .main-navbar .nav-list li a:visited {
         font-size: 18px;
         padding: 20px 30px;
         display: block;
-        color: white;
-        text-decoration: none;
+        color: white !important;
+        text-decoration: none !important;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         transition: all 0.3s ease;
     }
 
-    .main-navbar .nav-list li a:hover {
-        color: var(--amarelo-z4);
+    .main-navbar .nav-list li a:hover,
+    .main-navbar .nav-list li a:focus,
+    .main-navbar .nav-list li a:active {
+        color: #FFEA00 !important;
         background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Garantir que links do navbar sempre mudem para amarelo no hover - maior especificidade */
+    .main-navbar .nav-list.active li:not(.mobile-area-atleta) a:hover,
+    .main-navbar .nav-list.active li:not(.mobile-area-atleta) a:focus,
+    .main-navbar .nav-list.active li:not(.mobile-area-atleta) a:active,
+    .main-navbar .nav-list.active li:not(.mobile-area-atleta) a:link:hover,
+    .main-navbar .nav-list.active li:not(.mobile-area-atleta) a:visited:hover {
+        color: #FFEA00 !important;
+        background-color: rgba(255, 255, 255, 0.1) !important;
     }
 
     .main-navbar .nav-list li:last-child a {
@@ -184,11 +211,97 @@
         background-color: rgba(255, 255, 255, 0.2);
     }
 
+    .main-navbar {
+        padding: calc(12px + env(safe-area-inset-top, 0px)) 5% 12px;
+        justify-content: space-between;
+        background-color: #1B293F !important;
+    }
+
+    /* Garantir que navbar no mobile sempre tenha cor azul fixa */
+    .main-navbar.scrolled-navbar {
+        background-color: #1B293F !important;
+    }
+
+    .main-navbar .logo {
+        margin-right: auto;
+        flex-shrink: 0;
+    }
+
+    .main-navbar .logo img {
+        max-width: 90px;
+        max-height: 40px;
+    }
+
     .hamburguer-btn {
         display: flex !important;
+        margin-left: auto;
+        margin-right: 0;
+        order: 2;
     }
 
     .junte-se-btn {
         display: none;
+    }
+
+    /* Botão Área do Atleta no menu mobile */
+    .mobile-area-atleta {
+        display: flex !important;
+        justify-content: center;
+        padding: 20px 30px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        margin-top: 10px;
+        background-color: transparent !important;
+    }
+
+    .mobile-area-atleta .mobile-area-btn {
+        width: 100%;
+        text-decoration: none;
+        display: block;
+        background-color: transparent !important;
+    }
+
+    .mobile-area-atleta button.btn-join-us {
+        width: 100%;
+        background-color: white !important;
+        color: #1B293F !important;
+        padding: 15px 20px !important;
+        border-radius: 25px !important;
+        font-weight: 600 !important;
+        font-size: 16px !important;
+        border: none !important;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: none !important;
+        margin: 0 !important;
+    }
+
+    .mobile-area-atleta button.btn-join-us:hover,
+    .mobile-area-atleta button.btn-join-us:focus,
+    .mobile-area-atleta button.btn-join-us:active {
+        background-color: #FFEA00 !important;
+        color: #1B293F !important;
+    }
+
+    /* Garantir que o link wrapper não interfira */
+    .mobile-area-atleta .mobile-area-btn:hover {
+        background-color: transparent !important;
+    }
+
+    /* Remover fundo escuro do item de lista no mobile */
+    .main-navbar .nav-list li.mobile-area-atleta a {
+        background-color: transparent !important;
+        border-bottom: none !important;
+        padding: 0 !important;
+    }
+
+    .main-navbar .nav-list li.mobile-area-atleta:hover {
+        background-color: transparent !important;
+    }
+}
+
+/* Esconder botão mobile no desktop */
+@media (min-width: 993px) {
+    .mobile-area-atleta {
+        display: none !important;
     }
 }

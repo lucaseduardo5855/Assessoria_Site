@@ -224,6 +224,18 @@ section.home {
     color: var(--amarelo-z4);
 }
 
+.junte-se-btn .btn-join-us {
+    background-color: white;
+    color: var(--fundo-z4);
+    padding: 10px;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.junte-se-btn .btn-join-us:hover {
+    background-color: var(--amarelo-z4);
+}
 
 .hamburguer-btn {
     display: none;

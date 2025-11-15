@@ -270,6 +270,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
             event.preventDefault();
 
+            // Salvar a posição atual do scroll antes de abrir o WhatsApp
+            const pricingSection = document.getElementById('pricing-z4-perfomance');
+            if (pricingSection) {
+                const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+                sessionStorage.setItem('pricingScrollPosition', scrollPosition);
+            }
+
             // Coleta de Dados
             const planName = link.getAttribute('data-plan-name');
             const activeDuration = document.querySelector('.tab-button.active').getAttribute('data-duration');
@@ -307,6 +314,24 @@ document.addEventListener('DOMContentLoaded', function () {
             // Codifica a mensagem e abre o WhatsApp
             const encodedMessage = encodeURIComponent(message);
             window.open(whatsappBaseUrl + encodedMessage, '_blank');
+
+            // Restaurar posição quando a página receber foco novamente
+            window.addEventListener('focus', function restoreScrollPosition() {
+                const savedPosition = sessionStorage.getItem('pricingScrollPosition');
+                if (savedPosition) {
+                    const pricingSectionEl = document.getElementById('pricing-z4-perfomance');
+                    if (pricingSectionEl) {
+                        setTimeout(() => {
+                            window.scrollTo({
+                                top: parseInt(savedPosition),
+                                behavior: 'smooth'
+                            });
+                            sessionStorage.removeItem('pricingScrollPosition');
+                        }, 100);
+                    }
+                }
+                window.removeEventListener('focus', restoreScrollPosition);
+            }, { once: true });
         });
     });
 });

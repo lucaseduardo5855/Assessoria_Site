@@ -188,6 +188,18 @@ section.pagina-footer {
     width: 100%;
 }
 
+.footer-col-1 .social-media-title {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.footer-col-1 .footer-social-media {
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .footer-col.footer-col-2 {
     display: flex;
     flex-direction: column;
@@ -337,13 +349,24 @@ section.pagina-footer {
         align-items: center;
         text-align: center;
         width: 100%;
+        
     }
     
     .footer-col-2 .footer-col-desc a {
         font-size: 14px;
         justify-content: center;
+        padding-top: 2px;
+        margin-top: 15px;
+        text-align: center;
         margin-left: auto;
         margin-right: auto;
+    }
+
+    /* Reset para mobile - telefone centralizado */
+    .footer-col-2 .footer-col-desc a:first-child {
+        margin-left: auto;
+        margin-right: auto;
+        transform: translateX(0);
     }
     
     .footer-col-2 .footer-col-desc p {
@@ -355,6 +378,29 @@ section.pagina-footer {
     .footer-col.footer-col-1 {
         align-items: center;
         text-align: center;
+    }
+
+    .footer-col-1 .footer-col-titulo {
+        justify-content: center;
+        padding-left: 0;
+    }
+
+    .footer-col-1 .footer-col-desc {
+        align-items: center;
+        text-align: center;
+        padding-right: 0;
+    }
+
+    .footer-col-1 .social-media-title {
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .footer-col-1 .footer-social-media {
+        justify-content: center;
+        margin-left: auto;
+        margin-right: auto;
     }
     
     .footer-col.footer-col-2 {

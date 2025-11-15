@@ -334,4 +334,48 @@ document.addEventListener('DOMContentLoaded', function () {
             }, { once: true });
         });
     });
+
+    // =========================================================
+    // 10. SCROLL REVEAL - Animações de revelação ao rolar
+    // =========================================================
+    if (typeof ScrollReveal !== 'undefined') {
+        const sr = ScrollReveal({
+            distance: '50px',
+            duration: 800,
+            easing: 'ease-out',
+            reset: false,
+            mobile: true,
+            viewFactor: 0.2
+        });
+
+        // Seção Sobre
+        sr.reveal('.sobre-coluna-esquerda', { origin: 'left', delay: 0 });
+        sr.reveal('.sobre-coluna-direita', { origin: 'right', delay: 200 });
+
+        // Seção Modalidades
+        sr.reveal('.section-header', { origin: 'bottom', delay: 0 });
+        sr.reveal('.servico-link:nth-child(1)', { origin: 'bottom', delay: 100 });
+        sr.reveal('.servico-link:nth-child(2)', { origin: 'bottom', delay: 200 });
+        sr.reveal('.servico-link:nth-child(3)', { origin: 'bottom', delay: 300 });
+        sr.reveal('.servico-link:nth-child(4)', { origin: 'bottom', delay: 400 });
+
+        // Seção Treinadora
+        sr.reveal('.section-header-treinadora', { origin: 'bottom', delay: 0 });
+        sr.reveal('.bio-coluna-texto', { origin: 'left', delay: 200 });
+        sr.reveal('.bio-coluna-foto', { origin: 'right', delay: 400 });
+
+        // Seção Planos
+        sr.reveal('.section-title', { origin: 'bottom', delay: 0 });
+        sr.reveal('.tabs-navigation', { origin: 'bottom', delay: 100 });
+        sr.reveal('.pricing-card:nth-child(1)', { origin: 'bottom', delay: 200 });
+        sr.reveal('.pricing-card:nth-child(2)', { origin: 'bottom', delay: 300 });
+        sr.reveal('.pricing-card:nth-child(3)', { origin: 'bottom', delay: 400 });
+
+        // Seção Consultoria
+        sr.reveal('.consultoria-coluna-esquerda', { origin: 'left', delay: 0 });
+        sr.reveal('.consultoria-coluna-direita', { origin: 'right', delay: 200 });
+
+        // Seção Feedbacks
+        sr.reveal('.feedbacks .section-header', { origin: 'bottom', delay: 0 });
+    }
 });
